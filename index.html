@@ -1,1 +1,602 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Registro de Estudiantes Reprobados</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Generador de PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <!-- Lector de PDF SIE -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  </script>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen py-6 px-4">
 
+  <script>
+    // ==========================================
+    // PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT:
+    // ==========================================
+    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxCQtbJK9HBQ-HHsJpI-diZFeawf_aOpNTz8JLFO6KW98gN_88uZdJZB3bifsNGPNcK5g/exec";
+  </script>
+
+  <div class="max-w-4xl mx-auto">
+
+    <!-- ENCABEZADO -->
+    <header class="bg-indigo-900 text-white rounded-t-xl p-6 shadow-md flex justify-between items-center">
+      <div>
+        <h1 class="text-xl font-bold">Plataforma Pedagógica de Justificación</h1>
+        <p class="text-xs text-indigo-200">Registro de Estudiantes en Riesgo y Reprobados</p>
+      </div>
+      <div id="userInfo" class="hidden text-right">
+        <span id="userBadge" class="bg-indigo-700 text-xs px-3 py-1.5 rounded-full font-semibold"></span>
+        <button onclick="cerrarSesion()" class="block text-xs text-red-300 hover:text-white mt-1 underline">Cerrar Sesión</button>
+      </div>
+    </header>
+
+    <!-- 1. LOGIN -->
+    <section id="loginCard" class="bg-white p-8 rounded-b-xl shadow-md border-t border-slate-100">
+      <h2 class="text-lg font-semibold mb-2 text-slate-800">Acceso al Sistema</h2>
+      <p class="text-xs text-slate-600 mb-4">Ingrese con su Carnet de Identidad (CI) y su PIN de 4 dígitos. Administradores ingresen con su clave.</p>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Cédula de Identidad (CI):</label>
+          <input type="text" id="txtCI" placeholder="Ej: 1234567" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">PIN (Últimos 4 dígitos del CI):</label>
+          <input type="password" id="txtPIN" placeholder="••••" maxlength="10" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+        </div>
+      </div>
+
+      <button onclick="login()" id="btnLogin" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg font-bold text-sm shadow transition">
+        Iniciar Sesión
+      </button>
+      <div id="loginError" class="text-red-600 text-xs mt-3 hidden font-medium"></div>
+    </section>
+
+    <!-- 2. VISTA DOCENTE -->
+    <div id="vistaDocente" class="hidden space-y-4">
+      <div class="bg-white p-6 rounded-b-xl shadow-md">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 border-b pb-3">
+          <h2 class="text-base font-bold text-slate-800">Formulario de Justificación</h2>
+          <button onclick="descargarPDFDocente()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-2 rounded shadow flex items-center gap-1 font-semibold">
+            📄 Descargar Mi Reporte PDF
+          </button>
+        </div>
+
+        <form id="formRegistro" onsubmit="enviarFormulario(event)">
+          <!-- SELECTORES EN CASCADA -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">1. Curso Asignado:</label>
+              <select id="selCurso" onchange="onCursoChange()" class="w-full border rounded-lg p-2 text-xs" required>
+                <option value="">-- Seleccionar Curso --</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">2. Área / Materia:</label>
+              <select id="selArea" onchange="validarDuplicadoEnFrontend()" class="w-full border rounded-lg p-2 text-xs" required disabled>
+                <option value="">-- Elija Curso --</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">3. Estudiante:</label>
+              <select id="selEstudiante" onchange="validarDuplicadoEnFrontend()" class="w-full border rounded-lg p-2 text-xs" required disabled>
+                <option value="">-- Elija Curso --</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="alertaDuplicado" class="hidden bg-amber-50 border-l-4 border-amber-500 p-3 mb-4 text-xs text-amber-800">
+            ⚠️ <strong>Atención:</strong> Ya existe un registro guardado para este estudiante en este curso y materia.
+          </div>
+
+          <!-- NOTAS -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4 bg-slate-50 p-3 rounded-lg border">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Nota 1er Trimestre (1-100):</label>
+              <input type="number" id="txtNota1" min="1" max="100" class="w-full border rounded p-2 text-xs" oninput="calcularPromedio()" required>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Nota 2do Trimestre (1-100):</label>
+              <input type="number" id="txtNota2" min="1" max="100" class="w-full border rounded p-2 text-xs" oninput="calcularPromedio()" required>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Promedio 1° y 2° Trimestre:</label>
+              <input type="text" id="txtPromedio" class="w-full border bg-slate-200 rounded p-2 text-xs font-bold text-indigo-900" readonly value="0.0">
+            </div>
+          </div>
+
+          <!-- JUSTIFICACIÓN ACADÉMICA -->
+          <div class="mb-4">
+            <label class="block text-xs font-bold text-slate-700 mb-1">Justificación Académica (Seleccione causales):</label>
+            <div class="bg-slate-50 p-3 rounded border space-y-2">
+              <div id="chkAcademica" class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs"></div>
+              <div class="pt-2 border-t">
+                <input type="text" id="txtOtraAcademica" placeholder="✏️ Otra justificación académica no listada..." class="w-full border rounded p-1.5 text-xs bg-white">
+              </div>
+            </div>
+          </div>
+
+          <!-- JUSTIFICACIÓN CONDUCTUAL -->
+          <div class="mb-4">
+            <label class="block text-xs font-bold text-slate-700 mb-1">Justificación Conductual (Seleccione causales):</label>
+            <div class="bg-slate-50 p-3 rounded border space-y-2">
+              <div id="chkConductual" class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs"></div>
+              <div class="pt-2 border-t">
+                <input type="text" id="txtOtraConductual" placeholder="✏️ Otra justificación conductual no listada..." class="w-full border rounded p-1.5 text-xs bg-white">
+              </div>
+            </div>
+          </div>
+
+          <!-- ACCIONES PREVIAS -->
+          <div class="mb-4">
+            <label class="block text-xs font-bold text-slate-700 mb-1">Acciones Previas Implementadas (Seleccione una o varias):</label>
+            <div class="bg-slate-50 p-3 rounded border space-y-2">
+              <div id="chkAcciones" class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs"></div>
+              <div class="pt-2 border-t">
+                <input type="text" id="txtOtraAccion" placeholder="✏️ Otra acción pedagógica implementada..." class="w-full border rounded p-1.5 text-xs bg-white">
+              </div>
+            </div>
+          </div>
+
+          <!-- OBSERVACIÓN GENERAL -->
+          <div class="mb-5">
+            <label class="block text-xs font-bold text-slate-700 mb-1">Observación Adicional / Detalle específico:</label>
+            <textarea id="txtObservacion" rows="2" class="w-full border rounded-lg p-2 text-xs" placeholder="Fechas de actas firmadas, citaciones a tutores o incidentes particulares..."></textarea>
+          </div>
+
+          <button type="submit" id="btnGuardar" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg text-sm shadow transition">
+            💾 Guardar Registro de Reprobación
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 3. VISTA ADMIN -->
+    <div id="vistaAdmin" class="hidden space-y-4">
+      
+      <!-- IMPORTADOR DE LISTAS DESDE PDF SIE -->
+      <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-5 shadow-sm">
+        <h3 class="text-sm font-bold text-indigo-900 mb-1">📥 Importar Nómina Oficial desde PDF (SIE)</h3>
+        <p class="text-xs text-indigo-700 mb-3">
+          Sube el PDF oficial del SIE. El sistema detectará el grado/paralelo e importará únicamente a los alumnos con matrícula <strong>"EFECTIVO"</strong> evitando duplicados.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3 items-center">
+          <input type="file" id="pdfFileInput" accept="application/pdf" class="text-xs text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
+          <button onclick="procesarPDFSIE()" id="btnProcesarPDF" class="bg-indigo-800 hover:bg-indigo-900 text-white text-xs px-4 py-2 rounded-lg font-bold transition">
+            ⚡ Procesar e Importar
+          </button>
+        </div>
+        <div id="pdfStatusMsg" class="text-xs font-semibold mt-2 hidden"></div>
+      </div>
+
+      <!-- TABLA GENERAL DE REPORTES -->
+      <div class="bg-white p-6 rounded-b-xl shadow-md">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 border-b pb-3">
+          <div>
+            <h2 class="text-base font-bold text-slate-800">Panel de Administración General</h2>
+            <p class="text-xs text-slate-500">Consolidado general institucional de reprobados</p>
+          </div>
+          <button onclick="descargarPDFAdmin()" class="bg-red-700 hover:bg-red-800 text-white text-xs px-4 py-2.5 rounded-lg shadow flex items-center gap-1 font-bold">
+            📑 Descargar Consolidado Completo (PDF)
+          </button>
+        </div>
+
+        <div class="overflow-x-auto max-h-96 border rounded-lg">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-slate-100 uppercase text-slate-600 sticky top-0">
+              <tr>
+                <th class="p-2 border">Curso</th>
+                <th class="p-2 border">Estudiante</th>
+                <th class="p-2 border">Docente</th>
+                <th class="p-2 border">Área</th>
+                <th class="p-2 border text-center">1T</th>
+                <th class="p-2 border text-center">2T</th>
+                <th class="p-2 border text-center">Prom</th>
+                <th class="p-2 border">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyAdmin" class="divide-y"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    let sesionActual = null;
+    let cacheEstudiantes = {};
+    let opcionesConfig = { academicas: [], conductuales: [], acciones: [] };
+
+    async function apiRequest(params) {
+      const resp = await fetch(URL_APPS_SCRIPT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(params)
+      });
+      return await resp.json();
+    }
+
+    async function login() {
+      const ci = document.getElementById('txtCI').value.trim();
+      const pin = document.getElementById('txtPIN').value.trim();
+      const err = document.getElementById('loginError');
+      const btn = document.getElementById('btnLogin');
+      if (!ci) return;
+
+      err.classList.add('hidden');
+      btn.innerText = "Verificando credenciales...";
+      btn.disabled = true;
+
+      try {
+        const res = await apiRequest({ action: 'login', ci: ci, pin: pin });
+        if (res.success) {
+          sesionActual = res;
+          sesionActual.ci = ci;
+          document.getElementById('loginCard').classList.add('hidden');
+          document.getElementById('userInfo').classList.remove('hidden');
+          document.getElementById('userBadge').innerText = res.rol + ": " + res.nombre;
+
+          if (res.rol === 'ADMIN') {
+            document.getElementById('vistaAdmin').classList.remove('hidden');
+            cargarDatosAdmin();
+          } else {
+            document.getElementById('vistaDocente').classList.remove('hidden');
+            await cargarOpcionesDesdeSheet();
+            iniciarVistaDocente();
+          }
+        } else {
+          err.innerText = res.message;
+          err.classList.remove('hidden');
+        }
+      } catch (e) {
+        err.innerText = "Error de conexión con el servidor Google Sheets.";
+        err.classList.remove('hidden');
+      } finally {
+        btn.innerText = "Iniciar Sesión";
+        btn.disabled = false;
+      }
+    }
+
+    async function cargarOpcionesDesdeSheet() {
+      try {
+        const res = await apiRequest({ action: 'obtenerOpcionesConfig' });
+        opcionesConfig = res;
+
+        renderCheckboxes('chkAcademica', opcionesConfig.academicas);
+        renderCheckboxes('chkConductual', opcionesConfig.conductuales);
+        renderCheckboxes('chkAcciones', opcionesConfig.acciones);
+      } catch (e) {
+        console.error("Error cargando opciones", e);
+      }
+    }
+
+    function renderCheckboxes(containerId, lista) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      lista.forEach(item => {
+        const label = document.createElement('label');
+        label.className = 'flex items-center gap-2 cursor-pointer';
+        label.innerHTML = `<input type="checkbox" value="${item}" class="rounded text-indigo-600"> <span>${item}</span>`;
+        container.appendChild(label);
+      });
+    }
+
+    function iniciarVistaDocente() {
+      const selCurso = document.getElementById('selCurso');
+      selCurso.innerHTML = '<option value="">-- Seleccionar Curso --</option>';
+      const cursosUnicos = [...new Set(sesionActual.asignaciones.map(a => a.curso))];
+      cursosUnicos.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = c;
+        selCurso.appendChild(opt);
+      });
+    }
+
+    async function onCursoChange() {
+      const curso = document.getElementById('selCurso').value;
+      const selArea = document.getElementById('selArea');
+      const selEst = document.getElementById('selEstudiante');
+      
+      selArea.innerHTML = '<option value="">-- Seleccionar Materia --</option>';
+      selEst.innerHTML = '<option value="">Cargando estudiantes...</option>';
+      selArea.disabled = !curso;
+      selEst.disabled = true;
+
+      if (!curso) return;
+
+      const areas = sesionActual.asignaciones.filter(a => a.curso === curso).map(a => a.area);
+      areas.forEach(ar => {
+        const opt = document.createElement('option');
+        opt.value = ar;
+        opt.textContent = ar;
+        selArea.appendChild(opt);
+      });
+      if (areas.length === 1) selArea.value = areas[0];
+
+      if (!cacheEstudiantes[curso]) {
+        const res = await apiRequest({ action: 'obtenerEstudiantes', curso: curso });
+        cacheEstudiantes[curso] = res.estudiantes || [];
+      }
+
+      selEst.innerHTML = '<option value="">-- Seleccionar Estudiante --</option>';
+      cacheEstudiantes[curso].forEach(est => {
+        const opt = document.createElement('option');
+        opt.value = est;
+        opt.textContent = est;
+        selEst.appendChild(opt);
+      });
+      selEst.disabled = false;
+    }
+
+    async function validarDuplicadoEnFrontend() {
+      const curso = document.getElementById('selCurso').value;
+      const area = document.getElementById('selArea').value;
+      const est = document.getElementById('selEstudiante').value;
+      const alertBox = document.getElementById('alertaDuplicado');
+      const btn = document.getElementById('btnGuardar');
+
+      if (curso && area && est) {
+        const idUnico = `${curso}_${est}_${area}`.trim();
+        const res = await apiRequest({ action: 'verificarDuplicado', idUnico: idUnico });
+        if (res.existe) {
+          alertBox.classList.remove('hidden');
+          btn.disabled = true;
+          btn.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+          alertBox.classList.add('hidden');
+          btn.disabled = false;
+          btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+      }
+    }
+
+    function calcularPromedio() {
+      const n1 = parseFloat(document.getElementById('txtNota1').value) || 0;
+      const n2 = parseFloat(document.getElementById('txtNota2').value) || 0;
+      document.getElementById('txtPromedio').value = ((n1 + n2) / 2).toFixed(1);
+    }
+
+    function getSelectedOptions(containerId, inputOtroId) {
+      const checked = Array.from(document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`)).map(c => c.value);
+      const otroTexto = document.getElementById(inputOtroId).value.trim();
+      if (otroTexto) {
+        checked.push(`Otro: ${otroTexto}`);
+      }
+      return checked.join('; ');
+    }
+
+    async function enviarFormulario(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnGuardar');
+      btn.innerText = "Guardando en Base de Datos...";
+      btn.disabled = true;
+
+      const datos = {
+        curso: document.getElementById('selCurso').value,
+        area: document.getElementById('selArea').value,
+        estudiante: document.getElementById('selEstudiante').value,
+        docente: sesionActual.nombre,
+        nota1: document.getElementById('txtNota1').value,
+        nota2: document.getElementById('txtNota2').value,
+        justificacionAcademica: getSelectedOptions('chkAcademica', 'txtOtraAcademica'),
+        justificacionConductual: getSelectedOptions('chkConductual', 'txtOtraConductual'),
+        accionesPrevias: getSelectedOptions('chkAcciones', 'txtOtraAccion'),
+        observacionAdicional: document.getElementById('txtObservacion').value.trim()
+      };
+
+      try {
+        const res = await apiRequest({ action: 'guardarRegistro', datos: datos });
+        alert(res.message);
+        if (res.success) {
+          document.getElementById('formRegistro').reset();
+          document.getElementById('selArea').disabled = true;
+          document.getElementById('selEstudiante').disabled = true;
+          document.getElementById('txtPromedio').value = '0.0';
+        }
+      } catch (err) {
+        alert("Error al registrar: " + err.toString());
+      } finally {
+        btn.innerText = "💾 Guardar Registro de Reprobación";
+        btn.disabled = false;
+      }
+    }
+
+    async function descargarPDFDocente() {
+      const res = await apiRequest({ action: 'obtenerReporteDocente', docente: sesionActual.nombre });
+      if (!res.registros || res.registros.length === 0) {
+        alert("Aún no tiene registros guardados.");
+        return;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'letter' });
+
+      doc.setFontSize(13);
+      doc.text("INFORME PEDAGÓGICO DE ESTUDIANTES REPROBADOS / EN RIESGO", 14, 15);
+      doc.setFontSize(9);
+      doc.text(`Docente: ${sesionActual.nombre} | Fecha de Emisión: ${new Date().toLocaleDateString()}`, 14, 21);
+
+      const tableBody = res.registros.map(r => [
+        r[1], // CURSO
+        r[2], // ESTUDIANTE
+        r[4], // AREA
+        `${r[5]} / ${r[6]} (${r[7]})`, // NOTAS
+        r[8], // JUST. ACADÉMICA
+        r[9], // JUST. CONDUCTUAL
+        r[10], // ACCIONES PREVIAS
+        r[11] // OBSERVACIÓN
+      ]);
+
+      doc.autoTable({
+        startY: 25,
+        head: [['Curso', 'Estudiante', 'Área', '1T/2T (Prom)', 'Justif. Académica', 'Justif. Conductual', 'Acciones Previas', 'Observación']],
+        body: tableBody,
+        theme: 'grid',
+        styles: { fontSize: 7, cellPadding: 2 },
+        headStyles: { fillColor: [30, 41, 59] },
+        columnStyles: {
+          4: { cellWidth: 42 },
+          5: { cellWidth: 42 },
+          6: { cellWidth: 42 },
+          7: { cellWidth: 35 }
+        }
+      });
+
+      doc.save(`Reporte_Reprobados_${sesionActual.nombre.replace(/\s+/g, '_')}.pdf`);
+    }
+
+    async function cargarDatosAdmin() {
+      const res = await apiRequest({ action: 'obtenerReporteAdmin', claveAdmin: sesionActual.ci });
+      const tbody = document.getElementById('tbodyAdmin');
+      tbody.innerHTML = '';
+
+      if (res.registros) {
+        res.registros.forEach(r => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="p-2 border font-medium">${r[1]}</td>
+            <td class="p-2 border">${r[2]}</td>
+            <td class="p-2 border">${r[3]}</td>
+            <td class="p-2 border">${r[4]}</td>
+            <td class="p-2 border text-center">${r[5]}</td>
+            <td class="p-2 border text-center">${r[6]}</td>
+            <td class="p-2 border text-center font-bold">${r[7]}</td>
+            <td class="p-2 border text-slate-500">${r[10]}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+    }
+
+    async function descargarPDFAdmin() {
+      const res = await apiRequest({ action: 'obtenerReporteAdmin', claveAdmin: sesionActual.ci });
+      if (!res.registros || res.registros.length === 0) {
+        alert("No hay registros disponibles en la base de datos.");
+        return;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'letter' });
+
+      doc.setFontSize(13);
+      doc.text("CONSOLIDADO INSTITUCIONAL DE ESTUDIANTES EN RIESGO / REPROBADOS", 14, 15);
+      doc.setFontSize(9);
+      doc.text(`Reporte General de Dirección | Fecha de Emisión: ${new Date().toLocaleDateString()}`, 14, 21);
+
+      const tableBody = res.registros.map(r => [
+        r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11]
+      ]);
+
+      doc.autoTable({
+        startY: 25,
+        head: [['Curso', 'Estudiante', 'Docente', 'Área', '1T', '2T', 'Prom', 'Causales Académicas', 'Causales Conductuales', 'Acciones Previas', 'Obs']],
+        body: tableBody,
+        theme: 'grid',
+        styles: { fontSize: 6.5, cellPadding: 1.5 },
+        headStyles: { fillColor: [153, 27, 27] }
+      });
+
+      doc.save(`Consolidado_General_Reprobados_${new Date().toISOString().slice(0,10)}.pdf`);
+    }
+
+    // IMPORTADOR PDF SIE
+    async function procesarPDFSIE() {
+      const fileInput = document.getElementById('pdfFileInput');
+      const statusMsg = document.getElementById('pdfStatusMsg');
+      const btn = document.getElementById('btnProcesarPDF');
+
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert("Por favor seleccione un archivo PDF del SIE.");
+        return;
+      }
+
+      statusMsg.className = "text-xs font-semibold mt-2 text-indigo-700";
+      statusMsg.innerText = "Extrayendo información del PDF SIE...";
+      statusMsg.classList.remove('hidden');
+      btn.disabled = true;
+
+      try {
+        const file = fileInput.files[0];
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        
+        let fullText = "";
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+          const page = await pdf.getPage(pageNum);
+          const textContent = await page.getTextContent();
+          const pageText = textContent.items.map(item => item.str).join(" ");
+          fullText += " " + pageText;
+        }
+
+        let cursoDetectado = "6to A";
+        const gradoMatch = fullText.match(/Grado:\s*([^\s]+)/i);
+        const paraleloMatch = fullText.match(/Paralelo:\s*([^\s]+)/i);
+        
+        if (gradoMatch && paraleloMatch) {
+          const gradoMap = { "primero": "1ro", "segundo": "2do", "tercero": "3ro", "cuarto": "4to", "quinto": "5to", "sexto": "6to" };
+          const g = gradoMap[gradoMatch[1].toLowerCase()] || gradoMatch[1];
+          cursoDetectado = `${g} ${paraleloMatch[1].toUpperCase()}`;
+        }
+
+        const regexFila = /\d+\s+(\d{10,20}[A-Z]?)\s+(\d{6,10})\s+([A-ZÑÁÉÍÓÚ\s]+?)\s+[MF]\s+\d{1,2}\s+de\s+[a-z]{3}\.?\s+de\s+\d{4}[\s\S]*?(EFECTIVO|RETIRADO|NO\s+INCORPORADO)/g;
+
+        let estudiantesEfectivos = [];
+        let match;
+        while ((match = regexFila.exec(fullText)) !== null) {
+          const nombre = match[3].replace(/\s+/g, ' ').trim();
+          const estado = match[4].replace(/\s+/g, ' ').trim().toUpperCase();
+
+          if (estado === "EFECTIVO" && nombre.length > 5) {
+            estudiantesEfectivos.push(nombre);
+          }
+        }
+
+        if (estudiantesEfectivos.length === 0) {
+          statusMsg.className = "text-xs font-semibold mt-2 text-red-600";
+          statusMsg.innerText = "No se encontraron estudiantes con matrícula EFECTIVO.";
+          btn.disabled = false;
+          return;
+        }
+
+        statusMsg.innerText = `Guardando ${estudiantesEfectivos.length} estudiantes de ${cursoDetectado}...`;
+
+        const res = await apiRequest({
+          action: 'importarEstudiantesMasivo',
+          curso: cursoDetectado,
+          estudiantes: estudiantesEfectivos,
+          claveAdmin: sesionActual.ci
+        });
+
+        if (res.success) {
+          statusMsg.className = "text-xs font-semibold mt-2 text-emerald-700";
+          statusMsg.innerText = `✅ ${res.message}`;
+          fileInput.value = "";
+        } else {
+          statusMsg.className = "text-xs font-semibold mt-2 text-red-600";
+          statusMsg.innerText = `Error: ${res.message}`;
+        }
+
+      } catch (err) {
+        statusMsg.className = "text-xs font-semibold mt-2 text-red-600";
+        statusMsg.innerText = `Error: ${err.message}`;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function cerrarSesion() {
+      location.reload();
+    }
+  </script>
+</body>
+</html>
