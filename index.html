@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistema de Registro de Estudiantes Reprobados</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Generador de PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <!-- Lector de PDF SIE -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -16,7 +18,7 @@
 
   <script>
     // ==========================================
-    // PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT:
+    // TU URL DE GOOGLE APPS SCRIPT CONFIGURADA:
     // ==========================================
     const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxCQtbJK9HBQ-HHsJpI-diZFeawf_aOpNTz8JLFO6KW98gN_88uZdJZB3bifsNGPNcK5g/exec";
   </script>
@@ -77,20 +79,21 @@
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-600 mb-1">2. Área / Materia:</label>
-              <select id="selArea" onchange="validarDuplicadoEnFrontend()" class="w-full border rounded-lg p-2 text-xs" required disabled>
+              <select id="selArea" onchange="verificarRegistroEstudiante()" class="w-full border rounded-lg p-2 text-xs" required disabled>
                 <option value="">-- Elija Curso --</option>
               </select>
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-600 mb-1">3. Estudiante:</label>
-              <select id="selEstudiante" onchange="validarDuplicadoEnFrontend()" class="w-full border rounded-lg p-2 text-xs" required disabled>
+              <select id="selEstudiante" onchange="verificarRegistroEstudiante()" class="w-full border rounded-lg p-2 text-xs" required disabled>
                 <option value="">-- Elija Curso --</option>
               </select>
             </div>
           </div>
 
-          <div id="alertaDuplicado" class="hidden bg-amber-50 border-l-4 border-amber-500 p-3 mb-4 text-xs text-amber-800">
-            ⚠️ <strong>Atención:</strong> Ya existe un registro guardado para este estudiante en este curso y materia.
+          <!-- AVISO DINÁMICO DE EDICIÓN O REGISTRO NUEVO -->
+          <div id="alertaEdicion" class="hidden bg-amber-50 border-l-4 border-amber-500 p-3 mb-4 text-xs text-amber-900">
+            ✏️ <strong>Modo Edición:</strong> Ya existe un registro para este estudiante. Los datos previos han sido cargados. Realice los cambios necesarios y presione "Actualizar Modificaciones".
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4 bg-slate-50 p-3 rounded-lg border">
@@ -169,7 +172,7 @@
         </div>
       </div>
 
-      <!-- GESTIÓN MÓVIL DE PRÓRROGAS / EXCLUSIVIDAD POR DOCENTE -->
+      <!-- PRÓRROGAS POR DOCENTE -->
       <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
         <div class="flex justify-between items-center mb-3">
           <div>
@@ -317,7 +320,6 @@
       }
     }
 
-    // CARGAR LISTA DE DOCENTES PARA DAR/QUITAR PRÓRROGA
     async function cargarListaDocentesAdmin() {
       const container = document.getElementById('listaDocentesProrroga');
       container.innerHTML = '<div class="p-3 text-xs text-slate-400 text-center">Cargando docentes...</div>';
@@ -407,6 +409,8 @@
       selArea.disabled = !curso;
       selEst.disabled = true;
 
+      limpiarFormularioCampos();
+
       if (!curso) return;
 
       const areas = sesionActual.asignaciones.filter(a => a.curso === curso).map(a => a.area);
@@ -433,25 +437,82 @@
       selEst.disabled = false;
     }
 
-    async function validarDuplicadoEnFrontend() {
+    function limpiarFormularioCampos() {
+      document.getElementById('txtNota1').value = '';
+      document.getElementById('txtNota2').value = '';
+      document.getElementById('txtPromedio').value = '0.0';
+      document.getElementById('txtObservacion').value = '';
+      document.getElementById('txtOtraAcademica').value = '';
+      document.getElementById('txtOtraConductual').value = '';
+      document.getElementById('txtOtraAccion').value = '';
+      
+      document.querySelectorAll('#chkAcademica input, #chkConductual input, #chkAcciones input').forEach(chk => chk.checked = false);
+      
+      document.getElementById('alertaEdicion').classList.add('hidden');
+      const btn = document.getElementById('btnGuardar');
+      btn.innerText = "💾 Guardar Registro de Reprobación";
+      btn.className = "w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg text-sm shadow transition";
+    }
+
+    async function verificarRegistroEstudiante() {
       const curso = document.getElementById('selCurso').value;
       const area = document.getElementById('selArea').value;
       const est = document.getElementById('selEstudiante').value;
-      const alertBox = document.getElementById('alertaDuplicado');
+      const alertBox = document.getElementById('alertaEdicion');
       const btn = document.getElementById('btnGuardar');
 
-      if (curso && area && est) {
-        const idUnico = `${curso}_${est}_${area}`.trim();
-        const res = await apiRequest({ action: 'verificarDuplicado', idUnico: idUnico });
-        if (res.existe) {
-          alertBox.classList.remove('hidden');
-          btn.disabled = true;
-          btn.classList.add('opacity-50', 'cursor-not-allowed');
-        } else {
-          alertBox.classList.add('hidden');
-          btn.disabled = false;
-          btn.classList.remove('opacity-50', 'cursor-not-allowed');
+      if (!curso || !area || !est) {
+        limpiarFormularioCampos();
+        return;
+      }
+
+      const idUnico = `${curso}_${est}_${area}`.trim();
+      const res = await apiRequest({ action: 'buscarRegistroEstudiante', idUnico: idUnico });
+
+      if (res.existe && res.registro) {
+        const reg = res.registro;
+        alertBox.classList.remove('hidden');
+        btn.innerText = "✏️ Actualizar / Guardar Modificaciones";
+        btn.className = "w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-lg text-sm shadow transition";
+
+        document.getElementById('txtNota1').value = reg.nota1;
+        document.getElementById('txtNota2').value = reg.nota2;
+        calcularPromedio();
+
+        marcarCheckboxes('chkAcademica', reg.justificacionAcademica, 'txtOtraAcademica');
+        marcarCheckboxes('chkConductual', reg.justificacionConductual, 'txtOtraConductual');
+        marcarCheckboxes('chkAcciones', reg.accionesPrevias, 'txtOtraAccion');
+        document.getElementById('txtObservacion').value = reg.observacionAdicional || '';
+      } else {
+        limpiarFormularioCampos();
+      }
+    }
+
+    function marcarCheckboxes(containerId, textoGuardado, inputOtroId) {
+      if (!textoGuardado) return;
+      const items = String(textoGuardado).split(';').map(s => s.trim());
+      const container = document.getElementById(containerId);
+      const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+
+      let otroTextos = [];
+
+      items.forEach(item => {
+        let encontrado = false;
+        checkboxes.forEach(chk => {
+          if (chk.value.trim().toUpperCase() === item.toUpperCase()) {
+            chk.checked = true;
+            encontrado = true;
+          }
+        });
+        if (!encontrado && item.startsWith("Otro:")) {
+          otroTextos.push(item.replace("Otro:", "").trim());
+        } else if (!encontrado && item) {
+          otroTextos.push(item);
         }
+      });
+
+      if (inputOtroId && otroTextos.length > 0) {
+        document.getElementById(inputOtroId).value = otroTextos.join(', ');
       }
     }
 
@@ -473,6 +534,7 @@
     async function enviarFormulario(e) {
       e.preventDefault();
       const btn = document.getElementById('btnGuardar');
+      const textoOriginal = btn.innerText;
       btn.innerText = "Guardando...";
       btn.disabled = true;
 
@@ -490,18 +552,16 @@
       };
 
       try {
-        const res = await apiRequest({ action: 'guardarRegistro', datos: datos });
+        const res = await apiRequest({ action: 'guardarOModificarRegistro', datos: datos });
         alert(res.message);
         if (res.success) {
-          document.getElementById('formRegistro').reset();
-          document.getElementById('selArea').disabled = true;
-          document.getElementById('selEstudiante').disabled = true;
-          document.getElementById('txtPromedio').value = '0.0';
+          limpiarFormularioCampos();
+          document.getElementById('selEstudiante').value = "";
         }
       } catch (err) {
-        alert("Error al registrar: " + err.toString());
+        alert("Error al guardar: " + err.toString());
       } finally {
-        btn.innerText = "💾 Guardar Registro de Reprobación";
+        btn.innerText = textoOriginal;
         btn.disabled = false;
       }
     }
