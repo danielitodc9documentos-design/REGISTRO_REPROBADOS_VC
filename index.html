@@ -17,9 +17,6 @@
 <body class="bg-slate-100 text-slate-800 min-h-screen py-4 sm:py-6 px-3 sm:px-6 antialiased">
 
   <script>
-    // ==========================================
-    // URL DE GOOGLE APPS SCRIPT CONFIGURADA:
-    // ==========================================
     const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxCQtbJK9HBQ-HHsJpI-diZFeawf_aOpNTz8JLFO6KW98gN_88uZdJZB3bifsNGPNcK5g/exec";
   </script>
 
@@ -29,7 +26,6 @@
     <header class="bg-indigo-900 text-white rounded-2xl p-4 sm:p-6 shadow-md border-b-4 border-indigo-950">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         
-        <!-- Identificación y Títulos -->
         <div class="space-y-1">
           <div class="flex items-center gap-2 flex-wrap">
             <h1 class="text-base sm:text-xl font-extrabold tracking-tight">Plataforma de Justificación</h1>
@@ -38,7 +34,6 @@
           <p class="text-xs text-indigo-200 font-medium truncate max-w-sm sm:max-w-md" id="lblHeaderSubtitulo">UNIDAD EDUCATIVA</p>
         </div>
 
-        <!-- Perfil y Cierre de Sesión -->
         <div id="userInfo" class="hidden flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 border-indigo-800 pt-2 sm:pt-0">
           <span id="userBadge" class="bg-indigo-800 text-indigo-100 text-[11px] sm:text-xs px-3 py-1 rounded-lg font-bold border border-indigo-700"></span>
           <button onclick="cerrarSesion()" class="text-xs text-red-300 hover:text-white underline font-semibold transition ml-2 sm:ml-0 sm:mt-1">Cerrar Sesión</button>
@@ -88,7 +83,6 @@
 
         <form id="formRegistro" onsubmit="enviarFormulario(event)">
           
-          <!-- SELECTORES EN CASCADA -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
             <div>
               <label class="block text-xs font-semibold text-slate-600 mb-1">1. Curso Asignado:</label>
@@ -110,7 +104,6 @@
             </div>
           </div>
 
-          <!-- AVISO DINÁMICO DE EDICIÓN -->
           <div id="alertaEdicion" class="hidden bg-amber-50 border-l-4 border-amber-500 p-3 mb-4 text-xs text-amber-900 rounded-r-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
             <span>✏️ <strong>Modo Edición:</strong> Registro existente. Puede modificar las notas o justificaciones.</span>
             <button type="button" onclick="enviarPorWhatsApp()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow flex items-center gap-1">
@@ -118,27 +111,26 @@
             </button>
           </div>
 
-          <!-- NOTAS DINÁMICAS -->
+          <!-- NOTAS Y PROMEDIO REDONDEADO A ENTERO -->
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4 bg-slate-50 p-4 rounded-xl border" id="panelNotasDinamicas">
             <div id="colNota1">
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Nota 1° Trim:</label>
-              <input type="number" id="txtNota1" min="1" max="100" class="w-full border rounded-lg p-2 text-xs bg-white" oninput="calcularPromedioDinamico()" required>
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Nota 1° Trim (1-100):</label>
+              <input type="number" id="txtNota1" min="1" max="100" step="1" class="w-full border rounded-lg p-2 text-xs bg-white" oninput="calcularPromedioDinamico()" required>
             </div>
             <div id="colNota2">
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Nota 2° Trim:</label>
-              <input type="number" id="txtNota2" min="1" max="100" class="w-full border rounded-lg p-2 text-xs bg-white" oninput="calcularPromedioDinamico()">
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Nota 2° Trim (1-100):</label>
+              <input type="number" id="txtNota2" min="1" max="100" step="1" class="w-full border rounded-lg p-2 text-xs bg-white" oninput="calcularPromedioDinamico()">
             </div>
             <div id="colNota3" class="hidden">
-              <label class="block text-xs font-semibold text-slate-600 mb-1">Nota 3° Trim:</label>
-              <input type="number" id="txtNota3" min="1" max="100" class="w-full border rounded-lg p-2 text-xs bg-white" oninput="calcularPromedioDinamico()">
+              <label class="block text-xs font-semibold text-slate-600 mb-1">Nota 3° Trim (1-100):</label>
+              <input type="number" id="txtNota3" min="1" max="100" step="1" class="w-full border rounded-lg p-2 text-xs bg-white" oninput="calcularPromedioDinamico()">
             </div>
             <div class="col-span-2 sm:col-span-1">
-              <label class="block text-xs font-semibold text-slate-600 mb-1" id="lblPromedioTitulo">Promedio:</label>
-              <input type="text" id="txtPromedio" class="w-full border bg-slate-200 rounded-lg p-2 text-xs font-bold text-indigo-950" readonly value="0.0">
+              <label class="block text-xs font-semibold text-slate-600 mb-1" id="lblPromedioTitulo">Promedio Entero:</label>
+              <input type="text" id="txtPromedio" class="w-full border bg-slate-200 rounded-lg p-2 text-xs font-bold text-indigo-950" readonly value="0">
             </div>
           </div>
 
-          <!-- CAUSALES ACADÉMICAS -->
           <div class="mb-4">
             <label class="block text-xs font-bold text-slate-700 mb-1.5">Justificación Académica:</label>
             <div class="bg-slate-50 p-3.5 rounded-xl border space-y-2.5">
@@ -149,7 +141,6 @@
             </div>
           </div>
 
-          <!-- CAUSALES CONDUCTUALES -->
           <div class="mb-4">
             <label class="block text-xs font-bold text-slate-700 mb-1.5">Justificación Conductual:</label>
             <div class="bg-slate-50 p-3.5 rounded-xl border space-y-2.5">
@@ -160,7 +151,6 @@
             </div>
           </div>
 
-          <!-- ACCIONES PREVIAS -->
           <div class="mb-4">
             <label class="block text-xs font-bold text-slate-700 mb-1.5">Acciones Previas Implementadas:</label>
             <div class="bg-slate-50 p-3.5 rounded-xl border space-y-2.5">
@@ -171,7 +161,6 @@
             </div>
           </div>
 
-          <!-- OBSERVACIÓN -->
           <div class="mb-5">
             <label class="block text-xs font-bold text-slate-700 mb-1">Observación Adicional / Compromisos:</label>
             <textarea id="txtObservacion" rows="2" class="w-full border rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Detalles de actas o citaciones..."></textarea>
@@ -187,15 +176,14 @@
     <!-- 3. VISTA GESTIÓN (ADMINISTRACIÓN / COMISIÓN PEDAGÓGICA) -->
     <div id="vistaAdmin" class="hidden space-y-4">
       
-      <!-- DASHBOARD EN TIEMPO REAL -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div class="bg-white border rounded-2xl p-4 shadow-sm text-center">
           <div class="text-2xl font-black text-indigo-900" id="statTotalCasos">0</div>
           <div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">Total Casos Registrados</div>
         </div>
         <div class="bg-white border rounded-2xl p-4 shadow-sm text-center">
-          <div class="text-2xl font-black text-amber-600" id="statPromedioGeneral">0.0</div>
-          <div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">Promedio General Riesgo</div>
+          <div class="text-2xl font-black text-amber-600" id="statPromedioGeneral">0</div>
+          <div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">Promedio General Entero</div>
         </div>
         <div class="bg-white border rounded-2xl p-4 shadow-sm text-center">
           <div class="text-2xl font-black text-emerald-700 truncate px-2" id="statMateriasCriticas">-</div>
@@ -203,13 +191,9 @@
         </div>
       </div>
 
-      <!-- MÓDULOS EXCLUSIVOS DE DIRECCIÓN -->
       <div id="seccionSoloAdmin" class="space-y-4">
         
-        <!-- AJUSTES BÁSICOS -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-          
-          <!-- Trimestre Activo -->
           <div class="bg-white border rounded-2xl p-4 shadow-sm flex flex-col justify-between">
             <div>
               <h3 class="text-xs font-bold text-slate-800 mb-0.5">📅 Trimestre Activo</h3>
@@ -222,7 +206,6 @@
             </div>
           </div>
 
-          <!-- Nombre Colegio -->
           <div class="bg-white border rounded-2xl p-4 shadow-sm flex flex-col justify-between">
             <div>
               <h3 class="text-xs font-bold text-slate-800 mb-0.5">🏫 Unidad Educativa (PDF)</h3>
@@ -234,7 +217,6 @@
             </div>
           </div>
 
-          <!-- Bloqueo Global -->
           <div class="bg-white border rounded-2xl p-4 shadow-sm flex flex-col justify-between">
             <div>
               <h3 class="text-xs font-bold text-slate-800 mb-0.5">🔒 Estado del Sistema</h3>
@@ -245,10 +227,8 @@
               <button onclick="toggleEstadoSistema(false)" class="flex-1 bg-red-600 text-white text-[11px] py-2 rounded-xl font-bold hover:bg-red-700">🔒 Bloquear</button>
             </div>
           </div>
-
         </div>
 
-        <!-- PLANTEL DOCENTE -->
         <div class="bg-white border rounded-2xl p-4 sm:p-5 shadow-sm">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
             <h3 class="text-sm font-bold text-slate-800">👩‍🏫 Plantel Docente y Asignaciones</h3>
@@ -270,7 +250,6 @@
           </div>
         </div>
 
-        <!-- CONFIGURADOR DE OPCIONES -->
         <div class="bg-white border rounded-2xl p-4 sm:p-5 shadow-sm">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
             <h3 class="text-sm font-bold text-slate-800">⚙️ Opciones de Justificación</h3>
@@ -295,17 +274,15 @@
           </div>
         </div>
 
-        <!-- PRÓRROGAS -->
         <div class="bg-white border rounded-2xl p-4 sm:p-5 shadow-sm">
           <h3 class="text-sm font-bold text-slate-800 mb-0.5">🔑 Prórrogas y Acceso Exclusivo</h3>
           <p class="text-xs text-slate-500 mb-3">Permite el ingreso individual con sistema cerrado.</p>
           <div class="overflow-y-auto max-h-44 border rounded-xl divide-y" id="listaDocentesProrroga"></div>
         </div>
 
-        <!-- IMPORTADOR SIE -->
         <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-4 sm:p-5 shadow-sm">
           <h3 class="text-sm font-bold text-indigo-950 mb-0.5">📥 Importar Nómina Oficial desde PDF (SIE)</h3>
-          <p class="text-xs text-indigo-700 mb-3">Sube el PDF oficial para importar a los estudiantes <strong>"EFECTIVOS"</strong>.</p>
+          <p class="text-xs text-indigo-700 mb-3">Sube el PDF oficial para importar a los estudiantes <strong>"EFECTIVOS"</strong>[cite: 1].</p>
           <div class="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center">
             <input type="file" id="pdfFileInput" accept="application/pdf" class="text-xs text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-indigo-600 file:text-white cursor-pointer">
             <button onclick="procesarPDFSIE()" id="btnProcesarPDF" class="bg-indigo-900 text-white text-xs px-4 py-2.5 rounded-xl font-bold hover:bg-black transition">⚡ Procesar e Importar</button>
@@ -315,7 +292,6 @@
 
       </div>
 
-      <!-- CONSOLIDADO INSTITUCIONAL -->
       <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
         
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 border-b pb-4">
@@ -357,7 +333,6 @@
 
   </div>
 
-  <!-- MODAL DOCENTE -->
   <div id="modalDocente" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-xl">
       <h3 class="text-sm font-bold text-slate-800 mb-3">Registrar Docente y Asignación</h3>
@@ -480,18 +455,19 @@
       }
     }
 
+    // Cálculo redondeado a ENTERO estricto
     function calcularPromedioDinamico() {
-      const n1 = parseFloat(document.getElementById('txtNota1').value) || 0;
-      const n2 = parseFloat(document.getElementById('txtNota2').value) || 0;
-      const n3 = parseFloat(document.getElementById('txtNota3').value) || 0;
+      const n1 = Math.round(parseFloat(document.getElementById('txtNota1').value) || 0);
+      const n2 = Math.round(parseFloat(document.getElementById('txtNota2').value) || 0);
+      const n3 = Math.round(parseFloat(document.getElementById('txtNota3').value) || 0);
       const trim = trimestreActivoGlobal;
 
       if (trim === "1T") {
-        document.getElementById('txtPromedio').value = n1.toFixed(1);
+        document.getElementById('txtPromedio').value = n1;
       } else if (trim === "2T") {
-        document.getElementById('txtPromedio').value = ((n1 + n2) / 2).toFixed(1);
+        document.getElementById('txtPromedio').value = Math.round((n1 + n2) / 2);
       } else if (trim === "3T") {
-        document.getElementById('txtPromedio').value = ((n1 + n2 + n3) / 3).toFixed(1);
+        document.getElementById('txtPromedio').value = Math.round((n1 + n2 + n3) / 3);
       }
     }
 
@@ -716,7 +692,7 @@
       document.getElementById('txtNota1').value = '';
       document.getElementById('txtNota2').value = '';
       document.getElementById('txtNota3').value = '';
-      document.getElementById('txtPromedio').value = '0.0';
+      document.getElementById('txtPromedio').value = '0';
       document.getElementById('txtObservacion').value = '';
       document.getElementById('txtOtraAcademica').value = '';
       document.getElementById('txtOtraConductual').value = '';
@@ -793,9 +769,9 @@
         area: document.getElementById('selArea').value,
         estudiante: document.getElementById('selEstudiante').value,
         docente: sesionActual.nombre,
-        nota1: document.getElementById('txtNota1').value,
-        nota2: document.getElementById('txtNota2').value,
-        nota3: document.getElementById('txtNota3').value,
+        nota1: Math.round(parseFloat(document.getElementById('txtNota1').value) || 0),
+        nota2: Math.round(parseFloat(document.getElementById('txtNota2').value) || 0),
+        nota3: Math.round(parseFloat(document.getElementById('txtNota3').value) || 0),
         justificacionAcademica: getSelectedOptions('chkAcademica', 'txtOtraAcademica'),
         justificacionConductual: getSelectedOptions('chkConductual', 'txtOtraConductual'),
         accionesPrevias: getSelectedOptions('chkAcciones', 'txtOtraAccion'),
@@ -817,7 +793,7 @@
       const prom = document.getElementById('txtPromedio').value;
       const obs = document.getElementById('txtObservacion').value;
 
-      const mensaje = `*INFORME PEDAGÓGICO (${trimestreActivoGlobal}) - ESTUDIANTE EN RIESGO*%0A*Estudiante:* ${est}%0A*Curso:* ${curso} | *Área:* ${area}%0A*Promedio Actual:* ${prom}%0A*Observación:* ${obs}%0A*Docente:* ${sesionActual.nombre}`;
+      const mensaje = `*INFORME PEDAGÓGICO (${trimestreActivoGlobal}) - ESTUDIANTE EN RIESGO*%0A*Estudiante:* ${est}%0A*Curso:* ${curso} | *Área:* ${area}%0A*Promedio Entero:* ${prom}%0A*Observación:* ${obs}%0A*Docente:* ${sesionActual.nombre}`;
       window.open(`https://api.whatsapp.com/send?text=${mensaje}`, '_blank');
     }
 
@@ -833,11 +809,11 @@
       let sumaProm = 0;
       let conteoMaterias = {};
       registrosGlobalesAdmin.forEach(r => {
-        sumaProm += parseFloat(r[9]) || 0;
+        sumaProm += Math.round(parseFloat(r[9]) || 0);
         let mat = r[5];
         conteoMaterias[mat] = (conteoMaterias[mat] || 0) + 1;
       });
-      document.getElementById('statPromedioGeneral').innerText = registrosGlobalesAdmin.length > 0 ? (sumaProm / registrosGlobalesAdmin.length).toFixed(1) : "0.0";
+      document.getElementById('statPromedioGeneral').innerText = registrosGlobalesAdmin.length > 0 ? Math.round(sumaProm / registrosGlobalesAdmin.length) : "0";
       
       let matTop = "-"; let maxM = 0;
       for (let m in conteoMaterias) {
@@ -855,7 +831,7 @@
           <td class="p-2.5 border">${r[3]}</td>
           <td class="p-2.5 border">${r[4]}</td>
           <td class="p-2.5 border">${r[5]}</td>
-          <td class="p-2.5 border text-center font-bold text-red-700">${r[9]}</td>
+          <td class="p-2.5 border text-center font-bold text-red-700">${Math.round(r[9])}</td>
           <td class="p-2.5 border text-center flex gap-2 justify-center">
             <button onclick="descargarFichaIndividual('${idUnico}')" class="text-indigo-600 font-bold hover:underline">Ficha PDF</button>
             ${sesionActual.rol === 'ADMIN' ? `<button onclick="eliminarRegistroAdmin('${idUnico}')" class="text-red-600 font-bold hover:underline">Eliminar</button>` : ''}
@@ -874,9 +850,9 @@
 
     function exportarExcelAdmin() {
       if (registrosGlobalesAdmin.length === 0) { alert("No hay datos para exportar."); return; }
-      let csv = "ID,Trimestre,Curso,Estudiante,Docente,Area,Nota 1T,Nota 2T,Nota 3T,Promedio,Justif. Academica,Justif. Conductual,Acciones Previas,Observacion\n";
+      let csv = "ID,Trimestre,Curso,Estudiante,Docente,Area,Nota 1T,Nota 2T,Nota 3T,Promedio Entero,Justif. Academica,Justif. Conductual,Acciones Previas,Observacion\n";
       registrosGlobalesAdmin.forEach(r => {
-        csv += `"${r[0]}","${r[1]}","${r[2]}","${r[3]}","${r[4]}","${r[5]}",${r[6]},${r[7]},${r[8]},${r[9]},"${r[10]}","${r[11]}","${r[12]}","${r[13]}"\n`;
+        csv += `"${r[0]}","${r[1]}","${r[2]}","${r[3]}","${r[4]}","${r[5]}",${Math.round(r[6]) || ''},${Math.round(r[7]) || ''},${Math.round(r[8]) || ''},${Math.round(r[9])},"${r[10]}","${r[11]}","${r[12]}","${r[13]}"\n`;
       });
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
@@ -907,7 +883,7 @@
 
       const tableBody = lista.map(r => [
         r[1], r[2], r[3], r[4], r[5],
-        `${r[6] || '-'}/${r[7] || '-'}/${r[8] || '-'} (${r[9]})`,
+        `${r[6] ? Math.round(r[6]) : '-'}/${r[7] ? Math.round(r[7]) : '-'}/${r[8] ? Math.round(r[8]) : '-'} (${Math.round(r[9])})`,
         r[10], r[11], r[12]
       ]);
 
@@ -950,7 +926,7 @@
       doc.text(`• Curso: ${r[2]}`, 14, 47);
       doc.text(`• Área / Materia: ${r[5]}`, 14, 54);
       doc.text(`• Docente Responsable: ${r[4]}`, 14, 61);
-      doc.text(`• Calificaciones: 1°T: ${r[6] || '-'} | 2°T: ${r[7] || '-'} | 3°T: ${r[8] || '-'} | Promedio Final: ${r[9]}`, 14, 68);
+      doc.text(`• Calificaciones: 1°T: ${r[6] ? Math.round(r[6]) : '-'} | 2°T: ${r[7] ? Math.round(r[7]) : '-'} | 3°T: ${r[8] ? Math.round(r[8]) : '-'} | Promedio Final: ${Math.round(r[9])}`, 14, 68);
 
       doc.setFontSize(11); doc.text("DETALLE DE CAUSALES Y ACCIONES PEDAGÓGICAS:", 14, 80);
       
