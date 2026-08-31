@@ -5,10 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistema de Registro de Estudiantes Reprobados</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Generador de PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-  <!-- Lector de PDF SIE -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -20,7 +18,7 @@
     // ==========================================
     // PEGA AQUÍ TU URL DE GOOGLE APPS SCRIPT:
     // ==========================================
-    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxCQtbJK9HBQ-HHsJpI-diZFeawf_aOpNTz8JLFO6KW98gN_88uZdJZB3bifsNGPNcK5g/exec";
+    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/TU_SCRIPT_ID/exec";
   </script>
 
   <div class="max-w-4xl mx-auto">
@@ -70,7 +68,6 @@
         </div>
 
         <form id="formRegistro" onsubmit="enviarFormulario(event)">
-          <!-- SELECTORES EN CASCADA -->
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
             <div>
               <label class="block text-xs font-semibold text-slate-600 mb-1">1. Curso Asignado:</label>
@@ -96,7 +93,6 @@
             ⚠️ <strong>Atención:</strong> Ya existe un registro guardado para este estudiante en este curso y materia.
           </div>
 
-          <!-- NOTAS -->
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4 bg-slate-50 p-3 rounded-lg border">
             <div>
               <label class="block text-xs font-semibold text-slate-600 mb-1">Nota 1er Trimestre (1-100):</label>
@@ -112,7 +108,6 @@
             </div>
           </div>
 
-          <!-- JUSTIFICACIÓN ACADÉMICA -->
           <div class="mb-4">
             <label class="block text-xs font-bold text-slate-700 mb-1">Justificación Académica (Seleccione causales):</label>
             <div class="bg-slate-50 p-3 rounded border space-y-2">
@@ -123,7 +118,6 @@
             </div>
           </div>
 
-          <!-- JUSTIFICACIÓN CONDUCTUAL -->
           <div class="mb-4">
             <label class="block text-xs font-bold text-slate-700 mb-1">Justificación Conductual (Seleccione causales):</label>
             <div class="bg-slate-50 p-3 rounded border space-y-2">
@@ -134,7 +128,6 @@
             </div>
           </div>
 
-          <!-- ACCIONES PREVIAS -->
           <div class="mb-4">
             <label class="block text-xs font-bold text-slate-700 mb-1">Acciones Previas Implementadas (Seleccione una o varias):</label>
             <div class="bg-slate-50 p-3 rounded border space-y-2">
@@ -145,7 +138,6 @@
             </div>
           </div>
 
-          <!-- OBSERVACIÓN GENERAL -->
           <div class="mb-5">
             <label class="block text-xs font-bold text-slate-700 mb-1">Observación Adicional / Detalle específico:</label>
             <textarea id="txtObservacion" rows="2" class="w-full border rounded-lg p-2 text-xs" placeholder="Fechas de actas firmadas, citaciones a tutores o incidentes particulares..."></textarea>
@@ -161,11 +153,42 @@
     <!-- 3. VISTA ADMIN -->
     <div id="vistaAdmin" class="hidden space-y-4">
       
-      <!-- IMPORTADOR DE LISTAS DESDE PDF SIE -->
+      <!-- CONTROL GLOBAL DE BLOQUEO -->
+      <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div>
+          <h3 class="text-sm font-bold text-slate-800">Estado Global del Sistema</h3>
+          <p class="text-xs text-slate-500" id="lblEstadoSistema">Verificando estado...</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="toggleEstadoSistema(true)" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-4 py-2 rounded-lg font-bold transition">
+            🔓 Abrir Sistema (Todos)
+          </button>
+          <button onclick="toggleEstadoSistema(false)" class="bg-red-600 hover:bg-red-700 text-white text-xs px-4 py-2 rounded-lg font-bold transition">
+            🔒 Bloquear Sistema
+          </button>
+        </div>
+      </div>
+
+      <!-- GESTIÓN MÓVIL DE PRÓRROGAS / EXCLUSIVIDAD POR DOCENTE -->
+      <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+        <div class="flex justify-between items-center mb-3">
+          <div>
+            <h3 class="text-sm font-bold text-slate-800">🔑 Prórrogas y Acceso Exclusivo por Docente</h3>
+            <p class="text-xs text-slate-500">Habilita a un docente específico cuando el sistema general esté bloqueado.</p>
+          </div>
+          <button onclick="cargarListaDocentesAdmin()" class="text-xs text-indigo-600 hover:underline font-semibold">🔄 Actualizar lista</button>
+        </div>
+
+        <div class="overflow-y-auto max-h-60 border rounded-lg divide-y" id="listaDocentesProrroga">
+          <div class="p-3 text-xs text-slate-400 text-center">Cargando docentes...</div>
+        </div>
+      </div>
+
+      <!-- IMPORTADOR DE PDF SIE -->
       <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-5 shadow-sm">
         <h3 class="text-sm font-bold text-indigo-900 mb-1">📥 Importar Nómina Oficial desde PDF (SIE)</h3>
         <p class="text-xs text-indigo-700 mb-3">
-          Sube el PDF oficial del SIE. El sistema detectará el grado/paralelo e importará únicamente a los alumnos con matrícula <strong>"EFECTIVO"</strong> evitando duplicados.
+          Sube el PDF del SIE. Se importarán únicamente los alumnos con matrícula <strong>"EFECTIVO"</strong>.
         </p>
         <div class="flex flex-col sm:flex-row gap-3 items-center">
           <input type="file" id="pdfFileInput" accept="application/pdf" class="text-xs text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-700 cursor-pointer">
@@ -181,7 +204,7 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 border-b pb-3">
           <div>
             <h2 class="text-base font-bold text-slate-800">Panel de Administración General</h2>
-            <p class="text-xs text-slate-500">Consolidado general institucional de reprobados</p>
+            <p class="text-xs text-slate-500">Consolidado institucional de reprobados</p>
           </div>
           <button onclick="descargarPDFAdmin()" class="bg-red-700 hover:bg-red-800 text-white text-xs px-4 py-2.5 rounded-lg shadow flex items-center gap-1 font-bold">
             📑 Descargar Consolidado Completo (PDF)
@@ -216,10 +239,17 @@
     let cacheEstudiantes = {};
     let opcionesConfig = { academicas: [], conductuales: [], acciones: [] };
 
+    function obtenerFechaHoraActual() {
+      const ahora = new Date();
+      const pad = n => n.toString().padStart(2, '0');
+      const fecha = `${pad(ahora.getDate())}/${pad(ahora.getMonth() + 1)}/${ahora.getFullYear()}`;
+      const hora = `${pad(ahora.getHours())}:${pad(ahora.getMinutes())}:${pad(ahora.getSeconds())}`;
+      return `${fecha} a horas ${hora}`;
+    }
+
     async function apiRequest(params) {
       const resp = await fetch(URL_APPS_SCRIPT, {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(params)
       });
       return await resp.json();
@@ -233,7 +263,7 @@
       if (!ci) return;
 
       err.classList.add('hidden');
-      btn.innerText = "Verificando credenciales...";
+      btn.innerText = "Verificando...";
       btn.disabled = true;
 
       try {
@@ -247,6 +277,8 @@
 
           if (res.rol === 'ADMIN') {
             document.getElementById('vistaAdmin').classList.remove('hidden');
+            actualizarIndicadorSistema(res.sistemaActivo);
+            cargarListaDocentesAdmin();
             cargarDatosAdmin();
           } else {
             document.getElementById('vistaDocente').classList.remove('hidden');
@@ -258,12 +290,75 @@
           err.classList.remove('hidden');
         }
       } catch (e) {
-        err.innerText = "Error de conexión con el servidor Google Sheets.";
+        err.innerText = "Error de conexión con el servidor.";
         err.classList.remove('hidden');
       } finally {
         btn.innerText = "Iniciar Sesión";
         btn.disabled = false;
       }
+    }
+
+    function actualizarIndicadorSistema(activo) {
+      const lbl = document.getElementById('lblEstadoSistema');
+      if (activo) {
+        lbl.innerHTML = '<span class="text-emerald-600 font-bold">● HABILITADO GENERAL</span> — Todos los docentes pueden registrar.';
+      } else {
+        lbl.innerHTML = '<span class="text-red-600 font-bold">● BLOQUEADO</span> — Solo docentes con prórroga exclusiva pueden ingresar.';
+      }
+    }
+
+    async function toggleEstadoSistema(habilitar) {
+      const res = await apiRequest({ action: 'cambiarEstadoSistema', activo: habilitar, claveAdmin: sesionActual.ci });
+      if (res.success) {
+        alert(res.message);
+        actualizarIndicadorSistema(res.sistemaActivo);
+      } else {
+        alert(res.message);
+      }
+    }
+
+    // CARGAR LISTA DE DOCENTES PARA DAR/QUITAR PRÓRROGA
+    async function cargarListaDocentesAdmin() {
+      const container = document.getElementById('listaDocentesProrroga');
+      container.innerHTML = '<div class="p-3 text-xs text-slate-400 text-center">Cargando docentes...</div>';
+
+      try {
+        const res = await apiRequest({ action: 'obtenerListaDocentesAdmin', claveAdmin: sesionActual.ci });
+        if (res.success && res.docentes.length > 0) {
+          container.innerHTML = '';
+          res.docentes.forEach(doc => {
+            const row = document.createElement('div');
+            row.className = 'p-3 flex items-center justify-between text-xs hover:bg-slate-50';
+            row.innerHTML = `
+              <div>
+                <div class="font-bold text-slate-800">${doc.nombre}</div>
+                <div class="text-slate-400 text-[11px]">CI: ${doc.ci}</div>
+              </div>
+              <div>
+                ${doc.habilitadoExclusivo 
+                  ? `<button onclick="cambiarAccesoDocente('${doc.ci}', false)" class="bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold px-3 py-1.5 rounded text-[11px] hover:bg-red-100 hover:text-red-800 transition">
+                      ✅ Prórroga Activa (Quitar)
+                     </button>`
+                  : `<button onclick="cambiarAccesoDocente('${doc.ci}', true)" class="bg-slate-100 text-slate-700 border border-slate-300 font-semibold px-3 py-1.5 rounded text-[11px] hover:bg-emerald-600 hover:text-white transition">
+                      + Habilitar Prórroga
+                     </button>`
+                }
+              </div>
+            `;
+            container.appendChild(row);
+          });
+        } else {
+          container.innerHTML = '<div class="p-3 text-xs text-slate-400 text-center">No hay docentes en la hoja.</div>';
+        }
+      } catch (e) {
+        container.innerHTML = '<div class="p-3 text-xs text-red-500 text-center">Error al cargar la lista.</div>';
+      }
+    }
+
+    async function cambiarAccesoDocente(ci, permitir) {
+      const res = await apiRequest({ action: 'cambiarPermisoDocente', ciDocente: ci, permitido: permitir, claveAdmin: sesionActual.ci });
+      alert(res.message);
+      cargarListaDocentesAdmin();
     }
 
     async function cargarOpcionesDesdeSheet() {
@@ -378,7 +473,7 @@
     async function enviarFormulario(e) {
       e.preventDefault();
       const btn = document.getElementById('btnGuardar');
-      btn.innerText = "Guardando en Base de Datos...";
+      btn.innerText = "Guardando...";
       btn.disabled = true;
 
       const datos = {
@@ -420,25 +515,19 @@
 
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'letter' });
+      const fechaHora = obtenerFechaHoraActual();
 
       doc.setFontSize(13);
-      doc.text("INFORME PEDAGÓGICO DE ESTUDIANTES REPROBADOS / EN RIESGO", 14, 15);
+      doc.text("INFORME PEDAGÓGICO DE ESTUDIANTES REPROBADOS / EN RIESGO", 14, 14);
       doc.setFontSize(9);
-      doc.text(`Docente: ${sesionActual.nombre} | Fecha de Emisión: ${new Date().toLocaleDateString()}`, 14, 21);
+      doc.text(`Docente: ${sesionActual.nombre} | Fecha y Hora de Emisión: ${fechaHora}`, 14, 20);
 
       const tableBody = res.registros.map(r => [
-        r[1], // CURSO
-        r[2], // ESTUDIANTE
-        r[4], // AREA
-        `${r[5]} / ${r[6]} (${r[7]})`, // NOTAS
-        r[8], // JUST. ACADÉMICA
-        r[9], // JUST. CONDUCTUAL
-        r[10], // ACCIONES PREVIAS
-        r[11] // OBSERVACIÓN
+        r[1], r[2], r[4], `${r[5]} / ${r[6]} (${r[7]})`, r[8], r[9], r[10], r[11]
       ]);
 
       doc.autoTable({
-        startY: 25,
+        startY: 24,
         head: [['Curso', 'Estudiante', 'Área', '1T/2T (Prom)', 'Justif. Académica', 'Justif. Conductual', 'Acciones Previas', 'Observación']],
         body: tableBody,
         theme: 'grid',
@@ -449,6 +538,24 @@
           5: { cellWidth: 42 },
           6: { cellWidth: 42 },
           7: { cellWidth: 35 }
+        },
+        didDrawPage: function (data) {
+          const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+          let finalY = data.cursor.y + 22;
+          
+          if (finalY > pageHeight - 20) {
+            doc.addPage();
+            finalY = 35;
+          }
+
+          doc.setLineWidth(0.4);
+          doc.line(40, finalY, 110, finalY);
+          doc.line(170, finalY, 240, finalY);
+
+          doc.setFontSize(8);
+          doc.text("Firma de la Profesora / Profesor", 75, finalY + 4, { align: "center" });
+          doc.text(sesionActual.nombre, 75, finalY + 8, { align: "center" });
+          doc.text("Sello y Firma Dirección / Comisión Pedagógica", 205, finalY + 4, { align: "center" });
         }
       });
 
@@ -487,29 +594,43 @@
 
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'letter' });
+      const fechaHora = obtenerFechaHoraActual();
 
       doc.setFontSize(13);
-      doc.text("CONSOLIDADO INSTITUCIONAL DE ESTUDIANTES EN RIESGO / REPROBADOS", 14, 15);
+      doc.text("CONSOLIDADO INSTITUCIONAL DE ESTUDIANTES EN RIESGO / REPROBADOS", 14, 14);
       doc.setFontSize(9);
-      doc.text(`Reporte General de Dirección | Fecha de Emisión: ${new Date().toLocaleDateString()}`, 14, 21);
+      doc.text(`Reporte General de Dirección | Fecha y Hora de Emisión: ${fechaHora}`, 14, 20);
 
       const tableBody = res.registros.map(r => [
         r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11]
       ]);
 
       doc.autoTable({
-        startY: 25,
+        startY: 24,
         head: [['Curso', 'Estudiante', 'Docente', 'Área', '1T', '2T', 'Prom', 'Causales Académicas', 'Causales Conductuales', 'Acciones Previas', 'Obs']],
         body: tableBody,
         theme: 'grid',
         styles: { fontSize: 6.5, cellPadding: 1.5 },
-        headStyles: { fillColor: [153, 27, 27] }
+        headStyles: { fillColor: [153, 27, 27] },
+        didDrawPage: function (data) {
+          const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+          let finalY = data.cursor.y + 24;
+          
+          if (finalY > pageHeight - 20) {
+            doc.addPage();
+            finalY = 35;
+          }
+
+          doc.setLineWidth(0.4);
+          doc.line(110, finalY, 170, finalY);
+          doc.setFontSize(8);
+          doc.text("Sello y Firma de la Dirección", 140, finalY + 4, { align: "center" });
+        }
       });
 
       doc.save(`Consolidado_General_Reprobados_${new Date().toISOString().slice(0,10)}.pdf`);
     }
 
-    // IMPORTADOR PDF SIE
     async function procesarPDFSIE() {
       const fileInput = document.getElementById('pdfFileInput');
       const statusMsg = document.getElementById('pdfStatusMsg');
