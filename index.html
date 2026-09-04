@@ -20,7 +20,7 @@
     const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxCQtbJK9HBQ-HHsJpI-diZFeawf_aOpNTz8JLFO6KW98gN_88uZdJZB3bifsNGPNcK5g/exec";
   </script>
 
-  <div class="max-w-5xl mx-auto space-y-4">
+  <div class="max-w-6xl mx-auto space-y-4">
 
     <!-- ENCABEZADO RESPONSIVO OPTIMIZADO -->
     <header class="bg-indigo-900 text-white rounded-2xl p-4 sm:p-6 shadow-md border-b-4 border-indigo-950">
@@ -47,7 +47,7 @@
       <h2 class="text-base sm:text-lg font-bold mb-1 text-slate-800">Acceso al Sistema</h2>
       <p class="text-xs text-slate-500 mb-5 leading-relaxed">
         <strong>Docentes:</strong> Ingresen su Cédula y PIN.<br>
-        <strong>Dirección / Comisión:</strong> Ingresen su clave en la casilla de Cédula.
+        <strong>Dirección / Comisión:</strong> Ingresen su clave institucional en la casilla de Cédula.
       </p>
       
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
@@ -73,7 +73,7 @@
         
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5 border-b pb-4">
           <div>
-            <h2 class="text-base font-bold text-slate-800">Formulario de Justificación</h2>
+            <h2 class="text-base font-bold text-slate-800">Formulario de Justificación Pedagógica</h2>
             <p class="text-xs text-slate-500" id="lblDocenteTrimestreInfo">Periodo activo: 2° Trimestre</p>
           </div>
           <button onclick="descargarPDFDocente()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-4 py-2.5 rounded-xl shadow flex items-center justify-center gap-1.5 font-bold transition">
@@ -107,7 +107,7 @@
           <div id="alertaEdicion" class="hidden bg-amber-50 border-l-4 border-amber-500 p-3 mb-4 text-xs text-amber-900 rounded-r-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
             <span>✏️ <strong>Modo Edición:</strong> Registro existente. Puede modificar las notas o justificaciones.</span>
             <button type="button" onclick="enviarPorWhatsApp()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow flex items-center gap-1">
-              💬 Enviar WhatsApp
+              💬 Notificar WhatsApp
             </button>
           </div>
 
@@ -176,21 +176,51 @@
     <!-- 3. VISTA GESTIÓN (ADMINISTRACIÓN / COMISIÓN PEDAGÓGICA) -->
     <div id="vistaAdmin" class="hidden space-y-4">
       
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <!-- DASHBOARD ESTADÍSTICO DINÁMICO -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div class="bg-white border rounded-2xl p-4 shadow-sm text-center">
           <div class="text-2xl font-black text-indigo-900" id="statTotalCasos">0</div>
-          <div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">Total Casos Registrados</div>
+          <div class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Casos Filtrados</div>
+        </div>
+        <div class="bg-white border rounded-2xl p-4 shadow-sm text-center">
+          <div class="text-2xl font-black text-rose-600" id="statEstudiantesCriticos">0</div>
+          <div class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Multimateria (≥2 áreas)</div>
         </div>
         <div class="bg-white border rounded-2xl p-4 shadow-sm text-center">
           <div class="text-2xl font-black text-amber-600" id="statPromedioGeneral">0</div>
-          <div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">Promedio General Entero</div>
+          <div class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Promedio Filtrado</div>
         </div>
         <div class="bg-white border rounded-2xl p-4 shadow-sm text-center">
-          <div class="text-2xl font-black text-emerald-700 truncate px-2" id="statMateriasCriticas">-</div>
-          <div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider">Materia con Más Casos</div>
+          <div class="text-2xl font-black text-emerald-700 truncate px-1" id="statMateriasCriticas">-</div>
+          <div class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Área con Más Casos</div>
         </div>
       </div>
 
+      <!-- MÓDULO GESTIÓN DE COMUNICADOS (DISPONIBLE PARA ADMIN Y COMISIÓN) -->
+      <div class="bg-white border border-indigo-100 rounded-2xl p-4 sm:p-5 shadow-sm">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
+          <div>
+            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5">📢 Panel de Comunicados para el Plantel Docente</h3>
+            <p class="text-xs text-slate-500">Este mensaje aparecerá en pantalla a los docentes en cuanto inicien sesión en la plataforma.</p>
+          </div>
+          <div class="flex gap-2 w-full sm:w-auto">
+            <button onclick="retirarComunicado()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs px-3 py-2 rounded-xl font-bold transition">Quitar Comunicado</button>
+            <button onclick="publicarComunicado()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-4 py-2 rounded-xl font-bold transition shadow">💾 Publicar Aviso</button>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+          <div>
+            <label class="block font-semibold text-slate-600 mb-1">Título del Comunicado:</label>
+            <input type="text" id="txtComunTitulo" placeholder="Ej: Fecha límite de entrega 2° Trimestre" class="w-full border rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block font-semibold text-slate-600 mb-1">Cuerpo del Comunicado / Instrucciones:</label>
+            <input type="text" id="txtComunTexto" placeholder="Estimados colegas: se recuerda que el sistema cerrará el viernes..." class="w-full border rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN EXCLUSIVA PARA ADMIN (CONFIGURACIÓN GLOBAL Y NÓMINA) -->
       <div id="seccionSoloAdmin" class="space-y-4">
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -282,7 +312,7 @@
 
         <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-4 sm:p-5 shadow-sm">
           <h3 class="text-sm font-bold text-indigo-950 mb-0.5">📥 Importar Nómina Oficial desde PDF (SIE)</h3>
-          <p class="text-xs text-indigo-700 mb-3">Sube el PDF oficial para importar a los estudiantes <strong>"EFECTIVOS"</strong>[cite: 1].</p>
+          <p class="text-xs text-indigo-700 mb-3">Sube el PDF oficial para importar a los estudiantes <strong>"EFECTIVOS"</strong>.</p>
           <div class="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center">
             <input type="file" id="pdfFileInput" accept="application/pdf" class="text-xs text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-indigo-600 file:text-white cursor-pointer">
             <button onclick="procesarPDFSIE()" id="btnProcesarPDF" class="bg-indigo-900 text-white text-xs px-4 py-2.5 rounded-xl font-bold hover:bg-black transition">⚡ Procesar e Importar</button>
@@ -292,28 +322,92 @@
 
       </div>
 
-      <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
+      <!-- PANEL DE FILTROS AVANZADOS Y CONSOLIDADO GENERAL -->
+      <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
         
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 border-b pb-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-4">
           <div>
             <h2 class="text-base font-bold text-slate-800">Consolidado General de Justificaciones</h2>
-            <p class="text-xs text-slate-500" id="lblSubtituloTablaAdmin">Filtro actual: Todos los registros</p>
+            <p class="text-xs text-slate-500" id="lblSubtituloTablaAdmin">Filtrado dinámico en tiempo real</p>
           </div>
           <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-            <select id="filtroTrimestreAdmin" onchange="cargarDatosAdmin()" class="flex-1 sm:flex-none border rounded-xl p-2 text-xs font-semibold bg-slate-50 outline-none">
-              <option value="TODOS">Todos los Trimestres</option>
-              <option value="1T">Solo 1° Trimestre</option>
-              <option value="2T">Solo 2° Trimestre</option>
-              <option value="3T">Solo 3° Trimestre</option>
-            </select>
-            <button onclick="exportarExcelAdmin()" class="flex-1 sm:flex-none bg-emerald-700 hover:bg-emerald-800 text-white text-xs px-3.5 py-2 rounded-xl font-bold">📊 Excel</button>
-            <button onclick="descargarPDFAdmin()" class="flex-1 sm:flex-none bg-red-700 hover:bg-red-800 text-white text-xs px-3.5 py-2 rounded-xl font-bold">📑 PDF</button>
+            <button onclick="exportarExcelAdmin()" class="flex-1 sm:flex-none bg-emerald-700 hover:bg-emerald-800 text-white text-xs px-3.5 py-2.5 rounded-xl font-bold transition flex items-center justify-center gap-1.5 shadow">
+              📊 Exportar Filtrado (Excel)
+            </button>
+            <button onclick="descargarPDFAdmin()" class="flex-1 sm:flex-none bg-red-700 hover:bg-red-800 text-white text-xs px-3.5 py-2.5 rounded-xl font-bold transition flex items-center justify-center gap-1.5 shadow">
+              📑 Descargar Reporte (PDF)
+            </button>
           </div>
         </div>
 
+        <!-- BARRA DE FILTROS EN CASCADA / COMBINADOS -->
+        <div class="bg-slate-50 border p-3.5 rounded-xl space-y-3">
+          <div class="text-xs font-bold text-slate-700 flex items-center justify-between">
+            <span>🔍 Filtros de Búsqueda y Análisis Pedagógico:</span>
+            <button onclick="limpiarFiltros()" class="text-[11px] text-indigo-600 hover:underline font-semibold">Limpiar Filtros</button>
+          </div>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 text-xs">
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Trimestre:</label>
+              <select id="filtroTrimestreAdmin" onchange="cargarDatosAdmin()" class="w-full border rounded-xl p-2 bg-white outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="TODOS">Todos los Trimestres</option>
+                <option value="1T">1° Trimestre</option>
+                <option value="2T">2° Trimestre</option>
+                <option value="3T">3° Trimestre</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Curso:</label>
+              <select id="filtroCurso" onchange="aplicarFiltrosEnCascada('curso')" class="w-full border rounded-xl p-2 bg-white outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="">Todos los Cursos</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Área / Materia:</label>
+              <select id="filtroArea" onchange="aplicarFiltrosEnCascada('area')" class="w-full border rounded-xl p-2 bg-white outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="">Todas las Áreas</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Docente:</label>
+              <select id="filtroDocente" onchange="aplicarFiltrosEnCascada('docente')" class="w-full border rounded-xl p-2 bg-white outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="">Todos los Docentes</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs pt-1 border-t border-slate-200">
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Nivel de Riesgo (Calificación):</label>
+              <select id="filtroRiesgo" onchange="renderizarTablaYEstadisticas()" class="w-full border rounded-xl p-2 bg-white outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="TODOS">Todos los Rangos</option>
+                <option value="SEVERO">⚠️ Crítico Severo (Promedio ≤ 35)</option>
+                <option value="MEDIO">⚡ Riesgo Medio (Promedio 36 - 50)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Buscar Estudiante:</label>
+              <input type="text" id="filtroEstudiante" oninput="renderizarTablaYEstadisticas()" placeholder="Escriba el nombre..." class="w-full border rounded-xl p-2 bg-white outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+
+            <div class="flex items-end">
+              <label class="flex items-center gap-2 p-2 bg-rose-50 border border-rose-200 rounded-xl w-full cursor-pointer hover:bg-rose-100 transition">
+                <input type="checkbox" id="chkSoloMultimateria" onchange="renderizarTablaYEstadisticas()" class="rounded text-rose-600 focus:ring-0">
+                <span class="text-xs font-bold text-rose-900">🚨 Solo Multimateria (≥2 reprobadas)</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- TABLA PRINCIPAL DE REGISTROS -->
         <div class="overflow-x-auto max-h-96 border rounded-xl">
           <table class="w-full text-xs text-left">
-            <thead class="bg-slate-100 uppercase text-slate-600 sticky top-0">
+            <thead class="bg-slate-100 uppercase text-slate-600 sticky top-0 shadow-sm">
               <tr>
                 <th class="p-2.5 border">Trim</th>
                 <th class="p-2.5 border">Curso</th>
@@ -333,6 +427,32 @@
 
   </div>
 
+  <!-- MODAL DE COMUNICADO EMERGENTE (POPUP AL INGRESAR) -->
+  <div id="modalComunicado" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border-t-8 border-indigo-600 space-y-4 animate-in fade-in zoom-in duration-150">
+      <div class="flex items-start justify-between">
+        <div class="space-y-0.5">
+          <span class="bg-indigo-100 text-indigo-900 text-[11px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Aviso Institucional</span>
+          <h3 class="text-lg font-black text-slate-900 pt-1" id="lblModalComunTitulo">Comunicado</h3>
+        </div>
+        <button onclick="cerrarModalComunicado()" class="text-slate-400 hover:text-slate-600 text-lg font-bold">✕</button>
+      </div>
+      
+      <div class="bg-slate-50 border p-4 rounded-2xl text-xs sm:text-sm text-slate-700 leading-relaxed max-h-60 overflow-y-auto whitespace-pre-wrap" id="lblModalComunTexto">
+      </div>
+
+      <div class="flex items-center justify-between pt-2 text-[11px] text-slate-400 border-t">
+        <span id="lblModalComunAutor">Emitido por: Dirección / Comisión</span>
+        <span id="lblModalComunFecha"></span>
+      </div>
+
+      <button onclick="cerrarModalComunicado()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-xs sm:text-sm shadow transition">
+        Entendido / Aceptar
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL REGISTRO DE DOCENTE -->
   <div id="modalDocente" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-xl">
       <h3 class="text-sm font-bold text-slate-800 mb-3">Registrar Docente y Asignación</h3>
@@ -357,6 +477,7 @@
     let nombreColegioActual = "UNIDAD EDUCATIVA";
     let trimestreActivoGlobal = "2T";
     let registrosGlobalesAdmin = [];
+    let registrosFiltradosActuales = [];
     let asignacionesDetalleGlobal = [];
 
     function obtenerFechaHoraActual() {
@@ -395,9 +516,20 @@
           document.getElementById('userInfo').classList.remove('hidden');
           document.getElementById('userBadge').innerText = `${res.rol}: ${res.nombre}`;
 
+          // Verificación de comunicado emergente
+          if (res.comunicado && res.comunicado.texto) {
+            mostrarModalComunicado(res.comunicado);
+          }
+
           if (res.rol === 'ADMIN' || res.rol === 'COMISION') {
             document.getElementById('vistaAdmin').classList.remove('hidden');
             
+            // Cargar datos en el módulo de comunicados si ya existe uno
+            if (res.comunicado) {
+              document.getElementById('txtComunTitulo').value = res.comunicado.titulo || '';
+              document.getElementById('txtComunTexto').value = res.comunicado.texto || '';
+            }
+
             if (res.rol === 'COMISION') {
               document.getElementById('seccionSoloAdmin').classList.add('hidden');
             } else {
@@ -429,6 +561,52 @@
         btn.innerText = "Iniciar Sesión";
         btn.disabled = false;
       }
+    }
+
+    // GESTIÓN DE MODAL COMUNICADO
+    function mostrarModalComunicado(c) {
+      document.getElementById('lblModalComunTitulo').innerText = c.titulo || 'COMUNICADO INSTITUCIONAL';
+      document.getElementById('lblModalComunTexto').innerText = c.texto || '';
+      document.getElementById('lblModalComunAutor').innerText = `Emitido por: ${c.autor || 'Dirección'}`;
+      document.getElementById('lblModalComunFecha').innerText = c.fecha ? `Fecha: ${c.fecha}` : '';
+      document.getElementById('modalComunicado').classList.remove('hidden');
+    }
+
+    function cerrarModalComunicado() {
+      document.getElementById('modalComunicado').classList.add('hidden');
+    }
+
+    async function publicarComunicado() {
+      const titulo = document.getElementById('txtComunTitulo').value.trim();
+      const texto = document.getElementById('txtComunTexto').value.trim();
+      if (!texto) {
+        alert("Por favor ingrese el mensaje del comunicado.");
+        return;
+      }
+
+      const res = await apiRequest({
+        action: 'guardarComunicado',
+        comunicado: {
+          titulo: titulo || "COMUNICADO PEDAGÓGICO",
+          texto: texto,
+          autor: sesionActual.rol === 'ADMIN' ? "DIRECCIÓN INSTITUCIONAL" : "COMISIÓN PEDAGÓGICA"
+        },
+        claveAuth: sesionActual.ci
+      });
+
+      alert(res.message);
+    }
+
+    async function retirarComunicado() {
+      if (!confirm("¿Desea dar de baja el comunicado actual para que ya no aparezca?")) return;
+      const res = await apiRequest({
+        action: 'guardarComunicado',
+        comunicado: null,
+        claveAuth: sesionActual.ci
+      });
+      alert(res.message);
+      document.getElementById('txtComunTitulo').value = '';
+      document.getElementById('txtComunTexto').value = '';
     }
 
     function configurarCamposNotasDocente(trim) {
@@ -797,44 +975,184 @@
       window.open(`https://api.whatsapp.com/send?text=${mensaje}`, '_blank');
     }
 
-    async function cargarDatosAdmin() {
-      const filtro = document.getElementById('filtroTrimestreAdmin').value;
-      const res = await apiRequest({ action: 'obtenerReporteAdmin', claveAuth: sesionActual.ci, trimestre: filtro });
-      const tbody = document.getElementById('tbodyAdmin');
-      tbody.innerHTML = '';
-      registrosGlobalesAdmin = res.registros || [];
+    // ==========================================
+    // SISTEMA DE FILTROS AVANZADOS Y EN CASCADA
+    // ==========================================
 
-      // Dashboard
-      document.getElementById('statTotalCasos').innerText = registrosGlobalesAdmin.length;
-      let sumaProm = 0;
-      let conteoMaterias = {};
-      registrosGlobalesAdmin.forEach(r => {
-        sumaProm += Math.round(parseFloat(r[9]) || 0);
-        let mat = r[5];
-        conteoMaterias[mat] = (conteoMaterias[mat] || 0) + 1;
-      });
-      document.getElementById('statPromedioGeneral').innerText = registrosGlobalesAdmin.length > 0 ? Math.round(sumaProm / registrosGlobalesAdmin.length) : "0";
+    async function cargarDatosAdmin() {
+      const filtroTrim = document.getElementById('filtroTrimestreAdmin').value;
+      const res = await apiRequest({ action: 'obtenerReporteAdmin', claveAuth: sesionActual.ci, trimestre: filtroTrim });
+      registrosGlobalesAdmin = res.registros || [];
       
-      let matTop = "-"; let maxM = 0;
-      for (let m in conteoMaterias) {
-        if (conteoMaterias[m] > maxM) { maxM = conteoMaterias[m]; matTop = m; }
+      poblarSelectoresFiltros();
+      renderizarTablaYEstadisticas();
+    }
+
+    function poblarSelectoresFiltros() {
+      const cursoSel = document.getElementById('filtroCurso');
+      const areaSel = document.getElementById('filtroArea');
+      const docSel = document.getElementById('filtroDocente');
+
+      const valCurso = cursoSel.value;
+      const valArea = areaSel.value;
+      const valDoc = docSel.value;
+
+      const cursos = [...new Set(registrosGlobalesAdmin.map(r => r[2]))].sort();
+      const areas = [...new Set(registrosGlobalesAdmin.map(r => r[5]))].sort();
+      const docentes = [...new Set(registrosGlobalesAdmin.map(r => r[4]))].sort();
+
+      poblarOpcionesSelect(cursoSel, cursos, "Todos los Cursos", valCurso);
+      poblarOpcionesSelect(areaSel, areas, "Todas las Áreas", valArea);
+      poblarOpcionesSelect(docSel, docentes, "Todos los Docentes", valDoc);
+    }
+
+    function poblarOpcionesSelect(selectElement, items, placeholder, valorPrevio) {
+      selectElement.innerHTML = `<option value="">${placeholder}</option>`;
+      items.forEach(it => {
+        if (!it) return;
+        const opt = document.createElement('option');
+        opt.value = it;
+        opt.textContent = it;
+        selectElement.appendChild(opt);
+      });
+      if (items.includes(valorPrevio)) {
+        selectElement.value = valorPrevio;
+      }
+    }
+
+    function aplicarFiltrosEnCascada(origen) {
+      // Ajuste dinámico de cascada si es necesario
+      const c = document.getElementById('filtroCurso').value;
+      if (origen === 'curso' && c) {
+        const registrosDelCurso = registrosGlobalesAdmin.filter(r => r[2] === c);
+        const areasDelCurso = [...new Set(registrosDelCurso.map(r => r[5]))].sort();
+        const docsDelCurso = [...new Set(registrosDelCurso.map(r => r[4]))].sort();
+
+        poblarOpcionesSelect(document.getElementById('filtroArea'), areasDelCurso, "Todas las Áreas de este Curso", document.getElementById('filtroArea').value);
+        poblarOpcionesSelect(document.getElementById('filtroDocente'), docsDelCurso, "Todos los Docentes de este Curso", document.getElementById('filtroDocente').value);
+      } else if (origen === 'curso' && !c) {
+        poblarSelectoresFiltros();
+      }
+
+      renderizarTablaYEstadisticas();
+    }
+
+    function limpiarFiltros() {
+      document.getElementById('filtroCurso').value = "";
+      document.getElementById('filtroArea').value = "";
+      document.getElementById('filtroDocente').value = "";
+      document.getElementById('filtroRiesgo').value = "TODOS";
+      document.getElementById('filtroEstudiante').value = "";
+      document.getElementById('chkSoloMultimateria').checked = false;
+      poblarSelectoresFiltros();
+      renderizarTablaYEstadisticas();
+    }
+
+    function renderizarTablaYEstadisticas() {
+      const fCurso = document.getElementById('filtroCurso').value.trim().toUpperCase();
+      const fArea = document.getElementById('filtroArea').value.trim().toUpperCase();
+      const fDoc = document.getElementById('filtroDocente').value.trim().toUpperCase();
+      const fRiesgo = document.getElementById('filtroRiesgo').value;
+      const fEst = document.getElementById('filtroEstudiante').value.trim().toUpperCase();
+      const soloMultimateria = document.getElementById('chkSoloMultimateria').checked;
+
+      // 1. Detección previa de estudiantes con multimateria (2 o más reprobadas en la base actual)
+      const conteoMateriasEstudiante = {};
+      registrosGlobalesAdmin.forEach(r => {
+        const key = `${r[1]}_${r[2]}_${r[3]}`; // Trimestre + Curso + Estudiante
+        conteoMateriasEstudiante[key] = (conteoMateriasEstudiante[key] || 0) + 1;
+      });
+
+      // 2. Aplicación de filtros
+      registrosFiltradosActuales = registrosGlobalesAdmin.filter(r => {
+        const trim = r[1];
+        const curso = String(r[2] || '').trim().toUpperCase();
+        const est = String(r[3] || '').trim().toUpperCase();
+        const doc = String(r[4] || '').trim().toUpperCase();
+        const area = String(r[5] || '').trim().toUpperCase();
+        const prom = Math.round(parseFloat(r[9]) || 0);
+
+        if (fCurso && curso !== fCurso) return false;
+        if (fArea && area !== fArea) return false;
+        if (fDoc && doc !== fDoc) return false;
+        if (fEst && !est.includes(fEst)) return false;
+
+        if (fRiesgo === "SEVERO" && prom > 35) return false;
+        if (fRiesgo === "MEDIO" && (prom <= 35 || prom > 50)) return false;
+
+        const key = `${trim}_${r[2]}_${r[3]}`;
+        const numReprobadas = conteoMateriasEstudiante[key] || 1;
+        if (soloMultimateria && numReprobadas < 2) return false;
+
+        return true;
+      });
+
+      // 3. Renderizar Dashboard
+      document.getElementById('statTotalCasos').innerText = registrosFiltradosActuales.length;
+      
+      let sumaProm = 0;
+      let conteoAreas = {};
+      let estudiantesCriticosUnicos = new Set();
+
+      registrosFiltradosActuales.forEach(r => {
+        const p = Math.round(parseFloat(r[9]) || 0);
+        sumaProm += p;
+        conteoAreas[r[5]] = (conteoAreas[r[5]] || 0) + 1;
+
+        const key = `${r[1]}_${r[2]}_${r[3]}`;
+        if (conteoMateriasEstudiante[key] >= 2) {
+          estudiantesCriticosUnicos.add(key);
+        }
+      });
+
+      document.getElementById('statEstudiantesCriticos').innerText = estudiantesCriticosUnicos.size;
+      document.getElementById('statPromedioGeneral').innerText = registrosFiltradosActuales.length > 0 
+        ? Math.round(sumaProm / registrosFiltradosActuales.length) 
+        : "0";
+
+      let matTop = "-"; let maxCount = 0;
+      for (let m in conteoAreas) {
+        if (conteoAreas[m] > maxCount) {
+          maxCount = conteoAreas[m];
+          matTop = `${m} (${maxCount})`;
+        }
       }
       document.getElementById('statMateriasCriticas').innerText = matTop;
 
-      // Render tabla
-      registrosGlobalesAdmin.forEach(r => {
+      // 4. Renderizar Filas de la Tabla
+      const tbody = document.getElementById('tbodyAdmin');
+      tbody.innerHTML = '';
+
+      if (registrosFiltradosActuales.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-400 font-medium">No se encontraron registros con los filtros seleccionados.</td></tr>';
+        return;
+      }
+
+      registrosFiltradosActuales.forEach(r => {
         const idUnico = r[0];
+        const prom = Math.round(r[9]);
+        const key = `${r[1]}_${r[2]}_${r[3]}`;
+        const esMulti = (conteoMateriasEstudiante[key] || 0) >= 2;
+
         const tr = document.createElement('tr');
+        tr.className = esMulti ? "bg-rose-50/40 hover:bg-rose-100/40 transition" : "hover:bg-slate-50 transition";
         tr.innerHTML = `
           <td class="p-2.5 border font-bold text-indigo-900">${r[1]}</td>
           <td class="p-2.5 border font-medium">${r[2]}</td>
-          <td class="p-2.5 border">${r[3]}</td>
+          <td class="p-2.5 border">
+            <div class="font-bold text-slate-800 flex items-center gap-1.5">
+              ${r[3]}
+              ${esMulti ? '<span class="bg-rose-600 text-white text-[9px] px-1.5 py-0.5 rounded-full font-black">2+ ÁREAS</span>' : ''}
+            </div>
+          </td>
           <td class="p-2.5 border">${r[4]}</td>
-          <td class="p-2.5 border">${r[5]}</td>
-          <td class="p-2.5 border text-center font-bold text-red-700">${Math.round(r[9])}</td>
-          <td class="p-2.5 border text-center flex gap-2 justify-center">
-            <button onclick="descargarFichaIndividual('${idUnico}')" class="text-indigo-600 font-bold hover:underline">Ficha PDF</button>
-            ${sesionActual.rol === 'ADMIN' ? `<button onclick="eliminarRegistroAdmin('${idUnico}')" class="text-red-600 font-bold hover:underline">Eliminar</button>` : ''}
+          <td class="p-2.5 border font-semibold text-slate-700">${r[5]}</td>
+          <td class="p-2.5 border text-center font-black ${prom <= 35 ? 'text-red-700 bg-red-100/50' : 'text-amber-700'}">${prom}</td>
+          <td class="p-2.5 border text-center">
+            <div class="flex gap-2 justify-center">
+              <button onclick="descargarFichaIndividual('${idUnico}')" class="text-indigo-600 font-bold hover:underline">Ficha PDF</button>
+              ${sesionActual.rol === 'ADMIN' ? `<button onclick="eliminarRegistroAdmin('${idUnico}')" class="text-red-600 font-bold hover:underline">Eliminar</button>` : ''}
+            </div>
           </td>
         `;
         tbody.appendChild(tr);
@@ -848,16 +1166,17 @@
       cargarDatosAdmin();
     }
 
+    // EXPORTACIÓN A EXCEL (CSV) RESPETANDO FILTROS EXACTOS
     function exportarExcelAdmin() {
-      if (registrosGlobalesAdmin.length === 0) { alert("No hay datos para exportar."); return; }
+      if (registrosFiltradosActuales.length === 0) { alert("No hay registros en la vista actual para exportar."); return; }
       let csv = "ID,Trimestre,Curso,Estudiante,Docente,Area,Nota 1T,Nota 2T,Nota 3T,Promedio Entero,Justif. Academica,Justif. Conductual,Acciones Previas,Observacion\n";
-      registrosGlobalesAdmin.forEach(r => {
-        csv += `"${r[0]}","${r[1]}","${r[2]}","${r[3]}","${r[4]}","${r[5]}",${Math.round(r[6]) || ''},${Math.round(r[7]) || ''},${Math.round(r[8]) || ''},${Math.round(r[9])},"${r[10]}","${r[11]}","${r[12]}","${r[13]}"\n`;
+      registrosFiltradosActuales.forEach(r => {
+        csv += `"${r[0]}","${r[1]}","${r[2]}","${r[3]}","${r[4]}","${r[5]}",${Math.round(r[6]) || ''},${Math.round(r[7]) || ''},${Math.round(r[8]) || ''},${Math.round(r[9])},"${r[10] || ''}","${r[11] || ''}","${r[12] || ''}","${r[13] || ''}"\n`;
       });
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = `Consolidado_Reprobados_${new Date().toISOString().slice(0,10)}.csv`;
+      link.download = `Consolidado_Reprobados_Filtrado_${new Date().toISOString().slice(0,10)}.csv`;
       link.click();
     }
 
@@ -867,9 +1186,28 @@
       generarPDFReporte(res.registros, `Reporte_${sesionActual.nombre.replace(/\s+/g, '_')}_${trimestreActivoGlobal}.pdf`, `Docente: ${sesionActual.nombre} | Trimestre: ${trimestreActivoGlobal}`);
     }
 
+    // DESCARGA DE PDF RESPETANDO FILTROS ACTIVOS
     async function descargarPDFAdmin() {
-      if (registrosGlobalesAdmin.length === 0) { alert("No hay datos disponibles."); return; }
-      generarPDFReporte(registrosGlobalesAdmin, `Consolidado_General_${new Date().toISOString().slice(0,10)}.pdf`, `Reporte General de Dirección / Comisión`);
+      if (registrosFiltradosActuales.length === 0) { alert("No hay datos en la vista filtrada para imprimir."); return; }
+
+      const fCurso = document.getElementById('filtroCurso').value;
+      const fArea = document.getElementById('filtroArea').value;
+      const fDoc = document.getElementById('filtroDocente').value;
+      const fRiesgo = document.getElementById('filtroRiesgo').value;
+      const esMulti = document.getElementById('chkSoloMultimateria').checked;
+
+      let detallesFiltro = [];
+      if (fCurso) detallesFiltro.push(`Curso: ${fCurso}`);
+      if (fArea) detallesFiltro.push(`Área: ${fArea}`);
+      if (fDoc) detallesFiltro.push(`Docente: ${fDoc}`);
+      if (fRiesgo !== "TODOS") detallesFiltro.push(`Riesgo: ${fRiesgo}`);
+      if (esMulti) detallesFiltro.push(`Criterio: Casos Multimateria (≥2 áreas)`);
+
+      const subtituloFiltros = detallesFiltro.length > 0 
+        ? `Filtros Aplicados: ${detallesFiltro.join(" | ")} (${registrosFiltradosActuales.length} Casos)`
+        : `Consolidado General Completo (${registrosFiltradosActuales.length} Casos)`;
+
+      generarPDFReporte(registrosFiltradosActuales, `Consolidado_Filtrado_${new Date().toISOString().slice(0,10)}.pdf`, subtituloFiltros);
     }
 
     function generarPDFReporte(lista, nombreArchivo, subtituloExtra) {
@@ -879,7 +1217,7 @@
 
       doc.setFontSize(13); doc.text(nombreColegioActual, 14, 13);
       doc.setFontSize(10); doc.text("CONSOLIDADO PEDAGÓGICO DE ESTUDIANTES EN RIESGO / REPROBADOS", 14, 18);
-      doc.setFontSize(8.5); doc.text(`${subtituloExtra} | Emisión: ${fechaHora}`, 14, 23);
+      doc.setFontSize(8); doc.text(`${subtituloExtra} | Emisión: ${fechaHora}`, 14, 23);
 
       const tableBody = lista.map(r => [
         r[1], r[2], r[3], r[4], r[5],
@@ -894,14 +1232,14 @@
         theme: 'grid',
         styles: { fontSize: 6.5, cellPadding: 1.8 },
         headStyles: { fillColor: [30, 41, 59] },
-        columnStyles: { 6: { cellWidth: 40 }, 7: { cellWidth: 40 }, 8: { cellWidth: 40 } },
+        columnStyles: { 6: { cellWidth: 38 }, 7: { cellWidth: 38 }, 8: { cellWidth: 38 } },
         didDrawPage: function (data) {
           const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
           let finalY = data.cursor.y + 22;
           if (finalY > pageHeight - 20) { doc.addPage(); finalY = 35; }
           doc.setLineWidth(0.4);
           doc.line(110, finalY, 170, finalY);
-          doc.setFontSize(8); doc.text("Sello y Firma de Dirección", 140, finalY + 4, { align: "center" });
+          doc.setFontSize(8); doc.text("Sello y Firma de Dirección / Comisión", 140, finalY + 4, { align: "center" });
         }
       });
       doc.save(nombreArchivo);
