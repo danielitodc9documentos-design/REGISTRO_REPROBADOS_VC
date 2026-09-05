@@ -72,6 +72,8 @@
 
     <!-- 2. VISTA DOCENTE -->
     <div id="vistaDocente" class="hidden space-y-4">
+      
+      <!-- FORMULARIO DE JUSTIFICACIÓN -->
       <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5 border-b pb-4">
           <div>
@@ -106,10 +108,13 @@
           </div>
 
           <div id="alertaEdicion" class="hidden bg-amber-50 border-l-4 border-amber-500 p-3 mb-4 text-xs text-amber-900 rounded-r-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-            <span>✏️ <strong>Modo Edición:</strong> Registro existente. Puede modificar las notas o justificaciones.</span>
-            <button type="button" onclick="enviarPorWhatsApp()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow flex items-center gap-1">
-              💬 Notificar WhatsApp
-            </button>
+            <span>✏️ <strong>Modo Edición:</strong> Registro cargado. Modifique las notas o justificaciones y actualice.</span>
+            <div class="flex gap-2">
+              <button type="button" onclick="cancelarEdicionDocente()" class="text-xs text-slate-600 underline font-semibold">Cancelar Edición</button>
+              <button type="button" onclick="enviarPorWhatsApp()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow flex items-center gap-1">
+                💬 Notificar WhatsApp
+              </button>
+            </div>
           </div>
 
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4 bg-slate-50 p-4 rounded-xl border" id="panelNotasDinamicas">
@@ -171,6 +176,66 @@
           </button>
         </form>
       </div>
+
+      <!-- TABLA INFERIOR EXCLUSIVA DEL DOCENTE CON FILTROS PROPIOS -->
+      <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+        
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-4">
+          <div>
+            <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+              📋 Mis Registros Realizados 
+              <span id="badgeTotalDocente" class="bg-indigo-100 text-indigo-900 text-xs font-black px-2.5 py-0.5 rounded-full">0 casos</span>
+            </h3>
+            <p class="text-xs text-slate-500">Haga clic en cualquier estudiante de su lista para cargarlo y modificarlo.</p>
+          </div>
+          <div class="text-xs font-bold text-slate-600 bg-slate-50 px-3 py-1.5 rounded-xl border">
+            Promedio General Registrado: <span id="lblDocentePromedioGeneral" class="text-indigo-900 font-black">0</span> pts
+          </div>
+        </div>
+
+        <!-- FILTROS PROPIOS DEL DOCENTE -->
+        <div class="bg-slate-50 p-3 rounded-xl border grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+          <div>
+            <label class="block font-semibold text-slate-600 mb-1">Filtrar por Curso:</label>
+            <select id="filtroDocCurso" onchange="renderizarTablaDocente()" class="w-full border rounded-lg p-2 bg-white outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="">Todos Mis Cursos</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-600 mb-1">Filtrar por Área / Materia:</label>
+            <select id="filtroDocArea" onchange="renderizarTablaDocente()" class="w-full border rounded-lg p-2 bg-white outline-none focus:ring-2 focus:ring-indigo-500">
+              <option value="">Todas Mis Materias</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-600 mb-1">Buscar por Estudiante:</label>
+            <input type="text" id="filtroDocEstudiante" oninput="renderizarTablaDocente()" placeholder="Escriba el nombre..." class="w-full border rounded-lg p-2 bg-white outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+        </div>
+
+        <!-- TABLA EXCLUSIVA DEL PROFESOR -->
+        <div class="overflow-x-auto max-h-80 border rounded-xl shadow-inner">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-slate-100 uppercase text-slate-700 sticky top-0 border-b">
+              <tr>
+                <th class="p-2.5 border-r text-center w-12">Trim</th>
+                <th class="p-2.5 border-r w-20">Curso</th>
+                <th class="p-2.5 border-r">Estudiante (Clic para Editar)</th>
+                <th class="p-2.5 border-r text-center w-16">Área</th>
+                <th class="p-2 border-r text-center w-10 bg-slate-50">1T</th>
+                <th class="p-2 border-r text-center w-10 bg-slate-50">2T</th>
+                <th class="p-2 border-r text-center w-10 bg-slate-50">3T</th>
+                <th class="p-2 border-r text-center w-12 bg-indigo-50 font-black text-indigo-950">Prom</th>
+                <th class="p-2.5 border-r min-w-[160px]">Justif. Académica</th>
+                <th class="p-2.5 min-w-[160px]">Acciones Realizadas</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyDocente" class="divide-y"></tbody>
+          </table>
+        </div>
+
+      </div>
+
     </div>
 
     <!-- 3. VISTA GESTIÓN (ADMINISTRACIÓN / COMISIÓN PEDAGÓGICA) -->
@@ -528,6 +593,10 @@
     let registrosFiltradosActuales = [];
     let estudianteSeleccionadoResumen = null;
 
+    // Variables de la tabla del Docente
+    let registrosDocenteGlobal = [];
+    let registrosDocenteFiltrados = [];
+
     // Instancias de Chart.js
     let myChartMaterias = null;
     let myChartCursos = null;
@@ -593,7 +662,7 @@
     function obtenerSiglaArea(nombreArea) {
       if (!nombreArea) return "";
       const limpia = String(nombreArea).trim().toUpperCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // remover tildes para búsqueda segura
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
       for (let k in DICCIONARIO_SIGLAS) {
         const kLimpia = k.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -662,6 +731,7 @@
             configurarCamposNotasDocente(trimestreActivoGlobal);
             await cargarOpcionesDesdeSheet();
             iniciarVistaDocente();
+            await cargarRegistrosDocenteTabla();
           }
         } else {
           err.innerText = res.message;
@@ -941,6 +1011,11 @@
       document.getElementById('btnGuardar').innerText = "💾 Guardar Registro de Reprobación";
     }
 
+    function cancelarEdicionDocente() {
+      limpiarFormularioCampos();
+      document.getElementById('selEstudiante').value = "";
+    }
+
     async function verificarRegistroEstudiante() {
       const curso = document.getElementById('selCurso').value;
       const area = document.getElementById('selArea').value;
@@ -1019,7 +1094,11 @@
       try {
         const res = await apiRequest({ action: 'guardarOModificarRegistro', datos: datos });
         alert(res.message);
-        if (res.success) { limpiarFormularioCampos(); document.getElementById('selEstudiante').value = ""; }
+        if (res.success) { 
+          limpiarFormularioCampos(); 
+          document.getElementById('selEstudiante').value = "";
+          await cargarRegistrosDocenteTabla(); // Actualizar la tabla inferior del docente
+        }
       } catch (err) { alert("Error al guardar."); }
       finally { btn.innerText = "💾 Guardar Registro de Reprobación"; btn.disabled = false; }
     }
@@ -1037,7 +1116,110 @@
     }
 
     // ============================================================
-    // GESTIÓN DE FILTROS EN CASCADA Y VISTA TABLA
+    // TABLA Y FILTROS PROPIOS DEL DOCENTE (VISTA INFERIOR)
+    // ============================================================
+
+    async function cargarRegistrosDocenteTabla() {
+      const res = await apiRequest({ action: 'obtenerReporteDocente', docente: sesionActual.nombre, trimestre: trimestreActivoGlobal });
+      registrosDocenteGlobal = res.registros || [];
+
+      // Poblar filtros del docente
+      const cursosDoc = [...new Set(registrosDocenteGlobal.map(r => r[2]))].sort();
+      const areasDoc = [...new Set(registrosDocenteGlobal.map(r => r[5]))].sort();
+
+      const fCursoSel = document.getElementById('filtroDocCurso');
+      const fAreaSel = document.getElementById('filtroDocArea');
+
+      const valCurso = fCursoSel.value;
+      const valArea = fAreaSel.value;
+
+      poblarOpcionesSelect(fCursoSel, cursosDoc, "Todos Mis Cursos", valCurso);
+
+      fAreaSel.innerHTML = `<option value="">Todas Mis Materias</option>`;
+      areasDoc.forEach(ar => {
+        const opt = document.createElement('option');
+        opt.value = ar;
+        opt.textContent = `${ar} (${obtenerSiglaArea(ar)})`;
+        fAreaSel.appendChild(opt);
+      });
+      if (areasDoc.includes(valArea)) fAreaSel.value = valArea;
+
+      renderizarTablaDocente();
+    }
+
+    function renderizarTablaDocente() {
+      const fCurso = document.getElementById('filtroDocCurso').value.trim().toUpperCase();
+      const fArea = document.getElementById('filtroDocArea').value.trim().toUpperCase();
+      const fEst = document.getElementById('filtroDocEstudiante').value.trim().toUpperCase();
+
+      registrosDocenteFiltrados = registrosDocenteGlobal.filter(r => {
+        const curso = String(r[2] || '').trim().toUpperCase();
+        const est = String(r[3] || '').trim().toUpperCase();
+        const area = String(r[5] || '').trim().toUpperCase();
+
+        if (fCurso && curso !== fCurso) return false;
+        if (fArea && area !== fArea) return false;
+        if (fEst && !est.includes(fEst)) return false;
+
+        return true;
+      });
+
+      document.getElementById('badgeTotalDocente').innerText = `${registrosDocenteFiltrados.length} casos`;
+
+      let sumaP = 0;
+      registrosDocenteFiltrados.forEach(r => sumaP += Math.round(r[9]));
+      document.getElementById('lblDocentePromedioGeneral').innerText = registrosDocenteFiltrados.length > 0 
+        ? Math.round(sumaP / registrosDocenteFiltrados.length) 
+        : 0;
+
+      const tbody = document.getElementById('tbodyDocente');
+      tbody.innerHTML = '';
+
+      if (registrosDocenteFiltrados.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" class="p-4 text-center text-slate-400 font-medium">No tiene registros que coincidan con los filtros en este trimestre.</td></tr>';
+        return;
+      }
+
+      registrosDocenteFiltrados.forEach(r => {
+        const n1 = r[6] ? Math.round(r[6]) : '-';
+        const n2 = r[7] ? Math.round(r[7]) : '-';
+        const n3 = r[8] ? Math.round(r[8]) : '-';
+        const prom = Math.round(r[9]);
+        const sigla = obtenerSiglaArea(r[5]);
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-indigo-50/40 transition cursor-pointer";
+        tr.onclick = () => cargarRegistroDocenteEnFormulario(r[2], r[5], r[3]);
+        tr.title = "Haga clic para editar este estudiante";
+
+        tr.innerHTML = `
+          <td class="p-2.5 border-r font-black text-indigo-900 text-center">${r[1]}</td>
+          <td class="p-2.5 border-r font-medium text-slate-700">${r[2]}</td>
+          <td class="p-2.5 border-r font-bold text-slate-900 hover:text-indigo-600 underline">${r[3]}</td>
+          <td class="p-2.5 border-r text-center font-bold text-indigo-950 bg-indigo-50/30" title="${r[5]}">${sigla}</td>
+          <td class="p-2 border-r text-center font-semibold text-slate-700 bg-slate-50/50">${n1}</td>
+          <td class="p-2 border-r text-center font-semibold text-slate-700 bg-slate-50/50">${n2}</td>
+          <td class="p-2 border-r text-center font-semibold text-slate-700 bg-slate-50/50">${n3}</td>
+          <td class="p-2 border-r text-center font-black ${prom <= 35 ? 'text-red-700 bg-red-100/40' : 'text-amber-700 bg-amber-50/50'}">${prom}</td>
+          <td class="p-2.5 border-r text-[11px] text-slate-700 leading-snug">${r[10] || '-'}</td>
+          <td class="p-2.5 text-[11px] text-slate-700 leading-snug">${r[12] || '-'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // CARGAR AL FORMULARIO AL HACER CLIC EN SU TABLA
+    async function cargarRegistroDocenteEnFormulario(curso, area, estudiante) {
+      document.getElementById('selCurso').value = curso;
+      await onCursoChange();
+      document.getElementById('selArea').value = area;
+      document.getElementById('selEstudiante').value = estudiante;
+      await verificarRegistroEstudiante();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ============================================================
+    // GESTIÓN DE FILTROS EN CASCADA Y VISTA TABLA ADMIN/COMISIÓN
     // ============================================================
 
     async function cargarDatosAdmin() {
@@ -1085,7 +1267,6 @@
 
       poblarOpcionesSelect(cursoSel, cursos, "Todos los Cursos", valCurso);
       
-      // Áreas con sus siglas en el filtro
       areaSel.innerHTML = `<option value="">Todas las Áreas</option>`;
       areas.forEach(ar => {
         if (!ar) return;
@@ -1099,20 +1280,6 @@
       poblarOpcionesSelect(docSel, docentes, "Todos los Docentes", valDoc);
       poblarOpcionesSelect(justifAcadSel, Array.from(setAcad).sort(), "Todas las Causales Académicas", valAcad);
       poblarOpcionesSelect(justifCondSel, Array.from(setCond).sort(), "Todas las Causales Conductuales", valCond);
-    }
-
-    function poblarOpcionesSelect(selectElement, items, placeholder, valorPrevio) {
-      selectElement.innerHTML = `<option value="">${placeholder}</option>`;
-      items.forEach(it => {
-        if (!it) return;
-        const opt = document.createElement('option');
-        opt.value = it;
-        opt.textContent = it;
-        selectElement.appendChild(opt);
-      });
-      if (items.includes(valorPrevio)) {
-        selectElement.value = valorPrevio;
-      }
     }
 
     function aplicarFiltrosEnCascada(origen) {
@@ -1231,7 +1398,7 @@
         actualizarGraficosEstadisticos();
       }
 
-      // Render de la Tabla Completa mostrando Siglas
+      // Render de la Tabla Completa
       const tbody = document.getElementById('tbodyAdmin');
       tbody.innerHTML = '';
 
@@ -1276,7 +1443,7 @@
     }
 
     // ============================================================
-    // GESTIÓN DE GRÁFICOS INTERACTIVOS (CHART.JS) CON SIGLAS
+    // GESTIÓN DE GRÁFICOS INTERACTIVOS (CHART.JS)
     // ============================================================
 
     function togglePanelGraficos() {
@@ -1311,7 +1478,6 @@
         }
       });
 
-      // Render Gráfico 1: Materias usando SIGLAS
       const ctxMat = document.getElementById('chartMaterias').getContext('2d');
       if (myChartMaterias) myChartMaterias.destroy();
       myChartMaterias = new Chart(ctxMat, {
@@ -1333,7 +1499,6 @@
         }
       });
 
-      // Render Gráfico 2: Cursos
       const ctxCur = document.getElementById('chartCursos').getContext('2d');
       if (myChartCursos) myChartCursos.destroy();
       myChartCursos = new Chart(ctxCur, {
@@ -1352,7 +1517,6 @@
         }
       });
 
-      // Render Gráfico 3: Causales (Top 5)
       const topCausales = Object.entries(conteoCausales).sort((a, b) => b[1] - a[1]).slice(0, 5);
       const ctxCaus = document.getElementById('chartCausales').getContext('2d');
       if (myChartCausales) myChartCausales.destroy();
@@ -1572,7 +1736,7 @@
           1: { cellWidth: 14, halign: 'center' },
           2: { cellWidth: 44, fontStyle: 'bold' },
           3: { cellWidth: 38 },
-          4: { cellWidth: 14, halign: 'center', fontStyle: 'bold' }, // Sigla compacta
+          4: { cellWidth: 14, halign: 'center', fontStyle: 'bold' },
           5: { cellWidth: 8, halign: 'center' },
           6: { cellWidth: 8, halign: 'center' },
           7: { cellWidth: 8, halign: 'center' },
