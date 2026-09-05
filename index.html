@@ -22,7 +22,7 @@
 
   <div class="max-w-6xl mx-auto space-y-4">
 
-    <!-- ENCABEZADO -->
+    <!-- ENCABEZADO RESPONSIVO -->
     <header class="bg-indigo-900 text-white rounded-2xl p-4 sm:p-6 shadow-md border-b-4 border-indigo-950">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div class="space-y-1">
@@ -191,30 +191,6 @@
         </div>
       </div>
 
-      <!-- MÓDULO DE COMUNICADOS -->
-      <div class="bg-white border border-indigo-100 rounded-2xl p-4 sm:p-5 shadow-sm">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
-          <div>
-            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5">📢 Panel de Comunicados para el Plantel Docente</h3>
-            <p class="text-xs text-slate-500">Este mensaje aparecerá en un popup a los docentes en cuanto inicien sesión.</p>
-          </div>
-          <div class="flex gap-2 w-full sm:w-auto">
-            <button onclick="retirarComunicado()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs px-3 py-2 rounded-xl font-bold transition">Quitar Comunicado</button>
-            <button onclick="publicarComunicado()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-4 py-2 rounded-xl font-bold transition shadow">💾 Publicar Aviso</button>
-          </div>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-          <div>
-            <label class="block font-semibold text-slate-600 mb-1">Título del Comunicado:</label>
-            <input type="text" id="txtComunTitulo" placeholder="Ej: Fecha límite de entrega" class="w-full border rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500">
-          </div>
-          <div class="sm:col-span-2">
-            <label class="block font-semibold text-slate-600 mb-1">Cuerpo del Comunicado / Instrucciones:</label>
-            <input type="text" id="txtComunTexto" placeholder="Estimados colegas: se recuerda que..." class="w-full border rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500">
-          </div>
-        </div>
-      </div>
-
       <!-- SECCIÓN EXCLUSIVA ADMIN -->
       <div id="seccionSoloAdmin" class="space-y-4">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -333,7 +309,7 @@
           </div>
         </div>
 
-        <!-- FILTROS EN CASCADA / COMBINADOS -->
+        <!-- FILTROS -->
         <div class="bg-slate-50 border p-3.5 rounded-xl space-y-3">
           <div class="text-xs font-bold text-slate-700 flex items-center justify-between">
             <span>🔍 Filtros de Búsqueda y Análisis Pedagógico:</span>
@@ -375,7 +351,7 @@
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs pt-1 border-t border-slate-200">
             <div>
-              <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Nivel de Riesgo (Calificación):</label>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Nivel de Riesgo:</label>
               <select id="filtroRiesgo" onchange="renderizarTablaYEstadisticas()" class="w-full border rounded-xl p-2 bg-white outline-none focus:ring-2 focus:ring-indigo-500">
                 <option value="TODOS">Todos los Rangos</option>
                 <option value="SEVERO">⚠️ Crítico Severo (Promedio ≤ 35)</option>
@@ -397,7 +373,7 @@
           </div>
         </div>
 
-        <!-- TABLA REESTRUCTURADA: CON 1T, 2T, 3T, PROM Y SIN ACCIONES -->
+        <!-- TABLA -->
         <div class="overflow-x-auto max-h-[500px] border rounded-xl shadow-inner">
           <table class="w-full text-xs text-left">
             <thead class="bg-slate-100 uppercase text-slate-700 sticky top-0 shadow-sm z-10 border-b">
@@ -422,7 +398,7 @@
 
   </div>
 
-  <!-- MODAL: RESUMEN / KARDEX INTEGRAL DEL ESTUDIANTE -->
+  <!-- MODAL: RESUMEN / KARDEX DEL ESTUDIANTE -->
   <div id="modalResumenEstudiante" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-3xl p-5 sm:p-7 max-w-3xl w-full shadow-2xl space-y-4 animate-in fade-in zoom-in duration-150 max-h-[90vh] flex flex-col">
       <div class="flex items-start justify-between border-b pb-3">
@@ -465,31 +441,6 @@
       <div class="flex justify-end pt-2 border-t">
         <button onclick="cerrarModalResumen()" class="bg-slate-200 text-slate-800 text-xs px-5 py-2.5 rounded-xl font-bold hover:bg-slate-300">Cerrar Ventana</button>
       </div>
-    </div>
-  </div>
-
-  <!-- MODAL DE COMUNICADO EMERGENTE -->
-  <div id="modalComunicado" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border-t-8 border-indigo-600 space-y-4">
-      <div class="flex items-start justify-between">
-        <div class="space-y-0.5">
-          <span class="bg-indigo-100 text-indigo-900 text-[11px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Aviso Institucional</span>
-          <h3 class="text-lg font-black text-slate-900 pt-1" id="lblModalComunTitulo">Comunicado</h3>
-        </div>
-        <button onclick="cerrarModalComunicado()" class="text-slate-400 hover:text-slate-600 text-lg font-bold">✕</button>
-      </div>
-      
-      <div class="bg-slate-50 border p-4 rounded-2xl text-xs sm:text-sm text-slate-700 leading-relaxed max-h-60 overflow-y-auto whitespace-pre-wrap" id="lblModalComunTexto">
-      </div>
-
-      <div class="flex items-center justify-between pt-2 text-[11px] text-slate-400 border-t">
-        <span id="lblModalComunAutor">Emitido por: Dirección / Comisión</span>
-        <span id="lblModalComunFecha"></span>
-      </div>
-
-      <button onclick="cerrarModalComunicado()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-xs sm:text-sm shadow transition">
-        Entendido / Aceptar
-      </button>
     </div>
   </div>
 
@@ -557,17 +508,9 @@
           document.getElementById('userInfo').classList.remove('hidden');
           document.getElementById('userBadge').innerText = `${res.rol}: ${res.nombre}`;
 
-          if (res.comunicado && res.comunicado.texto) {
-            mostrarModalComunicado(res.comunicado);
-          }
-
           if (res.rol === 'ADMIN' || res.rol === 'COMISION') {
             document.getElementById('vistaAdmin').classList.remove('hidden');
-            if (res.comunicado) {
-              document.getElementById('txtComunTitulo').value = res.comunicado.titulo || '';
-              document.getElementById('txtComunTexto').value = res.comunicado.texto || '';
-            }
-
+            
             if (res.rol === 'COMISION') {
               document.getElementById('seccionSoloAdmin').classList.add('hidden');
             } else {
@@ -599,43 +542,6 @@
         btn.innerText = "Iniciar Sesión";
         btn.disabled = false;
       }
-    }
-
-    function mostrarModalComunicado(c) {
-      document.getElementById('lblModalComunTitulo').innerText = c.titulo || 'COMUNICADO INSTITUCIONAL';
-      document.getElementById('lblModalComunTexto').innerText = c.texto || '';
-      document.getElementById('lblModalComunAutor').innerText = `Emitido por: ${c.autor || 'Dirección'}`;
-      document.getElementById('lblModalComunFecha').innerText = c.fecha ? `Fecha: ${c.fecha}` : '';
-      document.getElementById('modalComunicado').classList.remove('hidden');
-    }
-
-    function cerrarModalComunicado() {
-      document.getElementById('modalComunicado').classList.add('hidden');
-    }
-
-    async function publicarComunicado() {
-      const titulo = document.getElementById('txtComunTitulo').value.trim();
-      const texto = document.getElementById('txtComunTexto').value.trim();
-      if (!texto) { alert("Por favor ingrese el mensaje del comunicado."); return; }
-
-      const res = await apiRequest({
-        action: 'guardarComunicado',
-        comunicado: {
-          titulo: titulo || "COMUNICADO PEDAGÓGICO",
-          texto: texto,
-          autor: sesionActual.rol === 'ADMIN' ? "DIRECCIÓN INSTITUCIONAL" : "COMISIÓN PEDAGÓGICA"
-        },
-        claveAuth: sesionActual.ci
-      });
-      alert(res.message);
-    }
-
-    async function retirarComunicado() {
-      if (!confirm("¿Desea dar de baja el comunicado actual?")) return;
-      const res = await apiRequest({ action: 'guardarComunicado', comunicado: null, claveAuth: sesionActual.ci });
-      alert(res.message);
-      document.getElementById('txtComunTitulo').value = '';
-      document.getElementById('txtComunTexto').value = '';
     }
 
     function configurarCamposNotasDocente(trim) {
@@ -994,10 +900,6 @@
       window.open(`https://api.whatsapp.com/send?text=${mensaje}`, '_blank');
     }
 
-    // ============================================================
-    // SISTEMA DE FILTROS EN CASCADA Y VISTA TABLA CON 1T, 2T, 3T
-    // ============================================================
-
     async function cargarDatosAdmin() {
       const filtroTrim = document.getElementById('filtroTrimestreAdmin').value;
       const res = await apiRequest({ action: 'obtenerReporteAdmin', claveAuth: sesionActual.ci, trimestre: filtroTrim });
@@ -1074,14 +976,12 @@
       const fEst = document.getElementById('filtroEstudiante').value.trim().toUpperCase();
       const soloMultimateria = document.getElementById('chkSoloMultimateria').checked;
 
-      // Conteo de materias por estudiante para marcar multimaterias
       const conteoMateriasEstudiante = {};
       registrosGlobalesAdmin.forEach(r => {
         const key = `${r[1]}_${r[2]}_${r[3]}`;
         conteoMateriasEstudiante[key] = (conteoMateriasEstudiante[key] || 0) + 1;
       });
 
-      // Filtro activo
       registrosFiltradosActuales = registrosGlobalesAdmin.filter(r => {
         const trim = r[1];
         const curso = String(r[2] || '').trim().toUpperCase();
@@ -1105,7 +1005,6 @@
         return true;
       });
 
-      // Dashboard
       document.getElementById('statTotalCasos').innerText = registrosFiltradosActuales.length;
       let sumaProm = 0;
       let conteoAreas = {};
@@ -1136,7 +1035,6 @@
       }
       document.getElementById('statMateriasCriticas').innerText = matTop;
 
-      // Render de la Tabla (1T, 2T, 3T, PROM y SIN ACCIONES)
       const tbody = document.getElementById('tbodyAdmin');
       tbody.innerHTML = '';
 
@@ -1174,10 +1072,6 @@
         tbody.appendChild(tr);
       });
     }
-
-    // ============================================================
-    // MÓDULO RESUMEN / KARDEX POR ESTUDIANTE (TODAS SUS MATERIAS)
-    // ============================================================
 
     function abrirResumenEstudiante(nombreEstudiante, cursoEstudiante) {
       estudianteSeleccionadoResumen = { nombre: nombreEstudiante, curso: cursoEstudiante };
@@ -1224,7 +1118,6 @@
       document.getElementById('modalResumenEstudiante').classList.add('hidden');
     }
 
-    // GENERAR REPORTE RESUMEN DEL ESTUDIANTE EN PDF
     function imprimirResumenEstudiantePDF() {
       if (!estudianteSeleccionadoResumen) return;
       const { nombre, curso } = estudianteSeleccionadoResumen;
@@ -1285,7 +1178,6 @@
       doc.save(`Resumen_${nombre.replace(/\s+/g, '_')}.pdf`);
     }
 
-    // EXPORTACIÓN A EXCEL (CSV)
     function exportarExcelAdmin() {
       if (registrosFiltradosActuales.length === 0) { alert("No hay registros en la vista actual para exportar."); return; }
       let csv = "ID,Trimestre,Curso,Estudiante,Docente,Area,Nota 1T,Nota 2T,Nota 3T,Promedio Entero,Justif. Academica,Justif. Conductual,Acciones Previas,Observacion\n";
@@ -1302,10 +1194,9 @@
     async function descargarPDFDocente() {
       const res = await apiRequest({ action: 'obtenerReporteDocente', docente: sesionActual.nombre, trimestre: trimestreActivoGlobal });
       if (!res.registros || res.registros.length === 0) { alert("Aún no tiene registros en este trimestre."); return; }
-      generarPDFReporte(res.registros, `Reporte_${sesionActual.nombre.replace(/\s+/g, '_')}_${trimestreActivoGlobal}.pdf`, `Docente: ${sesionActual.nombre} | Trimestre: ${trimestreActivoGlobal}`);
+      generarPDFReporte(res.registros, `Reporte_${sesionActual.nombre.replace(/\s+/g, '_')}_${trimestreActivoGlobal}.pdf`, `Docente: ${sesionActual.nombre} | Trimestre: ${trimestreActivoGlobal}`, true);
     }
 
-    // DESCARGA DE PDF RESPETANDO FILTROS
     async function descargarPDFAdmin() {
       if (registrosFiltradosActuales.length === 0) { alert("No hay datos en la vista filtrada para imprimir."); return; }
 
@@ -1320,50 +1211,127 @@
       if (fArea) detallesFiltro.push(`Área: ${fArea}`);
       if (fDoc) detallesFiltro.push(`Docente: ${fDoc}`);
       if (fRiesgo !== "TODOS") detallesFiltro.push(`Riesgo: ${fRiesgo}`);
-      if (esMulti) detallesFiltro.push(`Criterio: Casos Multimateria (≥2 áreas)`);
+      if (esMulti) detallesFiltro.push(`Multimateria`);
 
       const subtituloFiltros = detallesFiltro.length > 0 
         ? `Filtros: ${detallesFiltro.join(" | ")} (${registrosFiltradosActuales.length} Casos)`
         : `Consolidado General (${registrosFiltradosActuales.length} Casos)`;
 
-      generarPDFReporte(registrosFiltradosActuales, `Consolidado_Filtrado_${new Date().toISOString().slice(0,10)}.pdf`, subtituloFiltros);
+      generarPDFReporte(registrosFiltradosActuales, `Consolidado_Filtrado_${new Date().toISOString().slice(0,10)}.pdf`, subtituloFiltros, false);
     }
 
-    function generarPDFReporte(lista, nombreArchivo, subtituloExtra) {
+    // ============================================================
+    // GENERADOR DE PDF CORREGIDO CON TODAS LAS COLUMNAS Y FIRMAS EN CADA PÁGINA
+    // ============================================================
+    function generarPDFReporte(lista, nombreArchivo, subtituloExtra, esReporteDocente) {
       const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'letter' });
+      // Formato apaisado oficio/legal o carta con márgenes adaptados
+      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'legal' });
       const fechaHora = obtenerFechaHoraActual();
 
-      doc.setFontSize(13); doc.text(nombreColegioActual, 14, 13);
-      doc.setFontSize(10); doc.text("CONSOLIDADO PEDAGÓGICO DE ESTUDIANTES EN RIESGO / REPROBADOS", 14, 18);
-      doc.setFontSize(8); doc.text(`${subtituloExtra} | Emisión: ${fechaHora}`, 14, 23);
-
+      // Mapeo completo con TODAS las columnas (incluyendo conductual, acciones y observación)
       const tableBody = lista.map(r => [
-        r[1], r[2], r[3], r[4], r[5],
-        r[6] ? Math.round(r[6]) : '-',
-        r[7] ? Math.round(r[7]) : '-',
-        r[8] ? Math.round(r[8]) : '-',
-        Math.round(r[9]),
-        r[10] || '-'
+        r[1], // Trim
+        r[2], // Curso
+        r[3], // Estudiante
+        r[4], // Docente
+        r[5], // Área
+        r[6] ? Math.round(r[6]) : '-', // 1T
+        r[7] ? Math.round(r[7]) : '-', // 2T
+        r[8] ? Math.round(r[8]) : '-', // 3T
+        Math.round(r[9]),              // Prom
+        r[10] || '-',                  // Justif. Académica
+        r[11] || '-',                  // Justif. Conductual
+        r[12] || '-',                  // Acciones Previas
+        r[13] || '-'                   // Observación / Compromiso
       ]);
 
       doc.autoTable({
-        startY: 26,
-        head: [['Trim', 'Curso', 'Estudiante', 'Docente', 'Área', '1T', '2T', '3T', 'Prom', 'Justif. Académica']],
+        startY: 25,
+        margin: { top: 25, bottom: 28, left: 10, right: 10 },
+        head: [['Trim', 'Curso', 'Estudiante', 'Docente', 'Área', '1T', '2T', '3T', 'Prom', 'Justif. Académica', 'Justif. Conductual', 'Acciones Previas', 'Observación / Acuerdos']],
         body: tableBody,
         theme: 'grid',
-        styles: { fontSize: 6.5, cellPadding: 1.8 },
-        headStyles: { fillColor: [30, 41, 59] },
-        columnStyles: { 5: { cellWidth: 10 }, 6: { cellWidth: 10 }, 7: { cellWidth: 10 }, 8: { cellWidth: 12 }, 9: { cellWidth: 45 } },
+        styles: { 
+          fontSize: 6, 
+          cellPadding: 1.5, 
+          overflow: 'linebreak',
+          valign: 'middle'
+        },
+        headStyles: { 
+          fillColor: [30, 41, 59], 
+          textColor: [255, 255, 255], 
+          fontStyle: 'bold', 
+          halign: 'center',
+          fontSize: 6.5
+        },
+        columnStyles: {
+          0: { cellWidth: 10, halign: 'center' }, // Trim
+          1: { cellWidth: 14, halign: 'center' }, // Curso
+          2: { cellWidth: 42, fontStyle: 'bold' },// Estudiante
+          3: { cellWidth: 35 },                   // Docente
+          4: { cellWidth: 28 },                   // Área
+          5: { cellWidth: 8, halign: 'center' },  // 1T
+          6: { cellWidth: 8, halign: 'center' },  // 2T
+          7: { cellWidth: 8, halign: 'center' },  // 3T
+          8: { cellWidth: 10, halign: 'center', fontStyle: 'bold' }, // Prom
+          9: { cellWidth: 45 },                   // Justif. Académica
+          10: { cellWidth: 45 },                  // Justif. Conductual
+          11: { cellWidth: 45 },                  // Acciones Previas
+          12: { cellWidth: 36 }                   // Observación
+        },
         didDrawPage: function (data) {
+          const pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
           const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
-          let finalY = data.cursor.y + 22;
-          if (finalY > pageHeight - 20) { doc.addPage(); finalY = 35; }
+
+          // ENCABEZADO EN TODAS LAS PÁGINAS
+          doc.setFontSize(12);
+          doc.setFont(undefined, 'bold');
+          doc.text(nombreColegioActual, 10, 10);
+          
+          doc.setFontSize(9);
+          doc.text("CONSOLIDADO PEDAGÓGICO DE ESTUDIANTES EN RIESGO / REPROBADOS", 10, 15);
+          
+          doc.setFontSize(7.5);
+          doc.setFont(undefined, 'normal');
+          doc.text(`${subtituloExtra} | Emisión: ${fechaHora} | Pág. ${data.pageNumber}`, 10, 20);
+
+          // LÍNEA DIVISORIA DE ENCABEZADO
+          doc.setLineWidth(0.3);
+          doc.line(10, 22, pageWidth - 10, 22);
+
+          // FIRMAS EN EL PIE DE TODAS LAS PÁGINAS
+          const lineaY = pageHeight - 14;
           doc.setLineWidth(0.4);
-          doc.line(110, finalY, 170, finalY);
-          doc.setFontSize(8); doc.text("Sello y Firma de Dirección / Comisión", 140, finalY + 4, { align: "center" });
+
+          if (esReporteDocente) {
+            // Reporte Docente: Firma Docente + Firma Dirección/Comisión
+            const centroDocente = pageWidth * 0.28;
+            const centroDireccion = pageWidth * 0.72;
+
+            doc.line(centroDocente - 35, lineaY, centroDocente + 35, lineaY);
+            doc.line(centroDireccion - 35, lineaY, centroDireccion + 35, lineaY);
+
+            doc.setFontSize(7);
+            doc.text("Firma de la Profesora / Profesor", centroDocente, lineaY + 4, { align: "center" });
+            doc.text(sesionActual.nombre, centroDocente, lineaY + 7.5, { align: "center" });
+
+            doc.text("Sello y Firma de Dirección / Comisión Pedagógica", centroDireccion, lineaY + 4, { align: "center" });
+          } else {
+            // Reporte Consolidado Institucional (Admin/Comisión): Dos firmas institucionales
+            const centroComision = pageWidth * 0.30;
+            const centroDireccion = pageWidth * 0.70;
+
+            doc.line(centroComision - 40, lineaY, centroComision + 40, lineaY);
+            doc.line(centroDireccion - 40, lineaY, centroDireccion + 40, lineaY);
+
+            doc.setFontSize(7);
+            doc.text("Comisión Técnico Pedagógica", centroComision, lineaY + 4, { align: "center" });
+            doc.text("Sello y Firma de Dirección", centroDireccion, lineaY + 4, { align: "center" });
+          }
         }
       });
+
       doc.save(nombreArchivo);
     }
 
