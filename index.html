@@ -19,12 +19,15 @@
 <body class="bg-slate-100 text-slate-800 min-h-screen py-4 sm:py-6 px-3 sm:px-6 antialiased">
 
   <script>
+    // ==========================================
+    // URL DE GOOGLE APPS SCRIPT CONFIGURADA:
+    // ==========================================
     const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxCQtbJK9HBQ-HHsJpI-diZFeawf_aOpNTz8JLFO6KW98gN_88uZdJZB3bifsNGPNcK5g/exec";
   </script>
 
   <div class="max-w-7xl mx-auto space-y-4">
 
-    <!-- ENCABEZADO -->
+    <!-- ENCABEZADO RESPONSIVO -->
     <header class="bg-indigo-900 text-white rounded-2xl p-4 sm:p-6 shadow-md border-b-4 border-indigo-950">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div class="space-y-1">
@@ -70,6 +73,7 @@
     <!-- 2. VISTA DOCENTE -->
     <div id="vistaDocente" class="hidden space-y-4">
       
+      <!-- FORMULARIO DE JUSTIFICACIÓN -->
       <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5 border-b pb-4">
           <div>
@@ -173,21 +177,23 @@
         </form>
       </div>
 
-      <!-- TABLA INFERIOR DEL DOCENTE -->
+      <!-- TABLA INFERIOR DEL DOCENTE CON TODAS LAS COLUMNAS -->
       <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+        
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-4">
           <div>
             <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
               📋 Mis Registros Realizados 
               <span id="badgeTotalDocente" class="bg-indigo-100 text-indigo-900 text-xs font-black px-2.5 py-0.5 rounded-full">0 casos</span>
             </h3>
-            <p class="text-xs text-slate-500">Haga clic en cualquier fila para cargar al estudiante y editar sus notas.</p>
+            <p class="text-xs text-slate-500">Haga clic en el nombre del estudiante para cargarlo y modificarlo.</p>
           </div>
           <div class="text-xs font-bold text-slate-600 bg-slate-50 px-3 py-1.5 rounded-xl border">
             Promedio General Registrado: <span id="lblDocentePromedioGeneral" class="text-indigo-900 font-black">0</span> pts
           </div>
         </div>
 
+        <!-- FILTROS DEL DOCENTE -->
         <div class="bg-slate-50 p-3 rounded-xl border grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
           <div>
             <label class="block font-semibold text-slate-600 mb-1">Filtrar por Curso:</label>
@@ -207,25 +213,29 @@
           </div>
         </div>
 
-        <div class="overflow-x-auto max-h-80 border rounded-xl shadow-inner">
+        <!-- TABLA COMPLETA DEL DOCENTE (12 COLUMNAS) -->
+        <div class="overflow-x-auto max-h-96 border rounded-xl shadow-inner">
           <table class="w-full text-xs text-left">
             <thead class="bg-slate-100 uppercase text-slate-700 sticky top-0 border-b">
               <tr>
                 <th class="p-2.5 border-r text-center w-12">Trim</th>
                 <th class="p-2.5 border-r w-20">Curso</th>
-                <th class="p-2.5 border-r">Estudiante (Clic para Editar)</th>
+                <th class="p-2.5 border-r min-w-[170px]">Estudiante (Clic para Editar)</th>
                 <th class="p-2.5 border-r text-center w-16">Área</th>
                 <th class="p-2 border-r text-center w-10 bg-slate-50">1T</th>
                 <th class="p-2 border-r text-center w-10 bg-slate-50">2T</th>
                 <th class="p-2 border-r text-center w-10 bg-slate-50">3T</th>
                 <th class="p-2 border-r text-center w-12 bg-indigo-50 font-black text-indigo-950">Prom</th>
-                <th class="p-2.5 border-r min-w-[160px]">Justif. Académica</th>
-                <th class="p-2.5 min-w-[160px]">Acciones Realizadas</th>
+                <th class="p-2.5 border-r min-w-[190px]">Justif. Académica</th>
+                <th class="p-2.5 border-r min-w-[190px]">Justif. Conductual</th>
+                <th class="p-2.5 border-r min-w-[190px]">Acciones Realizadas</th>
+                <th class="p-2.5 min-w-[170px]">Observaciones / Compromisos</th>
               </tr>
             </thead>
             <tbody id="tbodyDocente" class="divide-y"></tbody>
           </table>
         </div>
+
       </div>
 
     </div>
@@ -233,7 +243,7 @@
     <!-- 3. VISTA GESTIÓN (ADMIN / COMISIÓN) -->
     <div id="vistaAdmin" class="hidden space-y-4">
       
-      <!-- DASHBOARD -->
+      <!-- DASHBOARD ESTADÍSTICO -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div class="bg-white border rounded-2xl p-4 shadow-sm text-center">
           <div class="text-2xl font-black text-indigo-900" id="statTotalCasos">0</div>
@@ -375,7 +385,7 @@
 
         <div class="bg-indigo-50 border border-indigo-200 rounded-2xl p-4 sm:p-5 shadow-sm">
           <h3 class="text-sm font-bold text-indigo-950 mb-0.5">📥 Importar Nómina Oficial desde PDF (SIE)</h3>
-          <p class="text-xs text-indigo-700 mb-3">Sube el PDF oficial para importar a los estudiantes <strong>"EFECTIVOS"</strong>[cite: 1].</p>
+          <p class="text-xs text-indigo-700 mb-3">Sube el PDF oficial para importar a los estudiantes <strong>"EFECTIVOS"</strong>.</p>
           <div class="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center">
             <input type="file" id="pdfFileInput" accept="application/pdf" class="text-xs text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-indigo-600 file:text-white cursor-pointer">
             <button onclick="procesarPDFSIE()" id="btnProcesarPDF" class="bg-indigo-900 text-white text-xs px-4 py-2.5 rounded-xl font-bold hover:bg-black transition">⚡ Procesar e Importar</button>
@@ -386,6 +396,7 @@
 
       <!-- PANEL PRINCIPAL CONSOLIDADO Y FILTROS -->
       <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+        
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-4">
           <div>
             <h2 class="text-base font-bold text-slate-800">Consolidado General de Justificaciones</h2>
@@ -401,6 +412,7 @@
           </div>
         </div>
 
+        <!-- FILTROS EN CASCADA / COMBINADOS -->
         <div class="bg-slate-50 border p-3.5 rounded-xl space-y-3">
           <div class="text-xs font-bold text-slate-700 flex items-center justify-between">
             <span>🔍 Filtros de Búsqueda y Análisis Pedagógico:</span>
@@ -480,6 +492,7 @@
           </div>
         </div>
 
+        <!-- TABLA COMPLETA CON TODAS LAS JUSTIFICACIONES EN PANTALLA Y SIGLAS -->
         <div class="overflow-x-auto max-h-[550px] border rounded-xl shadow-inner">
           <table class="w-full text-xs text-left">
             <thead class="bg-slate-100 uppercase text-slate-700 sticky top-0 shadow-sm z-10 border-b">
@@ -508,7 +521,7 @@
 
   </div>
 
-  <!-- MODAL: RESUMEN / KARDEX -->
+  <!-- MODAL: RESUMEN / KARDEX DEL ESTUDIANTE -->
   <div id="modalResumenEstudiante" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-3xl p-5 sm:p-7 max-w-3xl w-full shadow-2xl space-y-4 animate-in fade-in zoom-in duration-150 max-h-[90vh] flex flex-col">
       <div class="flex items-start justify-between border-b pb-3">
@@ -554,7 +567,7 @@
     </div>
   </div>
 
-  <!-- MODAL DOCENTE -->
+  <!-- MODAL REGISTRO DE DOCENTE -->
   <div id="modalDocente" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-xl">
       <h3 class="text-sm font-bold text-slate-800 mb-3">Registrar Docente y Asignación</h3>
@@ -573,457 +586,25 @@
   </div>
 
   <script>
-    let sesionActual = null;
-    let cacheEstudiantes = {};
-    let opcionesConfig = { academicas: [], conductuales: [], acciones: [] };
-    let nombreColegioActual = "UNIDAD EDUCATIVA";
-    let trimestreActivoGlobal = "2T";
-    let registrosGlobalesAdmin = [];
-    let registrosFiltradosActuales = [];
-    let estudianteSeleccionadoResumen = null;
+    // ============================================================
+    // CONTROLADOR PRINCIPAL Y LÓGICA DE INTERFAZ
+    // ============================================================
 
-    let registrosDocenteGlobal = [];
-    let registrosDocenteFiltrados = [];
-
-    let myChartMaterias = null;
-    let myChartCursos = null;
-    let myChartCausales = null;
-    let panelGraficosAbierto = false;
-
-    const DICCIONARIO_SIGLAS = {
-      "MATEMATICA": "MAT", "MATEMÁTICA": "MAT",
-      "CIENCIAS SOCIALES": "CSO", "SOCIALES": "CSO",
-      "CIENCIAS NATURALES": "CNA",
-      "BIOLOGIA": "BIO", "BIOLOGÍA": "BIO",
-      "BIOLOGIA GEOGRAFIA": "BIO", "BIOLOGÍA GEOGRAFÍA": "BIO",
-      "FISICA": "FIS", "FÍSICA": "FIS",
-      "QUIMICA": "QUI", "QUÍMICA": "QUI",
-      "FISICA QUIMICA": "FIS", "FÍSICA QUÍMICA": "FIS",
-      "LENGUAJE": "LC", "COMUNICACION Y LENGUAJES": "LC", "COMUNICACIÓN Y LENGUAJES": "LC", "LENGUA CASTELLANA": "LC",
-      "LENGUA EXTRANJERA": "LEX", "INGLES": "LEX", "INGLÉS": "LEX",
-      "LENGUA ORIGINARIA": "LO",
-      "EDUCACION FISICA": "EFD", "EDUCACIÓN FÍSICA": "EFD", "EDUCACION FISICA Y DEPORTES": "EFD", "EDUCACIÓN FÍSICA Y DEPORTES": "EFD",
-      "EDUCACION MUSICAL": "EMU", "EDUCACIÓN MUSICAL": "EMU", "MUSICA": "EMU", "MÚSICA": "EMU",
-      "ARTES PLASTICAS": "APV", "ARTES PLÁSTICAS": "APV", "ARTES PLASTICAS Y VISUALES": "APV", "ARTES PLÁSTICAS Y VISUALES": "APV",
-      "COSMOVISIONES": "CFS", "FILOSOFIA": "CFS", "FILOSOFÍA": "CFS", "PSICOLOGIA": "CFS", "PSICOLOGÍA": "CFS",
-      "COSMOVISIONES FILOSOFIA Y PSICOLOGIA": "CFS", "COSMOVISIONES FILOSOFÍA Y PSICOLOGÍA": "CFS",
-      "VALORES": "VER", "RELIGION": "VER", "RELIGIÓN": "VER", "VALORES ESPIRITUALIDAD Y RELIGIONES": "VER",
-      "TECNICA TECNOLOGICA": "TTG", "TÉCNICA TECNOLÓGICA": "TTG", "TECNICA TECNOLOGICA GENERAL": "TTG", "TÉCNICA TECNOLÓGICA GENERAL": "TTG",
-      "TECNICA TECNOLOGICA ESPECIALIZADA": "TTE", "TÉCNICA TECNOLÓGICA ESPECIALIZADA": "TTE"
-    };
-
-    function obtenerSiglaArea(nombreArea) {
-      if (!nombreArea) return "";
-      const limpia = String(nombreArea).trim().toUpperCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-      for (let k in DICCIONARIO_SIGLAS) {
-        const kLimpia = k.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        if (limpia === kLimpia || limpia.includes(kLimpia)) {
-          return DICCIONARIO_SIGLAS[k];
-        }
-      }
-      return nombreArea.length > 4 ? nombreArea.substring(0, 3).toUpperCase() : nombreArea.toUpperCase();
-    }
-
-    function obtenerFechaHoraActual() {
-      const ahora = new Date();
-      const pad = n => n.toString().padStart(2, '0');
-      return `${pad(ahora.getDate())}/${pad(ahora.getMonth() + 1)}/${ahora.getFullYear()} a horas ${pad(ahora.getHours())}:${pad(ahora.getMinutes())}`;
-    }
-
-    async function apiRequest(params) {
-      const resp = await fetch(URL_APPS_SCRIPT, { method: 'POST', body: JSON.stringify(params) });
-      return await resp.json();
-    }
-
-    async function login() {
-      const ci = document.getElementById('txtCI').value.trim();
-      const pin = document.getElementById('txtPIN').value.trim();
-      const err = document.getElementById('loginError');
-      const btn = document.getElementById('btnLogin');
-      if (!ci) return;
-
-      err.classList.add('hidden');
-      btn.innerText = "Verificando...";
-      btn.disabled = true;
-
-      try {
-        const res = await apiRequest({ action: 'login', ci, pin });
-        if (res.success) {
-          sesionActual = res;
-          sesionActual.ci = ci;
-          trimestreActivoGlobal = res.trimestreActivo || "2T";
-          nombreColegioActual = res.nombreColegio || "UNIDAD EDUCATIVA";
-          
-          document.getElementById('lblHeaderSubtitulo').innerText = nombreColegioActual;
-          document.getElementById('badgeTrimestreActivo').innerText = trimestreActivoGlobal;
-          document.getElementById('loginCard').classList.add('hidden');
-          document.getElementById('userInfo').classList.remove('hidden');
-          document.getElementById('userBadge').innerText = `${res.rol}: ${res.nombre}`;
-
-          if (res.rol === 'ADMIN' || res.rol === 'COMISION') {
-            document.getElementById('vistaAdmin').classList.remove('hidden');
-            
-            if (res.rol === 'COMISION') {
-              document.getElementById('seccionSoloAdmin').classList.add('hidden');
-            } else {
-              document.getElementById('seccionSoloAdmin').classList.remove('hidden');
-              document.getElementById('txtNombreColegio').value = nombreColegioActual;
-              actualizarIndicadorSistema(res.sistemaActivo);
-              actualizarBotonesTrimestre(trimestreActivoGlobal);
-              await cargarOpcionesDesdeSheet();
-              renderAdminOpcionesConfig();
-              cargarListaDocentesAdmin();
-            }
-
-            cargarDatosAdmin();
-          } else {
-            document.getElementById('vistaDocente').classList.remove('hidden');
-            document.getElementById('lblDocenteTrimestreInfo').innerText = `Periodo activo: ${trimestreActivoGlobal} Trimestre`;
-            configurarCamposNotasDocente(trimestreActivoGlobal);
-            await cargarOpcionesDesdeSheet();
-            iniciarVistaDocente();
-            await cargarRegistrosDocenteTabla();
-          }
-        } else {
-          err.innerText = res.message;
-          err.classList.remove('hidden');
-        }
-      } catch (e) {
-        err.innerText = "Error de conexión con el servidor.";
-        err.classList.remove('hidden');
-      } finally {
-        btn.innerText = "Iniciar Sesión";
-        btn.disabled = false;
-      }
-    }
-
-    function configurarCamposNotasDocente(trim) {
-      const col1 = document.getElementById('colNota1');
-      const col2 = document.getElementById('colNota2');
-      const col3 = document.getElementById('colNota3');
-      const lblProm = document.getElementById('lblPromedioTitulo');
-
-      if (trim === "1T") {
-        col1.classList.remove('hidden'); col2.classList.add('hidden'); col3.classList.add('hidden');
-        lblProm.innerText = "Nota Final 1T:";
-      } else if (trim === "2T") {
-        col1.classList.remove('hidden'); col2.classList.remove('hidden'); col3.classList.add('hidden');
-        lblProm.innerText = "Promedio (1T+2T):";
-      } else if (trim === "3T") {
-        col1.classList.remove('hidden'); col2.classList.remove('hidden'); col3.classList.remove('hidden');
-        lblProm.innerText = "Promedio Final:";
-      }
-    }
-
-    function calcularPromedioDinamico() {
-      const n1 = Math.round(parseFloat(document.getElementById('txtNota1').value) || 0);
-      const n2 = Math.round(parseFloat(document.getElementById('txtNota2').value) || 0);
-      const n3 = Math.round(parseFloat(document.getElementById('txtNota3').value) || 0);
-      const trim = trimestreActivoGlobal;
-
-      if (trim === "1T") {
-        document.getElementById('txtPromedio').value = n1;
-      } else if (trim === "2T") {
-        document.getElementById('txtPromedio').value = Math.round((n1 + n2) / 2);
-      } else if (trim === "3T") {
-        document.getElementById('txtPromedio').value = Math.round((n1 + n2 + n3) / 3);
-      }
-    }
-
-    function actualizarBotonesTrimestre(trim) {
-      ['1T', '2T', '3T'].forEach(t => {
-        const btn = document.getElementById(`btnTrim${t[0]}`);
-        btn.className = t === trim 
-          ? "flex-1 py-2 rounded-xl text-xs font-black bg-indigo-900 text-white shadow" 
-          : "flex-1 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 border";
+    function poblarOpcionesSelect(selectElement, items, placeholder, valorPrevio) {
+      selectElement.innerHTML = `<option value="">${placeholder}</option>`;
+      items.forEach(it => {
+        if (!it) return;
+        const opt = document.createElement('option');
+        opt.value = it;
+        opt.textContent = it;
+        selectElement.appendChild(opt);
       });
-    }
-
-    async function cambiarTrimestreAdmin(trim) {
-      if (!confirm(`¿Cambiar el trimestre activo a ${trim}?`)) return;
-      const res = await apiRequest({ action: 'guardarTrimestreActivo', trimestre: trim, claveAdmin: sesionActual.ci });
-      alert(res.message);
-      if (res.success) {
-        trimestreActivoGlobal = trim;
-        document.getElementById('badgeTrimestreActivo').innerText = trim;
-        actualizarBotonesTrimestre(trim);
+      if (items.includes(valorPrevio)) {
+        selectElement.value = valorPrevio;
       }
     }
 
-    async function guardarColegioAdmin() {
-      const nom = document.getElementById('txtNombreColegio').value.trim();
-      if (!nom) return;
-      const res = await apiRequest({ action: 'guardarNombreColegio', nombreColegio: nom, claveAdmin: sesionActual.ci });
-      alert(res.message);
-      if (res.success) {
-        nombreColegioActual = res.nombreColegio;
-        document.getElementById('lblHeaderSubtitulo').innerText = nombreColegioActual;
-      }
-    }
-
-    function actualizarIndicadorSistema(activo) {
-      document.getElementById('lblEstadoSistema').innerHTML = activo 
-        ? '<span class="text-emerald-600 font-bold">● HABILITADO GENERAL</span>' 
-        : '<span class="text-red-600 font-bold">● BLOQUEADO</span>';
-    }
-
-    async function toggleEstadoSistema(habilitar) {
-      const res = await apiRequest({ action: 'cambiarEstadoSistema', activo: habilitar, claveAdmin: sesionActual.ci });
-      if (res.success) { alert(res.message); actualizarIndicadorSistema(res.sistemaActivo); }
-    }
-
-    async function cargarOpcionesDesdeSheet() {
-      try {
-        const res = await apiRequest({ action: 'obtenerConfiguracionGlobal' });
-        if (res.success) {
-          opcionesConfig = res.opciones;
-          nombreColegioActual = res.nombreColegio || nombreColegioActual;
-          document.getElementById('lblHeaderSubtitulo').innerText = nombreColegioActual;
-          renderCheckboxes('chkAcademica', opcionesConfig.academicas);
-          renderCheckboxes('chkConductual', opcionesConfig.conductuales);
-          renderCheckboxes('chkAcciones', opcionesConfig.acciones);
-        }
-      } catch (e) { console.error(e); }
-    }
-
-    function renderAdminOpcionesConfig() {
-      renderListaEditorOpciones('listaAdminAcad', opcionesConfig.academicas, 'acad');
-      renderListaEditorOpciones('listaAdminCond', opcionesConfig.conductuales, 'cond');
-      renderListaEditorOpciones('listaAdminAcc', opcionesConfig.acciones, 'acc');
-    }
-
-    function renderListaEditorOpciones(containerId, lista, tipo) {
-      const container = document.getElementById(containerId);
-      container.innerHTML = '';
-      lista.forEach((item, index) => {
-        const div = document.createElement('div');
-        div.className = 'flex items-center justify-between bg-white border rounded-lg p-1.5 text-[11px]';
-        div.innerHTML = `<span class="truncate flex-1 pr-1">${item}</span><button onclick="eliminarOpcionAdmin('${tipo}', ${index})" class="text-red-500 font-bold px-1 hover:text-red-700">✕</button>`;
-        container.appendChild(div);
-      });
-    }
-
-    function agregarOpcionAdmin(tipo) {
-      const inputId = tipo === 'acad' ? 'txtNuevaAcad' : (tipo === 'cond' ? 'txtNuevaCond' : 'txtNuevaAcc');
-      const val = document.getElementById(inputId).value.trim();
-      if (!val) return;
-      if (tipo === 'acad') opcionesConfig.academicas.push(val);
-      if (tipo === 'cond') opcionesConfig.conductuales.push(val);
-      if (tipo === 'acc') opcionesConfig.acciones.push(val);
-      document.getElementById(inputId).value = '';
-      renderAdminOpcionesConfig();
-    }
-
-    function eliminarOpcionAdmin(tipo, index) {
-      if (tipo === 'acad') opcionesConfig.academicas.splice(index, 1);
-      if (tipo === 'cond') opcionesConfig.conductuales.splice(index, 1);
-      if (tipo === 'acc') opcionesConfig.acciones.splice(index, 1);
-      renderAdminOpcionesConfig();
-    }
-
-    async function guardarOpcionesAdmin() {
-      const res = await apiRequest({ action: 'guardarOpcionesConfig', opciones: opcionesConfig, claveAdmin: sesionActual.ci });
-      alert(res.message);
-    }
-
-    async function cargarListaDocentesAdmin() {
-      const containerProrroga = document.getElementById('listaDocentesProrroga');
-      const tbodyDoc = document.getElementById('tbodyDocentesAdmin');
-      containerProrroga.innerHTML = '<div class="p-3 text-xs text-slate-400 text-center">Cargando...</div>';
-      tbodyDoc.innerHTML = '';
-
-      try {
-        const res = await apiRequest({ action: 'obtenerListaDocentesAdmin', claveAuth: sesionActual.ci });
-        if (res.success) {
-          const asignaciones = res.asignacionesDetalle || [];
-          tbodyDoc.innerHTML = '';
-          asignaciones.forEach(asig => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td class="p-2.5 border">${asig.ci}</td>
-              <td class="p-2.5 border font-medium">${asig.nombre}</td>
-              <td class="p-2.5 border">${asig.curso}</td>
-              <td class="p-2.5 border font-semibold text-slate-700">${asig.area} <span class="text-indigo-600 text-[10px]">(${obtenerSiglaArea(asig.area)})</span></td>
-              <td class="p-2.5 border text-center"><button onclick="eliminarAsignacionDocente('${asig.ci}', '${asig.curso}', '${asig.area}')" class="text-red-600 font-bold hover:underline">Eliminar</button></td>
-            `;
-            tbodyDoc.appendChild(tr);
-          });
-
-          containerProrroga.innerHTML = '';
-          res.docentes.forEach(doc => {
-            const row = document.createElement('div');
-            row.className = 'p-3 flex items-center justify-between text-xs';
-            row.innerHTML = `
-              <div><div class="font-bold text-slate-800">${doc.nombre}</div><div class="text-slate-400 text-[11px]">CI: ${doc.ci}</div></div>
-              <div>
-                ${doc.habilitadoExclusivo 
-                  ? `<button onclick="cambiarAccesoDocente('${doc.ci}', false)" class="bg-emerald-100 text-emerald-800 font-bold px-3 py-1.5 rounded-lg text-[11px]">✅ Prórroga Activa</button>`
-                  : `<button onclick="cambiarAccesoDocente('${doc.ci}', true)" class="bg-slate-100 text-slate-700 font-semibold px-3 py-1.5 rounded-lg text-[11px] hover:bg-slate-200">+ Habilitar</button>`
-                }
-              </div>`;
-            containerProrroga.appendChild(row);
-          });
-        }
-      } catch (e) { console.error(e); }
-    }
-
-    function abrirModalDocente() { document.getElementById('modalDocente').classList.remove('hidden'); }
-    function cerrarModalDocente() { document.getElementById('modalDocente').classList.add('hidden'); }
-
-    async function guardarNuevoDocenteAdmin() {
-      const ci = document.getElementById('modalDocCI').value.trim();
-      const pin = document.getElementById('modalDocPIN').value.trim() || ci.slice(-4);
-      const nombre = document.getElementById('modalDocNombre').value.trim();
-      const curso = document.getElementById('modalDocCurso').value.trim();
-      const area = document.getElementById('modalDocArea').value.trim();
-
-      if (!ci || !nombre || !curso || !area) { alert("Complete todos los campos obligatorios."); return; }
-
-      const res = await apiRequest({ action: 'guardarDocenteAdmin', ci, pin, nombre, curso, area, claveAdmin: sesionActual.ci });
-      alert(res.message);
-      if (res.success) { cerrarModalDocente(); cargarListaDocentesAdmin(); }
-    }
-
-    async function eliminarAsignacionDocente(ci, curso, area) {
-      if (!confirm(`¿Eliminar asignación de ${curso} - ${area}?`)) return;
-      const res = await apiRequest({ action: 'eliminarAsignacionDocente', ci, curso, area, claveAdmin: sesionActual.ci });
-      alert(res.message);
-      cargarListaDocentesAdmin();
-    }
-
-    async function cambiarAccesoDocente(ci, permitir) {
-      const res = await apiRequest({ action: 'cambiarPermisoDocente', ciDocente: ci, permitido: permitir, claveAdmin: sesionActual.ci });
-      alert(res.message);
-      cargarListaDocentesAdmin();
-    }
-
-    function renderCheckboxes(containerId, lista) {
-      const container = document.getElementById(containerId);
-      container.innerHTML = '';
-      lista.forEach(item => {
-        const label = document.createElement('label');
-        label.className = 'flex items-center gap-2 cursor-pointer';
-        label.innerHTML = `<input type="checkbox" value="${item}" class="rounded text-indigo-600 focus:ring-0"> <span>${item}</span>`;
-        container.appendChild(label);
-      });
-    }
-
-    function iniciarVistaDocente() {
-      const selCurso = document.getElementById('selCurso');
-      selCurso.innerHTML = '<option value="">-- Seleccionar Curso --</option>';
-      const cursosUnicos = [...new Set(sesionActual.asignaciones.map(a => a.curso))];
-      cursosUnicos.forEach(c => {
-        const opt = document.createElement('option'); opt.value = c; opt.textContent = c; selCurso.appendChild(opt);
-      });
-    }
-
-    async function onCursoChange() {
-      const curso = document.getElementById('selCurso').value;
-      const selArea = document.getElementById('selArea');
-      const selEst = document.getElementById('selEstudiante');
-      
-      selArea.innerHTML = '<option value="">-- Seleccionar Materia --</option>';
-      selEst.innerHTML = '<option value="">Cargando...</option>';
-      selArea.disabled = !curso; selEst.disabled = true;
-      limpiarFormularioCampos();
-
-      if (!curso) return;
-      const areas = sesionActual.asignaciones.filter(a => a.curso === curso).map(a => a.area);
-      areas.forEach(ar => {
-        const opt = document.createElement('option'); 
-        opt.value = ar; 
-        opt.textContent = `${ar} (${obtenerSiglaArea(ar)})`; 
-        selArea.appendChild(opt);
-      });
-      if (areas.length === 1) selArea.value = areas[0];
-
-      if (!cacheEstudiantes[curso]) {
-        const res = await apiRequest({ action: 'obtenerEstudiantes', curso: curso });
-        cacheEstudiantes[curso] = res.estudiantes || [];
-      }
-      selEst.innerHTML = '<option value="">-- Seleccionar Estudiante --</option>';
-      cacheEstudiantes[curso].forEach(est => {
-        const opt = document.createElement('option'); opt.value = est; opt.textContent = est; selEst.appendChild(opt);
-      });
-      selEst.disabled = false;
-    }
-
-    function limpiarFormularioCampos() {
-      document.getElementById('txtNota1').value = '';
-      document.getElementById('txtNota2').value = '';
-      document.getElementById('txtNota3').value = '';
-      document.getElementById('txtPromedio').value = '0';
-      document.getElementById('txtObservacion').value = '';
-      document.getElementById('txtOtraAcademica').value = '';
-      document.getElementById('txtOtraConductual').value = '';
-      document.getElementById('txtOtraAccion').value = '';
-      document.querySelectorAll('#chkAcademica input, #chkConductual input, #chkAcciones input').forEach(chk => chk.checked = false);
-      document.getElementById('alertaEdicion').classList.add('hidden');
-      document.getElementById('btnGuardar').innerText = "💾 Guardar Registro de Reprobación";
-    }
-
-    function cancelarEdicionDocente() {
-      limpiarFormularioCampos();
-      document.getElementById('selEstudiante').value = "";
-    }
-
-    async function verificarRegistroEstudiante() {
-      const curso = document.getElementById('selCurso').value;
-      const area = document.getElementById('selArea').value;
-      const est = document.getElementById('selEstudiante').value;
-      const alertBox = document.getElementById('alertaEdicion');
-      const btn = document.getElementById('btnGuardar');
-
-      if (!curso || !area || !est) { limpiarFormularioCampos(); return; }
-
-      const idUnico = `${trimestreActivoGlobal}_${curso}_${est}_${area}`.trim();
-      const res = await apiRequest({ action: 'buscarRegistroEstudiante', idUnico: idUnico });
-
-      if (res.existe && res.registro) {
-        const reg = res.registro;
-        alertBox.classList.remove('hidden');
-        btn.innerText = "✏️ Actualizar / Guardar Modificaciones";
-        
-        document.getElementById('txtNota1').value = reg.nota1 || '';
-        document.getElementById('txtNota2').value = reg.nota2 || '';
-        document.getElementById('txtNota3').value = reg.nota3 || '';
-        calcularPromedioDinamico();
-
-        marcarCheckboxes('chkAcademica', reg.justificacionAcademica, 'txtOtraAcademica');
-        marcarCheckboxes('chkConductual', reg.justificacionConductual, 'txtOtraConductual');
-        marcarCheckboxes('chkAcciones', reg.accionesPrevias, 'txtOtraAccion');
-        document.getElementById('txtObservacion').value = reg.observacionAdicional || '';
-      } else {
-        limpiarFormularioCampos();
-      }
-    }
-
-    function marcarCheckboxes(containerId, textoGuardado, inputOtroId) {
-      if (!textoGuardado) return;
-      const items = String(textoGuardado).split(';').map(s => s.trim());
-      const container = document.getElementById(containerId);
-      const checkboxes = container.querySelectorAll('input[type="checkbox"]');
-      let otroTextos = [];
-
-      items.forEach(item => {
-        let encontrado = false;
-        checkboxes.forEach(chk => {
-          if (chk.value.trim().toUpperCase() === item.toUpperCase()) { chk.checked = true; encontrado = true; }
-        });
-        if (!encontrado && item) otroTextos.push(item);
-      });
-      if (inputOtroId && otroTextos.length > 0) document.getElementById(inputOtroId).value = otroTextos.join(', ');
-    }
-
-    function getSelectedOptions(containerId, inputOtroId) {
-      const checked = Array.from(document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`)).map(c => c.value);
-      const otroTexto = document.getElementById(inputOtroId).value.trim();
-      if (otroTexto) checked.push(`Otro: ${otroTexto}`);
-      return checked.join('; ');
-    }
-
+    // ENVÍO SEGURO DEL FORMULARIO CON MANEJO DE ERRORES ROBUSTO
     async function enviarFormulario(e) {
       e.preventDefault();
       const btn = document.getElementById('btnGuardar');
@@ -1063,36 +644,7 @@
       }
     }
 
-    function enviarPorWhatsApp() {
-      const curso = document.getElementById('selCurso').value;
-      const area = document.getElementById('selArea').value;
-      const est = document.getElementById('selEstudiante').value;
-      const prom = document.getElementById('txtPromedio').value;
-      const obs = document.getElementById('txtObservacion').value;
-      const sigla = obtenerSiglaArea(area);
-
-      const mensaje = `*INFORME PEDAGÓGICO (${trimestreActivoGlobal}) - ESTUDIANTE EN RIESGO*%0A*Estudiante:* ${est}%0A*Curso:* ${curso} | *Área:* ${area} (${sigla})%0A*Promedio Entero:* ${prom}%0A*Observación:* ${obs}%0A*Docente:* ${sesionActual.nombre}`;
-      window.open(`https://api.whatsapp.com/send?text=${mensaje}`, '_blank');
-    }
-
-    // ============================================================
-    // TABLA Y FILTROS DEL DOCENTE
-    // ============================================================
-
-    function poblarOpcionesSelect(selectElement, items, placeholder, valorPrevio) {
-      selectElement.innerHTML = `<option value="">${placeholder}</option>`;
-      items.forEach(it => {
-        if (!it) return;
-        const opt = document.createElement('option');
-        opt.value = it;
-        opt.textContent = it;
-        selectElement.appendChild(opt);
-      });
-      if (items.includes(valorPrevio)) {
-        selectElement.value = valorPrevio;
-      }
-    }
-
+    // CARGA DE TABLA DOCENTE CON FILTROS INICIALIZADOS CORRECTAMENTE
     async function cargarRegistrosDocenteTabla() {
       try {
         const res = await apiRequest({ action: 'obtenerReporteDocente', docente: sesionActual.nombre, trimestre: trimestreActivoGlobal });
@@ -1102,6 +654,7 @@
         const fAreaSel = document.getElementById('filtroDocArea');
         const fEstInput = document.getElementById('filtroDocEstudiante');
 
+        // Limpieza de filtros para mostrar todo al entrar
         fCursoSel.value = "";
         fAreaSel.value = "";
         fEstInput.value = "";
@@ -1125,6 +678,7 @@
       }
     }
 
+    // RENDERIZAR TABLA DOCENTE CON TODAS LAS 12 COLUMNAS
     function renderizarTablaDocente() {
       const fCurso = (document.getElementById('filtroDocCurso').value || '').trim().toUpperCase();
       const fArea = (document.getElementById('filtroDocArea').value || '').trim().toUpperCase();
@@ -1154,7 +708,7 @@
       tbody.innerHTML = '';
 
       if (registrosDocenteFiltrados.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="10" class="p-4 text-center text-slate-400 font-medium">Aún no tiene registros guardados en este trimestre.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="12" class="p-4 text-center text-slate-400 font-medium">Aún no tiene registros guardados en este trimestre.</td></tr>';
         return;
       }
 
@@ -1180,7 +734,9 @@
           <td class="p-2 border-r text-center font-semibold text-slate-700 bg-slate-50/50">${n3}</td>
           <td class="p-2 border-r text-center font-black ${prom <= 35 ? 'text-red-700 bg-red-100/40' : 'text-amber-700 bg-amber-50/50'}">${prom}</td>
           <td class="p-2.5 border-r text-[11px] text-slate-700 leading-snug">${r[10] || '-'}</td>
-          <td class="p-2.5 text-[11px] text-slate-700 leading-snug">${r[12] || '-'}</td>
+          <td class="p-2.5 border-r text-[11px] text-slate-700 leading-snug">${r[11] || '-'}</td>
+          <td class="p-2.5 border-r text-[11px] text-slate-700 leading-snug">${r[12] || '-'}</td>
+          <td class="p-2.5 text-[11px] text-slate-600 italic leading-snug">${r[13] || '-'}</td>
         `;
         tbody.appendChild(tr);
       });
