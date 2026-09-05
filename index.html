@@ -20,7 +20,7 @@
     const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxCQtbJK9HBQ-HHsJpI-diZFeawf_aOpNTz8JLFO6KW98gN_88uZdJZB3bifsNGPNcK5g/exec";
   </script>
 
-  <div class="max-w-6xl mx-auto space-y-4">
+  <div class="max-w-7xl mx-auto space-y-4">
 
     <!-- ENCABEZADO RESPONSIVO -->
     <header class="bg-indigo-900 text-white rounded-2xl p-4 sm:p-6 shadow-md border-b-4 border-indigo-950">
@@ -297,7 +297,7 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-4">
           <div>
             <h2 class="text-base font-bold text-slate-800">Consolidado General de Justificaciones</h2>
-            <p class="text-xs text-slate-500" id="lblSubtituloTablaAdmin">Filtros dinámicos con desglose por trimestre</p>
+            <p class="text-xs text-slate-500" id="lblSubtituloTablaAdmin">Filtros dinámicos y desglose de justificaciones</p>
           </div>
           <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
             <button onclick="exportarExcelAdmin()" class="flex-1 sm:flex-none bg-emerald-700 hover:bg-emerald-800 text-white text-xs px-3.5 py-2.5 rounded-xl font-bold transition shadow">
@@ -309,7 +309,7 @@
           </div>
         </div>
 
-        <!-- FILTROS -->
+        <!-- FILTROS EN CASCADA / COMBINADOS INCLUYENDO JUSTIFICACIONES -->
         <div class="bg-slate-50 border p-3.5 rounded-xl space-y-3">
           <div class="text-xs font-bold text-slate-700 flex items-center justify-between">
             <span>🔍 Filtros de Búsqueda y Análisis Pedagógico:</span>
@@ -349,6 +349,23 @@
             </div>
           </div>
 
+          <!-- FILTROS POR CAUSALES PEDAGÓGICAS Y CONDUCTUALES -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs pt-1 border-t border-slate-200">
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Filtrar por Justificación Académica:</label>
+              <select id="filtroJustifAcad" onchange="renderizarTablaYEstadisticas()" class="w-full border rounded-xl p-2 bg-white outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="">Todas las Causales Académicas</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Filtrar por Justificación Conductual:</label>
+              <select id="filtroJustifCond" onchange="renderizarTablaYEstadisticas()" class="w-full border rounded-xl p-2 bg-white outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="">Todas las Causales Conductuales</option>
+              </select>
+            </div>
+          </div>
+
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs pt-1 border-t border-slate-200">
             <div>
               <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Nivel de Riesgo:</label>
@@ -373,20 +390,24 @@
           </div>
         </div>
 
-        <!-- TABLA -->
-        <div class="overflow-x-auto max-h-[500px] border rounded-xl shadow-inner">
+        <!-- TABLA COMPLETA CON TODAS LAS JUSTIFICACIONES EN PANTALLA -->
+        <div class="overflow-x-auto max-h-[550px] border rounded-xl shadow-inner">
           <table class="w-full text-xs text-left">
             <thead class="bg-slate-100 uppercase text-slate-700 sticky top-0 shadow-sm z-10 border-b">
               <tr>
                 <th class="p-2.5 border-r text-center w-12">Trim</th>
                 <th class="p-2.5 border-r w-20">Curso</th>
-                <th class="p-2.5 border-r">Estudiante (Clic para Resumen)</th>
-                <th class="p-2.5 border-r">Docente</th>
-                <th class="p-2.5 border-r">Área / Materia</th>
-                <th class="p-2 border-r text-center w-12 bg-slate-50">1T</th>
-                <th class="p-2 border-r text-center w-12 bg-slate-50">2T</th>
-                <th class="p-2 border-r text-center w-12 bg-slate-50">3T</th>
-                <th class="p-2 text-center w-14 bg-indigo-50 font-black text-indigo-950">Prom</th>
+                <th class="p-2.5 border-r min-w-[170px]">Estudiante</th>
+                <th class="p-2.5 border-r min-w-[130px]">Docente</th>
+                <th class="p-2.5 border-r min-w-[110px]">Área</th>
+                <th class="p-2 border-r text-center w-10 bg-slate-50">1T</th>
+                <th class="p-2 border-r text-center w-10 bg-slate-50">2T</th>
+                <th class="p-2 border-r text-center w-10 bg-slate-50">3T</th>
+                <th class="p-2 border-r text-center w-12 bg-indigo-50 font-black text-indigo-950">Prom</th>
+                <th class="p-2.5 border-r min-w-[190px]">Justif. Académica</th>
+                <th class="p-2.5 border-r min-w-[190px]">Justif. Conductual</th>
+                <th class="p-2.5 border-r min-w-[190px]">Acciones Previas</th>
+                <th class="p-2.5 min-w-[170px]">Observaciones / Acuerdos</th>
               </tr>
             </thead>
             <tbody id="tbodyAdmin" class="divide-y"></tbody>
@@ -900,6 +921,10 @@
       window.open(`https://api.whatsapp.com/send?text=${mensaje}`, '_blank');
     }
 
+    // ============================================================
+    // SISTEMA DE FILTROS EN CASCADA Y VISTA TABLA COMPLETA
+    // ============================================================
+
     async function cargarDatosAdmin() {
       const filtroTrim = document.getElementById('filtroTrimestreAdmin').value;
       const res = await apiRequest({ action: 'obtenerReporteAdmin', claveAuth: sesionActual.ci, trimestre: filtroTrim });
@@ -913,18 +938,42 @@
       const cursoSel = document.getElementById('filtroCurso');
       const areaSel = document.getElementById('filtroArea');
       const docSel = document.getElementById('filtroDocente');
+      const justifAcadSel = document.getElementById('filtroJustifAcad');
+      const justifCondSel = document.getElementById('filtroJustifCond');
 
       const valCurso = cursoSel.value;
       const valArea = areaSel.value;
       const valDoc = docSel.value;
+      const valAcad = justifAcadSel.value;
+      const valCond = justifCondSel.value;
 
       const cursos = [...new Set(registrosGlobalesAdmin.map(r => r[2]))].sort();
       const areas = [...new Set(registrosGlobalesAdmin.map(r => r[5]))].sort();
       const docentes = [...new Set(registrosGlobalesAdmin.map(r => r[4]))].sort();
 
+      // Extraer causas únicas separadas por punto y coma
+      const setAcad = new Set();
+      const setCond = new Set();
+      registrosGlobalesAdmin.forEach(r => {
+        if (r[10]) {
+          String(r[10]).split(';').forEach(s => {
+            const item = s.trim();
+            if (item) setAcad.add(item);
+          });
+        }
+        if (r[11]) {
+          String(r[11]).split(';').forEach(s => {
+            const item = s.trim();
+            if (item) setCond.add(item);
+          });
+        }
+      });
+
       poblarOpcionesSelect(cursoSel, cursos, "Todos los Cursos", valCurso);
       poblarOpcionesSelect(areaSel, areas, "Todas las Áreas", valArea);
       poblarOpcionesSelect(docSel, docentes, "Todos los Docentes", valDoc);
+      poblarOpcionesSelect(justifAcadSel, Array.from(setAcad).sort(), "Todas las Causales Académicas", valAcad);
+      poblarOpcionesSelect(justifCondSel, Array.from(setCond).sort(), "Todas las Causales Conductuales", valCond);
     }
 
     function poblarOpcionesSelect(selectElement, items, placeholder, valorPrevio) {
@@ -961,6 +1010,8 @@
       document.getElementById('filtroCurso').value = "";
       document.getElementById('filtroArea').value = "";
       document.getElementById('filtroDocente').value = "";
+      document.getElementById('filtroJustifAcad').value = "";
+      document.getElementById('filtroJustifCond').value = "";
       document.getElementById('filtroRiesgo').value = "TODOS";
       document.getElementById('filtroEstudiante').value = "";
       document.getElementById('chkSoloMultimateria').checked = false;
@@ -972,6 +1023,8 @@
       const fCurso = document.getElementById('filtroCurso').value.trim().toUpperCase();
       const fArea = document.getElementById('filtroArea').value.trim().toUpperCase();
       const fDoc = document.getElementById('filtroDocente').value.trim().toUpperCase();
+      const fAcad = document.getElementById('filtroJustifAcad').value.trim().toUpperCase();
+      const fCond = document.getElementById('filtroJustifCond').value.trim().toUpperCase();
       const fRiesgo = document.getElementById('filtroRiesgo').value;
       const fEst = document.getElementById('filtroEstudiante').value.trim().toUpperCase();
       const soloMultimateria = document.getElementById('chkSoloMultimateria').checked;
@@ -988,11 +1041,15 @@
         const est = String(r[3] || '').trim().toUpperCase();
         const doc = String(r[4] || '').trim().toUpperCase();
         const area = String(r[5] || '').trim().toUpperCase();
+        const justAcad = String(r[10] || '').trim().toUpperCase();
+        const justCond = String(r[11] || '').trim().toUpperCase();
         const prom = Math.round(parseFloat(r[9]) || 0);
 
         if (fCurso && curso !== fCurso) return false;
         if (fArea && area !== fArea) return false;
         if (fDoc && doc !== fDoc) return false;
+        if (fAcad && !justAcad.includes(fAcad)) return false;
+        if (fCond && !justCond.includes(fCond)) return false;
         if (fEst && !est.includes(fEst)) return false;
 
         if (fRiesgo === "SEVERO" && prom > 35) return false;
@@ -1035,11 +1092,12 @@
       }
       document.getElementById('statMateriasCriticas').innerText = matTop;
 
+      // Render de la Tabla Completa en pantalla con todas las justificaciones
       const tbody = document.getElementById('tbodyAdmin');
       tbody.innerHTML = '';
 
       if (registrosFiltradosActuales.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" class="p-4 text-center text-slate-400 font-medium">No se encontraron registros con los filtros seleccionados.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="13" class="p-4 text-center text-slate-400 font-medium">No se encontraron registros con los filtros seleccionados.</td></tr>';
         return;
       }
 
@@ -1067,7 +1125,11 @@
           <td class="p-2 border-r text-center font-semibold text-slate-700 bg-slate-50/50">${n1}</td>
           <td class="p-2 border-r text-center font-semibold text-slate-700 bg-slate-50/50">${n2}</td>
           <td class="p-2 border-r text-center font-semibold text-slate-700 bg-slate-50/50">${n3}</td>
-          <td class="p-2 text-center font-black ${prom <= 35 ? 'text-red-700 bg-red-100/40' : 'text-amber-700 bg-amber-50/50'}">${prom}</td>
+          <td class="p-2 border-r text-center font-black ${prom <= 35 ? 'text-red-700 bg-red-100/40' : 'text-amber-700 bg-amber-50/50'}">${prom}</td>
+          <td class="p-2.5 border-r text-[11px] text-slate-700 leading-snug">${r[10] || '-'}</td>
+          <td class="p-2.5 border-r text-[11px] text-slate-700 leading-snug">${r[11] || '-'}</td>
+          <td class="p-2.5 border-r text-[11px] text-slate-700 leading-snug">${r[12] || '-'}</td>
+          <td class="p-2.5 text-[11px] text-slate-600 italic leading-snug">${r[13] || '-'}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -1203,6 +1265,8 @@
       const fCurso = document.getElementById('filtroCurso').value;
       const fArea = document.getElementById('filtroArea').value;
       const fDoc = document.getElementById('filtroDocente').value;
+      const fAcad = document.getElementById('filtroJustifAcad').value;
+      const fCond = document.getElementById('filtroJustifCond').value;
       const fRiesgo = document.getElementById('filtroRiesgo').value;
       const esMulti = document.getElementById('chkSoloMultimateria').checked;
 
@@ -1210,6 +1274,8 @@
       if (fCurso) detallesFiltro.push(`Curso: ${fCurso}`);
       if (fArea) detallesFiltro.push(`Área: ${fArea}`);
       if (fDoc) detallesFiltro.push(`Docente: ${fDoc}`);
+      if (fAcad) detallesFiltro.push(`Causal Acad.: ${fAcad}`);
+      if (fCond) detallesFiltro.push(`Causal Cond.: ${fCond}`);
       if (fRiesgo !== "TODOS") detallesFiltro.push(`Riesgo: ${fRiesgo}`);
       if (esMulti) detallesFiltro.push(`Multimateria`);
 
@@ -1220,16 +1286,12 @@
       generarPDFReporte(registrosFiltradosActuales, `Consolidado_Filtrado_${new Date().toISOString().slice(0,10)}.pdf`, subtituloFiltros, false);
     }
 
-    // ============================================================
-    // GENERADOR DE PDF CORREGIDO CON TODAS LAS COLUMNAS Y FIRMAS EN CADA PÁGINA
-    // ============================================================
+    // GENERADOR PDF OFICIO CON 13 COLUMNAS Y FIRMAS EN CADA HOJA
     function generarPDFReporte(lista, nombreArchivo, subtituloExtra, esReporteDocente) {
       const { jsPDF } = window.jspdf;
-      // Formato apaisado oficio/legal o carta con márgenes adaptados
       const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'legal' });
       const fechaHora = obtenerFechaHoraActual();
 
-      // Mapeo completo con TODAS las columnas (incluyendo conductual, acciones y observación)
       const tableBody = lista.map(r => [
         r[1], // Trim
         r[2], // Curso
@@ -1243,7 +1305,7 @@
         r[10] || '-',                  // Justif. Académica
         r[11] || '-',                  // Justif. Conductual
         r[12] || '-',                  // Acciones Previas
-        r[13] || '-'                   // Observación / Compromiso
+        r[13] || '-'                   // Observación / Acuerdos
       ]);
 
       doc.autoTable({
@@ -1266,25 +1328,25 @@
           fontSize: 6.5
         },
         columnStyles: {
-          0: { cellWidth: 10, halign: 'center' }, // Trim
-          1: { cellWidth: 14, halign: 'center' }, // Curso
-          2: { cellWidth: 42, fontStyle: 'bold' },// Estudiante
-          3: { cellWidth: 35 },                   // Docente
-          4: { cellWidth: 28 },                   // Área
-          5: { cellWidth: 8, halign: 'center' },  // 1T
-          6: { cellWidth: 8, halign: 'center' },  // 2T
-          7: { cellWidth: 8, halign: 'center' },  // 3T
-          8: { cellWidth: 10, halign: 'center', fontStyle: 'bold' }, // Prom
-          9: { cellWidth: 45 },                   // Justif. Académica
-          10: { cellWidth: 45 },                  // Justif. Conductual
-          11: { cellWidth: 45 },                  // Acciones Previas
-          12: { cellWidth: 36 }                   // Observación
+          0: { cellWidth: 10, halign: 'center' },
+          1: { cellWidth: 14, halign: 'center' },
+          2: { cellWidth: 42, fontStyle: 'bold' },
+          3: { cellWidth: 35 },
+          4: { cellWidth: 28 },
+          5: { cellWidth: 8, halign: 'center' },
+          6: { cellWidth: 8, halign: 'center' },
+          7: { cellWidth: 8, halign: 'center' },
+          8: { cellWidth: 10, halign: 'center', fontStyle: 'bold' },
+          9: { cellWidth: 45 },
+          10: { cellWidth: 45 },
+          11: { cellWidth: 45 },
+          12: { cellWidth: 36 }
         },
         didDrawPage: function (data) {
           const pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
           const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
 
-          // ENCABEZADO EN TODAS LAS PÁGINAS
+          // Encabezado en todas las páginas
           doc.setFontSize(12);
           doc.setFont(undefined, 'bold');
           doc.text(nombreColegioActual, 10, 10);
@@ -1296,16 +1358,14 @@
           doc.setFont(undefined, 'normal');
           doc.text(`${subtituloExtra} | Emisión: ${fechaHora} | Pág. ${data.pageNumber}`, 10, 20);
 
-          // LÍNEA DIVISORIA DE ENCABEZADO
           doc.setLineWidth(0.3);
           doc.line(10, 22, pageWidth - 10, 22);
 
-          // FIRMAS EN EL PIE DE TODAS LAS PÁGINAS
+          // Firmas en el pie de todas las páginas
           const lineaY = pageHeight - 14;
           doc.setLineWidth(0.4);
 
           if (esReporteDocente) {
-            // Reporte Docente: Firma Docente + Firma Dirección/Comisión
             const centroDocente = pageWidth * 0.28;
             const centroDireccion = pageWidth * 0.72;
 
@@ -1315,10 +1375,8 @@
             doc.setFontSize(7);
             doc.text("Firma de la Profesora / Profesor", centroDocente, lineaY + 4, { align: "center" });
             doc.text(sesionActual.nombre, centroDocente, lineaY + 7.5, { align: "center" });
-
             doc.text("Sello y Firma de Dirección / Comisión Pedagógica", centroDireccion, lineaY + 4, { align: "center" });
           } else {
-            // Reporte Consolidado Institucional (Admin/Comisión): Dos firmas institucionales
             const centroComision = pageWidth * 0.30;
             const centroDireccion = pageWidth * 0.70;
 
