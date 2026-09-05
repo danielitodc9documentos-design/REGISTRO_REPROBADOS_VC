@@ -203,7 +203,7 @@
             <span class="text-lg">📊</span>
             <div>
               <h3 class="text-sm font-bold text-slate-800">Panel de Diagnóstico Visual (Gráficos)</h3>
-              <p class="text-xs text-slate-500">Muestra la distribución estadística de los casos filtrados en tiempo real.</p>
+              <p class="text-xs text-slate-500">Distribución estadística con siglas oficiales de 3 letras.</p>
             </div>
           </div>
           <button onclick="togglePanelGraficos()" id="btnToggleGraficos" class="bg-indigo-50 text-indigo-900 border border-indigo-200 hover:bg-indigo-100 text-xs px-3.5 py-2 rounded-xl font-bold transition">
@@ -211,10 +211,9 @@
           </button>
         </div>
 
-        <!-- CONTENEDOR DE GRÁFICOS OCULTO POR DEFECTO -->
         <div id="contenedorGraficos" class="hidden mt-4 pt-4 border-t border-slate-100 grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div class="bg-slate-50 border p-3 rounded-xl flex flex-col items-center">
-            <h4 class="text-xs font-bold text-slate-700 mb-2 text-center">Reprobación por Materia</h4>
+            <h4 class="text-xs font-bold text-slate-700 mb-2 text-center">Reprobación por Área (Siglas)</h4>
             <div class="w-full h-56 relative"><canvas id="chartMaterias"></canvas></div>
           </div>
           <div class="bg-slate-50 border p-3 rounded-xl flex flex-col items-center">
@@ -346,7 +345,7 @@
           </div>
         </div>
 
-        <!-- FILTROS EN CASCADA / COMBINADOS INCLUYENDO JUSTIFICACIONES -->
+        <!-- FILTROS EN CASCADA / COMBINADOS -->
         <div class="bg-slate-50 border p-3.5 rounded-xl space-y-3">
           <div class="text-xs font-bold text-slate-700 flex items-center justify-between">
             <span>🔍 Filtros de Búsqueda y Análisis Pedagógico:</span>
@@ -386,7 +385,6 @@
             </div>
           </div>
 
-          <!-- FILTROS POR CAUSALES PEDAGÓGICAS Y CONDUCTUALES -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs pt-1 border-t border-slate-200">
             <div>
               <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Filtrar por Justificación Académica:</label>
@@ -427,7 +425,7 @@
           </div>
         </div>
 
-        <!-- TABLA COMPLETA CON TODAS LAS JUSTIFICACIONES EN PANTALLA -->
+        <!-- TABLA COMPLETA CON TODAS LAS JUSTIFICACIONES EN PANTALLA Y SIGLAS -->
         <div class="overflow-x-auto max-h-[550px] border rounded-xl shadow-inner">
           <table class="w-full text-xs text-left">
             <thead class="bg-slate-100 uppercase text-slate-700 sticky top-0 shadow-sm z-10 border-b">
@@ -436,7 +434,7 @@
                 <th class="p-2.5 border-r w-20">Curso</th>
                 <th class="p-2.5 border-r min-w-[170px]">Estudiante</th>
                 <th class="p-2.5 border-r min-w-[130px]">Docente</th>
-                <th class="p-2.5 border-r min-w-[110px]">Área</th>
+                <th class="p-2.5 border-r text-center w-16" title="Sigla Oficial">Área</th>
                 <th class="p-2 border-r text-center w-10 bg-slate-50">1T</th>
                 <th class="p-2 border-r text-center w-10 bg-slate-50">2T</th>
                 <th class="p-2 border-r text-center w-10 bg-slate-50">3T</th>
@@ -535,6 +533,76 @@
     let myChartCursos = null;
     let myChartCausales = null;
     let panelGraficosAbierto = false;
+
+    // DICCIONARIO OFICIAL DE SIGLAS DE ÁREAS (3 LETRAS)
+    const DICCIONARIO_SIGLAS = {
+      "MATEMATICA": "MAT",
+      "MATEMÁTICA": "MAT",
+      "CIENCIAS SOCIALES": "CSO",
+      "SOCIALES": "CSO",
+      "CIENCIAS NATURALES": "CNA",
+      "BIOLOGIA": "BIO",
+      "BIOLOGÍA": "BIO",
+      "BIOLOGIA GEOGRAFIA": "BIO",
+      "BIOLOGÍA GEOGRAFÍA": "BIO",
+      "FISICA": "FIS",
+      "FÍSICA": "FIS",
+      "QUIMICA": "QUI",
+      "QUÍMICA": "QUI",
+      "FISICA QUIMICA": "FIS",
+      "FÍSICA QUÍMICA": "FIS",
+      "LENGUAJE": "LC",
+      "COMUNICACION Y LENGUAJES": "LC",
+      "COMUNICACIÓN Y LENGUAJES": "LC",
+      "LENGUA CASTELLANA": "LC",
+      "LENGUA EXTRANJERA": "LEX",
+      "INGLES": "LEX",
+      "INGLÉS": "LEX",
+      "LENGUA ORIGINARIA": "LO",
+      "EDUCACION FISICA": "EFD",
+      "EDUCACIÓN FÍSICA": "EFD",
+      "EDUCACION FISICA Y DEPORTES": "EFD",
+      "EDUCACIÓN FÍSICA Y DEPORTES": "EFD",
+      "EDUCACION MUSICAL": "EMU",
+      "EDUCACIÓN MUSICAL": "EMU",
+      "MUSICA": "EMU",
+      "MÚSICA": "EMU",
+      "ARTES PLASTICAS": "APV",
+      "ARTES PLÁSTICAS": "APV",
+      "ARTES PLASTICAS Y VISUALES": "APV",
+      "ARTES PLÁSTICAS Y VISUALES": "APV",
+      "COSMOVISIONES": "CFS",
+      "FILOSOFIA": "CFS",
+      "FILOSOFÍA": "CFS",
+      "PSICOLOGIA": "CFS",
+      "PSICOLOGÍA": "CFS",
+      "COSMOVISIONES FILOSOFIA Y PSICOLOGIA": "CFS",
+      "COSMOVISIONES FILOSOFÍA Y PSICOLOGÍA": "CFS",
+      "VALORES": "VER",
+      "RELIGION": "VER",
+      "RELIGIÓN": "VER",
+      "VALORES ESPIRITUALIDAD Y RELIGIONES": "VER",
+      "TECNICA TECNOLOGICA": "TTG",
+      "TÉCNICA TECNOLÓGICA": "TTG",
+      "TECNICA TECNOLOGICA GENERAL": "TTG",
+      "TÉCNICA TECNOLÓGICA GENERAL": "TTG",
+      "TECNICA TECNOLOGICA ESPECIALIZADA": "TTE",
+      "TÉCNICA TECNOLÓGICA ESPECIALIZADA": "TTE"
+    };
+
+    function obtenerSiglaArea(nombreArea) {
+      if (!nombreArea) return "";
+      const limpia = String(nombreArea).trim().toUpperCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // remover tildes para búsqueda segura
+
+      for (let k in DICCIONARIO_SIGLAS) {
+        const kLimpia = k.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        if (limpia === kLimpia || limpia.includes(kLimpia)) {
+          return DICCIONARIO_SIGLAS[k];
+        }
+      }
+      return nombreArea.length > 4 ? nombreArea.substring(0, 3).toUpperCase() : nombreArea.toUpperCase();
+    }
 
     function obtenerFechaHoraActual() {
       const ahora = new Date();
@@ -754,7 +822,7 @@
               <td class="p-2.5 border">${asig.ci}</td>
               <td class="p-2.5 border font-medium">${asig.nombre}</td>
               <td class="p-2.5 border">${asig.curso}</td>
-              <td class="p-2.5 border">${asig.area}</td>
+              <td class="p-2.5 border font-semibold text-slate-700">${asig.area} <span class="text-indigo-600 text-[10px]">(${obtenerSiglaArea(asig.area)})</span></td>
               <td class="p-2.5 border text-center"><button onclick="eliminarAsignacionDocente('${asig.ci}', '${asig.curso}', '${asig.area}')" class="text-red-600 font-bold hover:underline">Eliminar</button></td>
             `;
             tbodyDoc.appendChild(tr);
@@ -841,7 +909,10 @@
       if (!curso) return;
       const areas = sesionActual.asignaciones.filter(a => a.curso === curso).map(a => a.area);
       areas.forEach(ar => {
-        const opt = document.createElement('option'); opt.value = ar; opt.textContent = ar; selArea.appendChild(opt);
+        const opt = document.createElement('option'); 
+        opt.value = ar; 
+        opt.textContent = `${ar} (${obtenerSiglaArea(ar)})`; 
+        selArea.appendChild(opt);
       });
       if (areas.length === 1) selArea.value = areas[0];
 
@@ -959,8 +1030,9 @@
       const est = document.getElementById('selEstudiante').value;
       const prom = document.getElementById('txtPromedio').value;
       const obs = document.getElementById('txtObservacion').value;
+      const sigla = obtenerSiglaArea(area);
 
-      const mensaje = `*INFORME PEDAGÓGICO (${trimestreActivoGlobal}) - ESTUDIANTE EN RIESGO*%0A*Estudiante:* ${est}%0A*Curso:* ${curso} | *Área:* ${area}%0A*Promedio Entero:* ${prom}%0A*Observación:* ${obs}%0A*Docente:* ${sesionActual.nombre}`;
+      const mensaje = `*INFORME PEDAGÓGICO (${trimestreActivoGlobal}) - ESTUDIANTE EN RIESGO*%0A*Estudiante:* ${est}%0A*Curso:* ${curso} | *Área:* ${area} (${sigla})%0A*Promedio Entero:* ${prom}%0A*Observación:* ${obs}%0A*Docente:* ${sesionActual.nombre}`;
       window.open(`https://api.whatsapp.com/send?text=${mensaje}`, '_blank');
     }
 
@@ -1012,7 +1084,18 @@
       });
 
       poblarOpcionesSelect(cursoSel, cursos, "Todos los Cursos", valCurso);
-      poblarOpcionesSelect(areaSel, areas, "Todas las Áreas", valArea);
+      
+      // Áreas con sus siglas en el filtro
+      areaSel.innerHTML = `<option value="">Todas las Áreas</option>`;
+      areas.forEach(ar => {
+        if (!ar) return;
+        const opt = document.createElement('option');
+        opt.value = ar;
+        opt.textContent = `${ar} (${obtenerSiglaArea(ar)})`;
+        areaSel.appendChild(opt);
+      });
+      if (areas.includes(valArea)) areaSel.value = valArea;
+
       poblarOpcionesSelect(docSel, docentes, "Todos los Docentes", valDoc);
       poblarOpcionesSelect(justifAcadSel, Array.from(setAcad).sort(), "Todas las Causales Académicas", valAcad);
       poblarOpcionesSelect(justifCondSel, Array.from(setCond).sort(), "Todas las Causales Conductuales", valCond);
@@ -1039,7 +1122,16 @@
         const areasDelCurso = [...new Set(registrosDelCurso.map(r => r[5]))].sort();
         const docsDelCurso = [...new Set(registrosDelCurso.map(r => r[4]))].sort();
 
-        poblarOpcionesSelect(document.getElementById('filtroArea'), areasDelCurso, "Todas las Áreas de este Curso", document.getElementById('filtroArea').value);
+        const areaSel = document.getElementById('filtroArea');
+        areaSel.innerHTML = `<option value="">Todas las Áreas de este Curso</option>`;
+        areasDelCurso.forEach(ar => {
+          const opt = document.createElement('option');
+          opt.value = ar;
+          opt.textContent = `${ar} (${obtenerSiglaArea(ar)})`;
+          areaSel.appendChild(opt);
+        });
+        if (areasDelCurso.includes(areaSel.value)) areaSel.value = areaSel.value;
+
         poblarOpcionesSelect(document.getElementById('filtroDocente'), docsDelCurso, "Todos los Docentes de este Curso", document.getElementById('filtroDocente').value);
       } else if (origen === 'curso' && !c) {
         poblarSelectoresFiltros();
@@ -1112,7 +1204,8 @@
       registrosFiltradosActuales.forEach(r => {
         const p = Math.round(parseFloat(r[9]) || 0);
         sumaProm += p;
-        conteoAreas[r[5]] = (conteoAreas[r[5]] || 0) + 1;
+        const sigla = obtenerSiglaArea(r[5]);
+        conteoAreas[sigla] = (conteoAreas[sigla] || 0) + 1;
 
         const key = `${r[1]}_${r[2]}_${r[3]}`;
         if (conteoMateriasEstudiante[key] >= 2) {
@@ -1129,17 +1222,16 @@
       for (let m in conteoAreas) {
         if (conteoAreas[m] > maxCount) {
           maxCount = conteoAreas[m];
-          matTop = `${m} (${maxCount})`;
+          matTop = `${m} (${maxCount} casos)`;
         }
       }
       document.getElementById('statMateriasCriticas').innerText = matTop;
 
-      // Actualizar gráficos si el panel está desplegado
       if (panelGraficosAbierto) {
         actualizarGraficosEstadisticos();
       }
 
-      // Render de la Tabla Completa
+      // Render de la Tabla Completa mostrando Siglas
       const tbody = document.getElementById('tbodyAdmin');
       tbody.innerHTML = '';
 
@@ -1153,6 +1245,7 @@
         const n2 = r[7] ? Math.round(r[7]) : '-';
         const n3 = r[8] ? Math.round(r[8]) : '-';
         const prom = Math.round(r[9]);
+        const sigla = obtenerSiglaArea(r[5]);
         const key = `${r[1]}_${r[2]}_${r[3]}`;
         const esMulti = (conteoMateriasEstudiante[key] || 0) >= 2;
 
@@ -1168,7 +1261,7 @@
             </div>
           </td>
           <td class="p-2.5 border-r text-slate-600">${r[4]}</td>
-          <td class="p-2.5 border-r font-semibold text-slate-700">${r[5]}</td>
+          <td class="p-2.5 border-r text-center font-bold text-indigo-950 bg-indigo-50/30" title="${r[5]}">${sigla}</td>
           <td class="p-2 border-r text-center font-semibold text-slate-700 bg-slate-50/50">${n1}</td>
           <td class="p-2 border-r text-center font-semibold text-slate-700 bg-slate-50/50">${n2}</td>
           <td class="p-2 border-r text-center font-semibold text-slate-700 bg-slate-50/50">${n3}</td>
@@ -1183,7 +1276,7 @@
     }
 
     // ============================================================
-    // GESTIÓN DE GRÁFICOS INTERACTIVOS (CHART.JS)
+    // GESTIÓN DE GRÁFICOS INTERACTIVOS (CHART.JS) CON SIGLAS
     // ============================================================
 
     function togglePanelGraficos() {
@@ -1202,15 +1295,13 @@
     }
 
     function actualizarGraficosEstadisticos() {
-      // 1. Datos por Materia
       const conteoMat = {};
-      // 2. Datos por Curso
       const conteoCur = {};
-      // 3. Causales Académicas
       const conteoCausales = {};
 
       registrosFiltradosActuales.forEach(r => {
-        conteoMat[r[5]] = (conteoMat[r[5]] || 0) + 1;
+        const sigla = obtenerSiglaArea(r[5]);
+        conteoMat[sigla] = (conteoMat[sigla] || 0) + 1;
         conteoCur[r[2]] = (conteoCur[r[2]] || 0) + 1;
         if (r[10]) {
           String(r[10]).split(';').forEach(c => {
@@ -1220,7 +1311,7 @@
         }
       });
 
-      // Render Gráfico 1: Materias
+      // Render Gráfico 1: Materias usando SIGLAS
       const ctxMat = document.getElementById('chartMaterias').getContext('2d');
       if (myChartMaterias) myChartMaterias.destroy();
       myChartMaterias = new Chart(ctxMat, {
@@ -1228,7 +1319,7 @@
         data: {
           labels: Object.keys(conteoMat),
           datasets: [{
-            label: 'N° Casos',
+            label: 'Casos por Área',
             data: Object.values(conteoMat),
             backgroundColor: '#4338ca',
             borderRadius: 6
@@ -1312,10 +1403,11 @@
       tbody.innerHTML = '';
 
       registrosEst.forEach(r => {
+        const sigla = obtenerSiglaArea(r[5]);
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td class="p-2 border font-bold text-center text-indigo-900">${r[1]}</td>
-          <td class="p-2 border font-semibold text-slate-800">${r[5]}</td>
+          <td class="p-2 border font-semibold text-slate-800">${r[5]} <span class="text-indigo-600 font-bold text-[10px]">(${sigla})</span></td>
           <td class="p-2 border text-slate-600">${r[4]}</td>
           <td class="p-2 border text-center font-medium">${r[6] ? Math.round(r[6]) : '-'}</td>
           <td class="p-2 border text-center font-medium">${r[7] ? Math.round(r[7]) : '-'}</td>
@@ -1361,7 +1453,7 @@
 
       const tableData = registrosEst.map(r => [
         r[1],
-        r[5],
+        `${r[5]} (${obtenerSiglaArea(r[5])})`,
         r[4],
         r[6] ? Math.round(r[6]) : '-',
         r[7] ? Math.round(r[7]) : '-',
@@ -1397,9 +1489,9 @@
 
     function exportarExcelAdmin() {
       if (registrosFiltradosActuales.length === 0) { alert("No hay registros en la vista actual para exportar."); return; }
-      let csv = "ID,Trimestre,Curso,Estudiante,Docente,Area,Nota 1T,Nota 2T,Nota 3T,Promedio Entero,Justif. Academica,Justif. Conductual,Acciones Previas,Observacion\n";
+      let csv = "ID,Trimestre,Curso,Estudiante,Docente,Area,Sigla,Nota 1T,Nota 2T,Nota 3T,Promedio Entero,Justif. Academica,Justif. Conductual,Acciones Previas,Observacion\n";
       registrosFiltradosActuales.forEach(r => {
-        csv += `"${r[0]}","${r[1]}","${r[2]}","${r[3]}","${r[4]}","${r[5]}",${Math.round(r[6]) || ''},${Math.round(r[7]) || ''},${Math.round(r[8]) || ''},${Math.round(r[9])},"${r[10] || ''}","${r[11] || ''}","${r[12] || ''}","${r[13] || ''}"\n`;
+        csv += `"${r[0]}","${r[1]}","${r[2]}","${r[3]}","${r[4]}","${r[5]}","${obtenerSiglaArea(r[5])}",${Math.round(r[6]) || ''},${Math.round(r[7]) || ''},${Math.round(r[8]) || ''},${Math.round(r[9])},"${r[10] || ''}","${r[11] || ''}","${r[12] || ''}","${r[13] || ''}"\n`;
       });
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement("a");
@@ -1427,7 +1519,7 @@
 
       let detallesFiltro = [];
       if (fCurso) detallesFiltro.push(`Curso: ${fCurso}`);
-      if (fArea) detallesFiltro.push(`Área: ${fArea}`);
+      if (fArea) detallesFiltro.push(`Área: ${obtenerSiglaArea(fArea)}`);
       if (fDoc) detallesFiltro.push(`Docente: ${fDoc}`);
       if (fAcad) detallesFiltro.push(`Causal Acad.: ${fAcad}`);
       if (fCond) detallesFiltro.push(`Causal Cond.: ${fCond}`);
@@ -1442,7 +1534,7 @@
     }
 
     // ============================================================
-    // GENERADOR PDF CON ANEXO DE GRÁFICOS, FOLIADO Y FIRMA AL FINAL
+    // GENERADOR PDF CON SIGLAS OFICIALES, GRÁFICOS Y FOLIADO
     // ============================================================
     function generarPDFReporte(lista, nombreArchivo, subtituloExtra, esReporteDocente) {
       const { jsPDF } = window.jspdf;
@@ -1456,7 +1548,7 @@
         r[2], // Curso
         r[3], // Estudiante
         r[4], // Docente
-        r[5], // Área
+        obtenerSiglaArea(r[5]), // SIGLA OFICIAL DE 3 LETRAS
         r[6] ? Math.round(r[6]) : '-', // 1T
         r[7] ? Math.round(r[7]) : '-', // 2T
         r[8] ? Math.round(r[8]) : '-', // 3T
@@ -1478,20 +1570,19 @@
         columnStyles: {
           0: { cellWidth: 10, halign: 'center' },
           1: { cellWidth: 14, halign: 'center' },
-          2: { cellWidth: 42, fontStyle: 'bold' },
-          3: { cellWidth: 35 },
-          4: { cellWidth: 28 },
+          2: { cellWidth: 44, fontStyle: 'bold' },
+          3: { cellWidth: 38 },
+          4: { cellWidth: 14, halign: 'center', fontStyle: 'bold' }, // Sigla compacta
           5: { cellWidth: 8, halign: 'center' },
           6: { cellWidth: 8, halign: 'center' },
           7: { cellWidth: 8, halign: 'center' },
           8: { cellWidth: 10, halign: 'center', fontStyle: 'bold' },
-          9: { cellWidth: 45 },
-          10: { cellWidth: 45 },
-          11: { cellWidth: 45 },
-          12: { cellWidth: 36 }
+          9: { cellWidth: 48 },
+          10: { cellWidth: 48 },
+          11: { cellWidth: 48 },
+          12: { cellWidth: 39 }
         },
         didDrawPage: function (data) {
-          // Encabezado en todas las páginas de la tabla
           doc.setFontSize(12); doc.setFont(undefined, 'bold');
           doc.text(nombreColegioActual, 10, 10);
           doc.setFontSize(9);
@@ -1503,11 +1594,10 @@
         }
       });
 
-      // Si es el informe de la Comisión / Admin, agregar HOJA ANEXA CON GRÁFICOS Y RESUMEN
+      // Anexo Estadístico con Gráficos para Comisión / Dirección
       if (!esReporteDocente) {
         doc.addPage();
 
-        // Encabezado de la hoja de Gráficos
         doc.setFontSize(12); doc.setFont(undefined, 'bold');
         doc.text(nombreColegioActual, 10, 10);
         doc.setFontSize(9);
@@ -1517,7 +1607,6 @@
         doc.setLineWidth(0.3);
         doc.line(10, 22, pageWidth - 10, 22);
 
-        // Asegurar que los gráficos existen para capturar la imagen
         if (!myChartMaterias) actualizarGraficosEstadisticos();
 
         try {
@@ -1525,13 +1614,12 @@
           const imgCur = document.getElementById('chartCursos').toDataURL('image/png', 1.0);
           const imgCaus = document.getElementById('chartCausales').toDataURL('image/png', 1.0);
 
-          // Posicionar las 3 imágenes lado a lado
           const imgWidth = 100;
           const imgHeight = 65;
           const startY = 28;
 
           doc.setFontSize(8.5); doc.setFont(undefined, 'bold');
-          doc.text("1. Reprobación por Área / Materia", 15, startY);
+          doc.text("1. Reprobación por Área (Siglas)", 15, startY);
           doc.addImage(imgMat, 'PNG', 15, startY + 2, imgWidth, imgHeight);
 
           doc.text("2. Distribución por Curso", 130, startY);
@@ -1543,7 +1631,6 @@
           console.warn("No se pudieron renderizar las imágenes de gráficos:", e);
         }
 
-        // Resumen Cuantitativo en formato Cuadro
         const totalCasos = lista.length;
         let sumaP = 0;
         const setEstudiantes = new Set();
@@ -1569,9 +1656,7 @@
         });
       }
 
-      // ============================================================
-      // FIRMAS EXCLUSIVAS EN LA ÚLTIMA PÁGINA
-      // ============================================================
+      // Firmas en la última página
       const totalPaginas = doc.internal.getNumberOfPages();
       doc.setPage(totalPaginas);
 
@@ -1606,9 +1691,7 @@
         doc.text("Sello y Firma de Dirección", centroDireccion, finalY + 4, { align: "center" });
       }
 
-      // ============================================================
-      // FOLIADO OFICIAL EN TODAS LAS PÁGINAS (Página X/Y)
-      // ============================================================
+      // Foliado Página X/Y
       const totalPaginasFinal = doc.internal.getNumberOfPages();
       for (let i = 1; i <= totalPaginasFinal; i++) {
         doc.setPage(i);
@@ -1627,6 +1710,7 @@
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
       const fechaHora = obtenerFechaHoraActual();
+      const sigla = obtenerSiglaArea(r[5]);
 
       doc.setFontSize(14); doc.text(nombreColegioActual, 105, 15, { align: 'center' });
       doc.setFontSize(11); doc.text("FICHA PEDAGÓGICA INDIVIDUAL DE SEGUIMIENTO", 105, 22, { align: 'center' });
@@ -1637,7 +1721,7 @@
       doc.setFontSize(10);
       doc.text(`• Estudiante: ${r[3]}`, 14, 40);
       doc.text(`• Curso: ${r[2]}`, 14, 47);
-      doc.text(`• Área / Materia: ${r[5]}`, 14, 54);
+      doc.text(`• Área / Materia: ${r[5]} (${sigla})`, 14, 54);
       doc.text(`• Docente Responsable: ${r[4]}`, 14, 61);
       doc.text(`• Calificaciones: 1°T: ${r[6] ? Math.round(r[6]) : '-'} | 2°T: ${r[7] ? Math.round(r[7]) : '-'} | 3°T: ${r[8] ? Math.round(r[8]) : '-'} | Promedio Final: ${Math.round(r[9])}`, 14, 68);
 
