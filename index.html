@@ -19,15 +19,12 @@
 <body class="bg-slate-100 text-slate-800 min-h-screen py-4 sm:py-6 px-3 sm:px-6 antialiased">
 
   <script>
-    // ==========================================
-    // URL DE GOOGLE APPS SCRIPT CONFIGURADA:
-    // ==========================================
     const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxCQtbJK9HBQ-HHsJpI-diZFeawf_aOpNTz8JLFO6KW98gN_88uZdJZB3bifsNGPNcK5g/exec";
   </script>
 
   <div class="max-w-7xl mx-auto space-y-4">
 
-    <!-- ENCABEZADO RESPONSIVO -->
+    <!-- ENCABEZADO -->
     <header class="bg-indigo-900 text-white rounded-2xl p-4 sm:p-6 shadow-md border-b-4 border-indigo-950">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div class="space-y-1">
@@ -73,7 +70,6 @@
     <!-- 2. VISTA DOCENTE -->
     <div id="vistaDocente" class="hidden space-y-4">
       
-      <!-- FORMULARIO DE JUSTIFICACIÓN -->
       <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5 border-b pb-4">
           <div>
@@ -177,23 +173,21 @@
         </form>
       </div>
 
-      <!-- TABLA INFERIOR EXCLUSIVA DEL DOCENTE CON FILTROS PROPIOS -->
+      <!-- TABLA INFERIOR DEL DOCENTE -->
       <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
-        
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-4">
           <div>
             <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
               📋 Mis Registros Realizados 
               <span id="badgeTotalDocente" class="bg-indigo-100 text-indigo-900 text-xs font-black px-2.5 py-0.5 rounded-full">0 casos</span>
             </h3>
-            <p class="text-xs text-slate-500">Haga clic en cualquier estudiante de su lista para cargarlo y modificarlo.</p>
+            <p class="text-xs text-slate-500">Haga clic en cualquier fila para cargar al estudiante y editar sus notas.</p>
           </div>
           <div class="text-xs font-bold text-slate-600 bg-slate-50 px-3 py-1.5 rounded-xl border">
             Promedio General Registrado: <span id="lblDocentePromedioGeneral" class="text-indigo-900 font-black">0</span> pts
           </div>
         </div>
 
-        <!-- FILTROS PROPIOS DEL DOCENTE -->
         <div class="bg-slate-50 p-3 rounded-xl border grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
           <div>
             <label class="block font-semibold text-slate-600 mb-1">Filtrar por Curso:</label>
@@ -213,7 +207,6 @@
           </div>
         </div>
 
-        <!-- TABLA EXCLUSIVA DEL PROFESOR -->
         <div class="overflow-x-auto max-h-80 border rounded-xl shadow-inner">
           <table class="w-full text-xs text-left">
             <thead class="bg-slate-100 uppercase text-slate-700 sticky top-0 border-b">
@@ -233,15 +226,14 @@
             <tbody id="tbodyDocente" class="divide-y"></tbody>
           </table>
         </div>
-
       </div>
 
     </div>
 
-    <!-- 3. VISTA GESTIÓN (ADMINISTRACIÓN / COMISIÓN PEDAGÓGICA) -->
+    <!-- 3. VISTA GESTIÓN (ADMIN / COMISIÓN) -->
     <div id="vistaAdmin" class="hidden space-y-4">
       
-      <!-- DASHBOARD ESTADÍSTICO -->
+      <!-- DASHBOARD -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div class="bg-white border rounded-2xl p-4 shadow-sm text-center">
           <div class="text-2xl font-black text-indigo-900" id="statTotalCasos">0</div>
@@ -261,7 +253,7 @@
         </div>
       </div>
 
-      <!-- BOTÓN ACORDEÓN PARA GRÁFICOS INTERACTIVOS -->
+      <!-- BOTÓN ACORDEÓN GRÁFICOS -->
       <div class="bg-white border rounded-2xl p-4 shadow-sm">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
@@ -394,7 +386,6 @@
 
       <!-- PANEL PRINCIPAL CONSOLIDADO Y FILTROS -->
       <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
-        
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-4">
           <div>
             <h2 class="text-base font-bold text-slate-800">Consolidado General de Justificaciones</h2>
@@ -410,7 +401,6 @@
           </div>
         </div>
 
-        <!-- FILTROS EN CASCADA / COMBINADOS -->
         <div class="bg-slate-50 border p-3.5 rounded-xl space-y-3">
           <div class="text-xs font-bold text-slate-700 flex items-center justify-between">
             <span>🔍 Filtros de Búsqueda y Análisis Pedagógico:</span>
@@ -490,7 +480,6 @@
           </div>
         </div>
 
-        <!-- TABLA COMPLETA CON TODAS LAS JUSTIFICACIONES EN PANTALLA Y SIGLAS -->
         <div class="overflow-x-auto max-h-[550px] border rounded-xl shadow-inner">
           <table class="w-full text-xs text-left">
             <thead class="bg-slate-100 uppercase text-slate-700 sticky top-0 shadow-sm z-10 border-b">
@@ -519,7 +508,7 @@
 
   </div>
 
-  <!-- MODAL: RESUMEN / KARDEX DEL ESTUDIANTE -->
+  <!-- MODAL: RESUMEN / KARDEX -->
   <div id="modalResumenEstudiante" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-3xl p-5 sm:p-7 max-w-3xl w-full shadow-2xl space-y-4 animate-in fade-in zoom-in duration-150 max-h-[90vh] flex flex-col">
       <div class="flex items-start justify-between border-b pb-3">
@@ -565,7 +554,7 @@
     </div>
   </div>
 
-  <!-- MODAL REGISTRO DE DOCENTE -->
+  <!-- MODAL DOCENTE -->
   <div id="modalDocente" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-xl">
       <h3 class="text-sm font-bold text-slate-800 mb-3">Registrar Docente y Asignación</h3>
@@ -584,25 +573,457 @@
   </div>
 
   <script>
-    // ============================================================
-    // CONTROLADOR PRINCIPAL Y LÓGICA DE INTERFAZ
-    // ============================================================
+    let sesionActual = null;
+    let cacheEstudiantes = {};
+    let opcionesConfig = { academicas: [], conductuales: [], acciones: [] };
+    let nombreColegioActual = "UNIDAD EDUCATIVA";
+    let trimestreActivoGlobal = "2T";
+    let registrosGlobalesAdmin = [];
+    let registrosFiltradosActuales = [];
+    let estudianteSeleccionadoResumen = null;
 
-    function poblarOpcionesSelect(selectElement, items, placeholder, valorPrevio) {
-      selectElement.innerHTML = `<option value="">${placeholder}</option>`;
-      items.forEach(it => {
-        if (!it) return;
-        const opt = document.createElement('option');
-        opt.value = it;
-        opt.textContent = it;
-        selectElement.appendChild(opt);
-      });
-      if (items.includes(valorPrevio)) {
-        selectElement.value = valorPrevio;
+    let registrosDocenteGlobal = [];
+    let registrosDocenteFiltrados = [];
+
+    let myChartMaterias = null;
+    let myChartCursos = null;
+    let myChartCausales = null;
+    let panelGraficosAbierto = false;
+
+    const DICCIONARIO_SIGLAS = {
+      "MATEMATICA": "MAT", "MATEMÁTICA": "MAT",
+      "CIENCIAS SOCIALES": "CSO", "SOCIALES": "CSO",
+      "CIENCIAS NATURALES": "CNA",
+      "BIOLOGIA": "BIO", "BIOLOGÍA": "BIO",
+      "BIOLOGIA GEOGRAFIA": "BIO", "BIOLOGÍA GEOGRAFÍA": "BIO",
+      "FISICA": "FIS", "FÍSICA": "FIS",
+      "QUIMICA": "QUI", "QUÍMICA": "QUI",
+      "FISICA QUIMICA": "FIS", "FÍSICA QUÍMICA": "FIS",
+      "LENGUAJE": "LC", "COMUNICACION Y LENGUAJES": "LC", "COMUNICACIÓN Y LENGUAJES": "LC", "LENGUA CASTELLANA": "LC",
+      "LENGUA EXTRANJERA": "LEX", "INGLES": "LEX", "INGLÉS": "LEX",
+      "LENGUA ORIGINARIA": "LO",
+      "EDUCACION FISICA": "EFD", "EDUCACIÓN FÍSICA": "EFD", "EDUCACION FISICA Y DEPORTES": "EFD", "EDUCACIÓN FÍSICA Y DEPORTES": "EFD",
+      "EDUCACION MUSICAL": "EMU", "EDUCACIÓN MUSICAL": "EMU", "MUSICA": "EMU", "MÚSICA": "EMU",
+      "ARTES PLASTICAS": "APV", "ARTES PLÁSTICAS": "APV", "ARTES PLASTICAS Y VISUALES": "APV", "ARTES PLÁSTICAS Y VISUALES": "APV",
+      "COSMOVISIONES": "CFS", "FILOSOFIA": "CFS", "FILOSOFÍA": "CFS", "PSICOLOGIA": "CFS", "PSICOLOGÍA": "CFS",
+      "COSMOVISIONES FILOSOFIA Y PSICOLOGIA": "CFS", "COSMOVISIONES FILOSOFÍA Y PSICOLOGÍA": "CFS",
+      "VALORES": "VER", "RELIGION": "VER", "RELIGIÓN": "VER", "VALORES ESPIRITUALIDAD Y RELIGIONES": "VER",
+      "TECNICA TECNOLOGICA": "TTG", "TÉCNICA TECNOLÓGICA": "TTG", "TECNICA TECNOLOGICA GENERAL": "TTG", "TÉCNICA TECNOLÓGICA GENERAL": "TTG",
+      "TECNICA TECNOLOGICA ESPECIALIZADA": "TTE", "TÉCNICA TECNOLÓGICA ESPECIALIZADA": "TTE"
+    };
+
+    function obtenerSiglaArea(nombreArea) {
+      if (!nombreArea) return "";
+      const limpia = String(nombreArea).trim().toUpperCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+      for (let k in DICCIONARIO_SIGLAS) {
+        const kLimpia = k.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        if (limpia === kLimpia || limpia.includes(kLimpia)) {
+          return DICCIONARIO_SIGLAS[k];
+        }
+      }
+      return nombreArea.length > 4 ? nombreArea.substring(0, 3).toUpperCase() : nombreArea.toUpperCase();
+    }
+
+    function obtenerFechaHoraActual() {
+      const ahora = new Date();
+      const pad = n => n.toString().padStart(2, '0');
+      return `${pad(ahora.getDate())}/${pad(ahora.getMonth() + 1)}/${ahora.getFullYear()} a horas ${pad(ahora.getHours())}:${pad(ahora.getMinutes())}`;
+    }
+
+    async function apiRequest(params) {
+      const resp = await fetch(URL_APPS_SCRIPT, { method: 'POST', body: JSON.stringify(params) });
+      return await resp.json();
+    }
+
+    async function login() {
+      const ci = document.getElementById('txtCI').value.trim();
+      const pin = document.getElementById('txtPIN').value.trim();
+      const err = document.getElementById('loginError');
+      const btn = document.getElementById('btnLogin');
+      if (!ci) return;
+
+      err.classList.add('hidden');
+      btn.innerText = "Verificando...";
+      btn.disabled = true;
+
+      try {
+        const res = await apiRequest({ action: 'login', ci, pin });
+        if (res.success) {
+          sesionActual = res;
+          sesionActual.ci = ci;
+          trimestreActivoGlobal = res.trimestreActivo || "2T";
+          nombreColegioActual = res.nombreColegio || "UNIDAD EDUCATIVA";
+          
+          document.getElementById('lblHeaderSubtitulo').innerText = nombreColegioActual;
+          document.getElementById('badgeTrimestreActivo').innerText = trimestreActivoGlobal;
+          document.getElementById('loginCard').classList.add('hidden');
+          document.getElementById('userInfo').classList.remove('hidden');
+          document.getElementById('userBadge').innerText = `${res.rol}: ${res.nombre}`;
+
+          if (res.rol === 'ADMIN' || res.rol === 'COMISION') {
+            document.getElementById('vistaAdmin').classList.remove('hidden');
+            
+            if (res.rol === 'COMISION') {
+              document.getElementById('seccionSoloAdmin').classList.add('hidden');
+            } else {
+              document.getElementById('seccionSoloAdmin').classList.remove('hidden');
+              document.getElementById('txtNombreColegio').value = nombreColegioActual;
+              actualizarIndicadorSistema(res.sistemaActivo);
+              actualizarBotonesTrimestre(trimestreActivoGlobal);
+              await cargarOpcionesDesdeSheet();
+              renderAdminOpcionesConfig();
+              cargarListaDocentesAdmin();
+            }
+
+            cargarDatosAdmin();
+          } else {
+            document.getElementById('vistaDocente').classList.remove('hidden');
+            document.getElementById('lblDocenteTrimestreInfo').innerText = `Periodo activo: ${trimestreActivoGlobal} Trimestre`;
+            configurarCamposNotasDocente(trimestreActivoGlobal);
+            await cargarOpcionesDesdeSheet();
+            iniciarVistaDocente();
+            await cargarRegistrosDocenteTabla();
+          }
+        } else {
+          err.innerText = res.message;
+          err.classList.remove('hidden');
+        }
+      } catch (e) {
+        err.innerText = "Error de conexión con el servidor.";
+        err.classList.remove('hidden');
+      } finally {
+        btn.innerText = "Iniciar Sesión";
+        btn.disabled = false;
       }
     }
 
-    // ENVÍO SEGURO DEL FORMULARIO CON MANEJO DE ERRORES ROBUSTO
+    function configurarCamposNotasDocente(trim) {
+      const col1 = document.getElementById('colNota1');
+      const col2 = document.getElementById('colNota2');
+      const col3 = document.getElementById('colNota3');
+      const lblProm = document.getElementById('lblPromedioTitulo');
+
+      if (trim === "1T") {
+        col1.classList.remove('hidden'); col2.classList.add('hidden'); col3.classList.add('hidden');
+        lblProm.innerText = "Nota Final 1T:";
+      } else if (trim === "2T") {
+        col1.classList.remove('hidden'); col2.classList.remove('hidden'); col3.classList.add('hidden');
+        lblProm.innerText = "Promedio (1T+2T):";
+      } else if (trim === "3T") {
+        col1.classList.remove('hidden'); col2.classList.remove('hidden'); col3.classList.remove('hidden');
+        lblProm.innerText = "Promedio Final:";
+      }
+    }
+
+    function calcularPromedioDinamico() {
+      const n1 = Math.round(parseFloat(document.getElementById('txtNota1').value) || 0);
+      const n2 = Math.round(parseFloat(document.getElementById('txtNota2').value) || 0);
+      const n3 = Math.round(parseFloat(document.getElementById('txtNota3').value) || 0);
+      const trim = trimestreActivoGlobal;
+
+      if (trim === "1T") {
+        document.getElementById('txtPromedio').value = n1;
+      } else if (trim === "2T") {
+        document.getElementById('txtPromedio').value = Math.round((n1 + n2) / 2);
+      } else if (trim === "3T") {
+        document.getElementById('txtPromedio').value = Math.round((n1 + n2 + n3) / 3);
+      }
+    }
+
+    function actualizarBotonesTrimestre(trim) {
+      ['1T', '2T', '3T'].forEach(t => {
+        const btn = document.getElementById(`btnTrim${t[0]}`);
+        btn.className = t === trim 
+          ? "flex-1 py-2 rounded-xl text-xs font-black bg-indigo-900 text-white shadow" 
+          : "flex-1 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 border";
+      });
+    }
+
+    async function cambiarTrimestreAdmin(trim) {
+      if (!confirm(`¿Cambiar el trimestre activo a ${trim}?`)) return;
+      const res = await apiRequest({ action: 'guardarTrimestreActivo', trimestre: trim, claveAdmin: sesionActual.ci });
+      alert(res.message);
+      if (res.success) {
+        trimestreActivoGlobal = trim;
+        document.getElementById('badgeTrimestreActivo').innerText = trim;
+        actualizarBotonesTrimestre(trim);
+      }
+    }
+
+    async function guardarColegioAdmin() {
+      const nom = document.getElementById('txtNombreColegio').value.trim();
+      if (!nom) return;
+      const res = await apiRequest({ action: 'guardarNombreColegio', nombreColegio: nom, claveAdmin: sesionActual.ci });
+      alert(res.message);
+      if (res.success) {
+        nombreColegioActual = res.nombreColegio;
+        document.getElementById('lblHeaderSubtitulo').innerText = nombreColegioActual;
+      }
+    }
+
+    function actualizarIndicadorSistema(activo) {
+      document.getElementById('lblEstadoSistema').innerHTML = activo 
+        ? '<span class="text-emerald-600 font-bold">● HABILITADO GENERAL</span>' 
+        : '<span class="text-red-600 font-bold">● BLOQUEADO</span>';
+    }
+
+    async function toggleEstadoSistema(habilitar) {
+      const res = await apiRequest({ action: 'cambiarEstadoSistema', activo: habilitar, claveAdmin: sesionActual.ci });
+      if (res.success) { alert(res.message); actualizarIndicadorSistema(res.sistemaActivo); }
+    }
+
+    async function cargarOpcionesDesdeSheet() {
+      try {
+        const res = await apiRequest({ action: 'obtenerConfiguracionGlobal' });
+        if (res.success) {
+          opcionesConfig = res.opciones;
+          nombreColegioActual = res.nombreColegio || nombreColegioActual;
+          document.getElementById('lblHeaderSubtitulo').innerText = nombreColegioActual;
+          renderCheckboxes('chkAcademica', opcionesConfig.academicas);
+          renderCheckboxes('chkConductual', opcionesConfig.conductuales);
+          renderCheckboxes('chkAcciones', opcionesConfig.acciones);
+        }
+      } catch (e) { console.error(e); }
+    }
+
+    function renderAdminOpcionesConfig() {
+      renderListaEditorOpciones('listaAdminAcad', opcionesConfig.academicas, 'acad');
+      renderListaEditorOpciones('listaAdminCond', opcionesConfig.conductuales, 'cond');
+      renderListaEditorOpciones('listaAdminAcc', opcionesConfig.acciones, 'acc');
+    }
+
+    function renderListaEditorOpciones(containerId, lista, tipo) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      lista.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'flex items-center justify-between bg-white border rounded-lg p-1.5 text-[11px]';
+        div.innerHTML = `<span class="truncate flex-1 pr-1">${item}</span><button onclick="eliminarOpcionAdmin('${tipo}', ${index})" class="text-red-500 font-bold px-1 hover:text-red-700">✕</button>`;
+        container.appendChild(div);
+      });
+    }
+
+    function agregarOpcionAdmin(tipo) {
+      const inputId = tipo === 'acad' ? 'txtNuevaAcad' : (tipo === 'cond' ? 'txtNuevaCond' : 'txtNuevaAcc');
+      const val = document.getElementById(inputId).value.trim();
+      if (!val) return;
+      if (tipo === 'acad') opcionesConfig.academicas.push(val);
+      if (tipo === 'cond') opcionesConfig.conductuales.push(val);
+      if (tipo === 'acc') opcionesConfig.acciones.push(val);
+      document.getElementById(inputId).value = '';
+      renderAdminOpcionesConfig();
+    }
+
+    function eliminarOpcionAdmin(tipo, index) {
+      if (tipo === 'acad') opcionesConfig.academicas.splice(index, 1);
+      if (tipo === 'cond') opcionesConfig.conductuales.splice(index, 1);
+      if (tipo === 'acc') opcionesConfig.acciones.splice(index, 1);
+      renderAdminOpcionesConfig();
+    }
+
+    async function guardarOpcionesAdmin() {
+      const res = await apiRequest({ action: 'guardarOpcionesConfig', opciones: opcionesConfig, claveAdmin: sesionActual.ci });
+      alert(res.message);
+    }
+
+    async function cargarListaDocentesAdmin() {
+      const containerProrroga = document.getElementById('listaDocentesProrroga');
+      const tbodyDoc = document.getElementById('tbodyDocentesAdmin');
+      containerProrroga.innerHTML = '<div class="p-3 text-xs text-slate-400 text-center">Cargando...</div>';
+      tbodyDoc.innerHTML = '';
+
+      try {
+        const res = await apiRequest({ action: 'obtenerListaDocentesAdmin', claveAuth: sesionActual.ci });
+        if (res.success) {
+          const asignaciones = res.asignacionesDetalle || [];
+          tbodyDoc.innerHTML = '';
+          asignaciones.forEach(asig => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td class="p-2.5 border">${asig.ci}</td>
+              <td class="p-2.5 border font-medium">${asig.nombre}</td>
+              <td class="p-2.5 border">${asig.curso}</td>
+              <td class="p-2.5 border font-semibold text-slate-700">${asig.area} <span class="text-indigo-600 text-[10px]">(${obtenerSiglaArea(asig.area)})</span></td>
+              <td class="p-2.5 border text-center"><button onclick="eliminarAsignacionDocente('${asig.ci}', '${asig.curso}', '${asig.area}')" class="text-red-600 font-bold hover:underline">Eliminar</button></td>
+            `;
+            tbodyDoc.appendChild(tr);
+          });
+
+          containerProrroga.innerHTML = '';
+          res.docentes.forEach(doc => {
+            const row = document.createElement('div');
+            row.className = 'p-3 flex items-center justify-between text-xs';
+            row.innerHTML = `
+              <div><div class="font-bold text-slate-800">${doc.nombre}</div><div class="text-slate-400 text-[11px]">CI: ${doc.ci}</div></div>
+              <div>
+                ${doc.habilitadoExclusivo 
+                  ? `<button onclick="cambiarAccesoDocente('${doc.ci}', false)" class="bg-emerald-100 text-emerald-800 font-bold px-3 py-1.5 rounded-lg text-[11px]">✅ Prórroga Activa</button>`
+                  : `<button onclick="cambiarAccesoDocente('${doc.ci}', true)" class="bg-slate-100 text-slate-700 font-semibold px-3 py-1.5 rounded-lg text-[11px] hover:bg-slate-200">+ Habilitar</button>`
+                }
+              </div>`;
+            containerProrroga.appendChild(row);
+          });
+        }
+      } catch (e) { console.error(e); }
+    }
+
+    function abrirModalDocente() { document.getElementById('modalDocente').classList.remove('hidden'); }
+    function cerrarModalDocente() { document.getElementById('modalDocente').classList.add('hidden'); }
+
+    async function guardarNuevoDocenteAdmin() {
+      const ci = document.getElementById('modalDocCI').value.trim();
+      const pin = document.getElementById('modalDocPIN').value.trim() || ci.slice(-4);
+      const nombre = document.getElementById('modalDocNombre').value.trim();
+      const curso = document.getElementById('modalDocCurso').value.trim();
+      const area = document.getElementById('modalDocArea').value.trim();
+
+      if (!ci || !nombre || !curso || !area) { alert("Complete todos los campos obligatorios."); return; }
+
+      const res = await apiRequest({ action: 'guardarDocenteAdmin', ci, pin, nombre, curso, area, claveAdmin: sesionActual.ci });
+      alert(res.message);
+      if (res.success) { cerrarModalDocente(); cargarListaDocentesAdmin(); }
+    }
+
+    async function eliminarAsignacionDocente(ci, curso, area) {
+      if (!confirm(`¿Eliminar asignación de ${curso} - ${area}?`)) return;
+      const res = await apiRequest({ action: 'eliminarAsignacionDocente', ci, curso, area, claveAdmin: sesionActual.ci });
+      alert(res.message);
+      cargarListaDocentesAdmin();
+    }
+
+    async function cambiarAccesoDocente(ci, permitir) {
+      const res = await apiRequest({ action: 'cambiarPermisoDocente', ciDocente: ci, permitido: permitir, claveAdmin: sesionActual.ci });
+      alert(res.message);
+      cargarListaDocentesAdmin();
+    }
+
+    function renderCheckboxes(containerId, lista) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      lista.forEach(item => {
+        const label = document.createElement('label');
+        label.className = 'flex items-center gap-2 cursor-pointer';
+        label.innerHTML = `<input type="checkbox" value="${item}" class="rounded text-indigo-600 focus:ring-0"> <span>${item}</span>`;
+        container.appendChild(label);
+      });
+    }
+
+    function iniciarVistaDocente() {
+      const selCurso = document.getElementById('selCurso');
+      selCurso.innerHTML = '<option value="">-- Seleccionar Curso --</option>';
+      const cursosUnicos = [...new Set(sesionActual.asignaciones.map(a => a.curso))];
+      cursosUnicos.forEach(c => {
+        const opt = document.createElement('option'); opt.value = c; opt.textContent = c; selCurso.appendChild(opt);
+      });
+    }
+
+    async function onCursoChange() {
+      const curso = document.getElementById('selCurso').value;
+      const selArea = document.getElementById('selArea');
+      const selEst = document.getElementById('selEstudiante');
+      
+      selArea.innerHTML = '<option value="">-- Seleccionar Materia --</option>';
+      selEst.innerHTML = '<option value="">Cargando...</option>';
+      selArea.disabled = !curso; selEst.disabled = true;
+      limpiarFormularioCampos();
+
+      if (!curso) return;
+      const areas = sesionActual.asignaciones.filter(a => a.curso === curso).map(a => a.area);
+      areas.forEach(ar => {
+        const opt = document.createElement('option'); 
+        opt.value = ar; 
+        opt.textContent = `${ar} (${obtenerSiglaArea(ar)})`; 
+        selArea.appendChild(opt);
+      });
+      if (areas.length === 1) selArea.value = areas[0];
+
+      if (!cacheEstudiantes[curso]) {
+        const res = await apiRequest({ action: 'obtenerEstudiantes', curso: curso });
+        cacheEstudiantes[curso] = res.estudiantes || [];
+      }
+      selEst.innerHTML = '<option value="">-- Seleccionar Estudiante --</option>';
+      cacheEstudiantes[curso].forEach(est => {
+        const opt = document.createElement('option'); opt.value = est; opt.textContent = est; selEst.appendChild(opt);
+      });
+      selEst.disabled = false;
+    }
+
+    function limpiarFormularioCampos() {
+      document.getElementById('txtNota1').value = '';
+      document.getElementById('txtNota2').value = '';
+      document.getElementById('txtNota3').value = '';
+      document.getElementById('txtPromedio').value = '0';
+      document.getElementById('txtObservacion').value = '';
+      document.getElementById('txtOtraAcademica').value = '';
+      document.getElementById('txtOtraConductual').value = '';
+      document.getElementById('txtOtraAccion').value = '';
+      document.querySelectorAll('#chkAcademica input, #chkConductual input, #chkAcciones input').forEach(chk => chk.checked = false);
+      document.getElementById('alertaEdicion').classList.add('hidden');
+      document.getElementById('btnGuardar').innerText = "💾 Guardar Registro de Reprobación";
+    }
+
+    function cancelarEdicionDocente() {
+      limpiarFormularioCampos();
+      document.getElementById('selEstudiante').value = "";
+    }
+
+    async function verificarRegistroEstudiante() {
+      const curso = document.getElementById('selCurso').value;
+      const area = document.getElementById('selArea').value;
+      const est = document.getElementById('selEstudiante').value;
+      const alertBox = document.getElementById('alertaEdicion');
+      const btn = document.getElementById('btnGuardar');
+
+      if (!curso || !area || !est) { limpiarFormularioCampos(); return; }
+
+      const idUnico = `${trimestreActivoGlobal}_${curso}_${est}_${area}`.trim();
+      const res = await apiRequest({ action: 'buscarRegistroEstudiante', idUnico: idUnico });
+
+      if (res.existe && res.registro) {
+        const reg = res.registro;
+        alertBox.classList.remove('hidden');
+        btn.innerText = "✏️ Actualizar / Guardar Modificaciones";
+        
+        document.getElementById('txtNota1').value = reg.nota1 || '';
+        document.getElementById('txtNota2').value = reg.nota2 || '';
+        document.getElementById('txtNota3').value = reg.nota3 || '';
+        calcularPromedioDinamico();
+
+        marcarCheckboxes('chkAcademica', reg.justificacionAcademica, 'txtOtraAcademica');
+        marcarCheckboxes('chkConductual', reg.justificacionConductual, 'txtOtraConductual');
+        marcarCheckboxes('chkAcciones', reg.accionesPrevias, 'txtOtraAccion');
+        document.getElementById('txtObservacion').value = reg.observacionAdicional || '';
+      } else {
+        limpiarFormularioCampos();
+      }
+    }
+
+    function marcarCheckboxes(containerId, textoGuardado, inputOtroId) {
+      if (!textoGuardado) return;
+      const items = String(textoGuardado).split(';').map(s => s.trim());
+      const container = document.getElementById(containerId);
+      const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+      let otroTextos = [];
+
+      items.forEach(item => {
+        let encontrado = false;
+        checkboxes.forEach(chk => {
+          if (chk.value.trim().toUpperCase() === item.toUpperCase()) { chk.checked = true; encontrado = true; }
+        });
+        if (!encontrado && item) otroTextos.push(item);
+      });
+      if (inputOtroId && otroTextos.length > 0) document.getElementById(inputOtroId).value = otroTextos.join(', ');
+    }
+
+    function getSelectedOptions(containerId, inputOtroId) {
+      const checked = Array.from(document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`)).map(c => c.value);
+      const otroTexto = document.getElementById(inputOtroId).value.trim();
+      if (otroTexto) checked.push(`Otro: ${otroTexto}`);
+      return checked.join('; ');
+    }
+
     async function enviarFormulario(e) {
       e.preventDefault();
       const btn = document.getElementById('btnGuardar');
@@ -630,7 +1051,7 @@
           alert(res.message);
           limpiarFormularioCampos(); 
           document.getElementById('selEstudiante').value = "";
-          cargarRegistrosDocenteTabla(); // Actualizar sin bloquear
+          cargarRegistrosDocenteTabla();
         } else {
           alert("Aviso: " + res.message);
         }
@@ -642,7 +1063,36 @@
       }
     }
 
-    // CARGA DE TABLA DOCENTE CON FILTROS INICIALIZADOS CORRECTAMENTE
+    function enviarPorWhatsApp() {
+      const curso = document.getElementById('selCurso').value;
+      const area = document.getElementById('selArea').value;
+      const est = document.getElementById('selEstudiante').value;
+      const prom = document.getElementById('txtPromedio').value;
+      const obs = document.getElementById('txtObservacion').value;
+      const sigla = obtenerSiglaArea(area);
+
+      const mensaje = `*INFORME PEDAGÓGICO (${trimestreActivoGlobal}) - ESTUDIANTE EN RIESGO*%0A*Estudiante:* ${est}%0A*Curso:* ${curso} | *Área:* ${area} (${sigla})%0A*Promedio Entero:* ${prom}%0A*Observación:* ${obs}%0A*Docente:* ${sesionActual.nombre}`;
+      window.open(`https://api.whatsapp.com/send?text=${mensaje}`, '_blank');
+    }
+
+    // ============================================================
+    // TABLA Y FILTROS DEL DOCENTE
+    // ============================================================
+
+    function poblarOpcionesSelect(selectElement, items, placeholder, valorPrevio) {
+      selectElement.innerHTML = `<option value="">${placeholder}</option>`;
+      items.forEach(it => {
+        if (!it) return;
+        const opt = document.createElement('option');
+        opt.value = it;
+        opt.textContent = it;
+        selectElement.appendChild(opt);
+      });
+      if (items.includes(valorPrevio)) {
+        selectElement.value = valorPrevio;
+      }
+    }
+
     async function cargarRegistrosDocenteTabla() {
       try {
         const res = await apiRequest({ action: 'obtenerReporteDocente', docente: sesionActual.nombre, trimestre: trimestreActivoGlobal });
@@ -652,7 +1102,6 @@
         const fAreaSel = document.getElementById('filtroDocArea');
         const fEstInput = document.getElementById('filtroDocEstudiante');
 
-        // Limpieza de filtros para mostrar todo al entrar
         fCursoSel.value = "";
         fAreaSel.value = "";
         fEstInput.value = "";
@@ -744,6 +1193,763 @@
       document.getElementById('selEstudiante').value = estudiante;
       await verificarRegistroEstudiante();
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ============================================================
+    // GESTIÓN ADMIN / COMISIÓN
+    // ============================================================
+
+    async function cargarDatosAdmin() {
+      const filtroTrim = document.getElementById('filtroTrimestreAdmin').value;
+      const res = await apiRequest({ action: 'obtenerReporteAdmin', claveAuth: sesionActual.ci, trimestre: filtroTrim });
+      registrosGlobalesAdmin = res.registros || [];
+      
+      poblarSelectoresFiltros();
+      renderizarTablaYEstadisticas();
+    }
+
+    function poblarSelectoresFiltros() {
+      const cursoSel = document.getElementById('filtroCurso');
+      const areaSel = document.getElementById('filtroArea');
+      const docSel = document.getElementById('filtroDocente');
+      const justifAcadSel = document.getElementById('filtroJustifAcad');
+      const justifCondSel = document.getElementById('filtroJustifCond');
+
+      const valCurso = cursoSel.value;
+      const valArea = areaSel.value;
+      const valDoc = docSel.value;
+      const valAcad = justifAcadSel.value;
+      const valCond = justifCondSel.value;
+
+      const cursos = [...new Set(registrosGlobalesAdmin.map(r => r[2]))].sort();
+      const areas = [...new Set(registrosGlobalesAdmin.map(r => r[5]))].sort();
+      const docentes = [...new Set(registrosGlobalesAdmin.map(r => r[4]))].sort();
+
+      const setAcad = new Set();
+      const setCond = new Set();
+      registrosGlobalesAdmin.forEach(r => {
+        if (r[10]) {
+          String(r[10]).split(';').forEach(s => {
+            const item = s.trim();
+            if (item) setAcad.add(item);
+          });
+        }
+        if (r[11]) {
+          String(r[11]).split(';').forEach(s => {
+            const item = s.trim();
+            if (item) setCond.add(item);
+          });
+        }
+      });
+
+      poblarOpcionesSelect(cursoSel, cursos, "Todos los Cursos", valCurso);
+      
+      areaSel.innerHTML = `<option value="">Todas las Áreas</option>`;
+      areas.forEach(ar => {
+        if (!ar) return;
+        const opt = document.createElement('option');
+        opt.value = ar;
+        opt.textContent = `${ar} (${obtenerSiglaArea(ar)})`;
+        areaSel.appendChild(opt);
+      });
+      if (areas.includes(valArea)) areaSel.value = valArea;
+
+      poblarOpcionesSelect(docSel, docentes, "Todos los Docentes", valDoc);
+      poblarOpcionesSelect(justifAcadSel, Array.from(setAcad).sort(), "Todas las Causales Académicas", valAcad);
+      poblarOpcionesSelect(justifCondSel, Array.from(setCond).sort(), "Todas las Causales Conductuales", valCond);
+    }
+
+    function aplicarFiltrosEnCascada(origen) {
+      const c = document.getElementById('filtroCurso').value;
+      if (origen === 'curso' && c) {
+        const registrosDelCurso = registrosGlobalesAdmin.filter(r => r[2] === c);
+        const areasDelCurso = [...new Set(registrosDelCurso.map(r => r[5]))].sort();
+        const docsDelCurso = [...new Set(registrosDelCurso.map(r => r[4]))].sort();
+
+        const areaSel = document.getElementById('filtroArea');
+        areaSel.innerHTML = `<option value="">Todas las Áreas de este Curso</option>`;
+        areasDelCurso.forEach(ar => {
+          const opt = document.createElement('option');
+          opt.value = ar;
+          opt.textContent = `${ar} (${obtenerSiglaArea(ar)})`;
+          areaSel.appendChild(opt);
+        });
+        if (areasDelCurso.includes(areaSel.value)) areaSel.value = areaSel.value;
+
+        poblarOpcionesSelect(document.getElementById('filtroDocente'), docsDelCurso, "Todos los Docentes de este Curso", document.getElementById('filtroDocente').value);
+      } else if (origen === 'curso' && !c) {
+        poblarSelectoresFiltros();
+      }
+
+      renderizarTablaYEstadisticas();
+    }
+
+    function limpiarFiltros() {
+      document.getElementById('filtroCurso').value = "";
+      document.getElementById('filtroArea').value = "";
+      document.getElementById('filtroDocente').value = "";
+      document.getElementById('filtroJustifAcad').value = "";
+      document.getElementById('filtroJustifCond').value = "";
+      document.getElementById('filtroRiesgo').value = "TODOS";
+      document.getElementById('filtroEstudiante').value = "";
+      document.getElementById('chkSoloMultimateria').checked = false;
+      poblarSelectoresFiltros();
+      renderizarTablaYEstadisticas();
+    }
+
+    function renderizarTablaYEstadisticas() {
+      const fCurso = document.getElementById('filtroCurso').value.trim().toUpperCase();
+      const fArea = document.getElementById('filtroArea').value.trim().toUpperCase();
+      const fDoc = document.getElementById('filtroDocente').value.trim().toUpperCase();
+      const fAcad = document.getElementById('filtroJustifAcad').value.trim().toUpperCase();
+      const fCond = document.getElementById('filtroJustifCond').value.trim().toUpperCase();
+      const fRiesgo = document.getElementById('filtroRiesgo').value;
+      const fEst = document.getElementById('filtroEstudiante').value.trim().toUpperCase();
+      const soloMultimateria = document.getElementById('chkSoloMultimateria').checked;
+
+      const conteoMateriasEstudiante = {};
+      registrosGlobalesAdmin.forEach(r => {
+        const key = `${r[1]}_${r[2]}_${r[3]}`;
+        conteoMateriasEstudiante[key] = (conteoMateriasEstudiante[key] || 0) + 1;
+      });
+
+      registrosFiltradosActuales = registrosGlobalesAdmin.filter(r => {
+        const trim = r[1];
+        const curso = String(r[2] || '').trim().toUpperCase();
+        const est = String(r[3] || '').trim().toUpperCase();
+        const doc = String(r[4] || '').trim().toUpperCase();
+        const area = String(r[5] || '').trim().toUpperCase();
+        const justAcad = String(r[10] || '').trim().toUpperCase();
+        const justCond = String(r[11] || '').trim().toUpperCase();
+        const prom = Math.round(parseFloat(r[9]) || 0);
+
+        if (fCurso && curso !== fCurso) return false;
+        if (fArea && area !== fArea) return false;
+        if (fDoc && doc !== fDoc) return false;
+        if (fAcad && !justAcad.includes(fAcad)) return false;
+        if (fCond && !justCond.includes(fCond)) return false;
+        if (fEst && !est.includes(fEst)) return false;
+
+        if (fRiesgo === "SEVERO" && prom > 35) return false;
+        if (fRiesgo === "MEDIO" && (prom <= 35 || prom > 50)) return false;
+
+        const key = `${trim}_${r[2]}_${r[3]}`;
+        const numReprobadas = conteoMateriasEstudiante[key] || 1;
+        if (soloMultimateria && numReprobadas < 2) return false;
+
+        return true;
+      });
+
+      document.getElementById('statTotalCasos').innerText = registrosFiltradosActuales.length;
+      let sumaProm = 0;
+      let conteoAreas = {};
+      let estudiantesCriticosUnicos = new Set();
+
+      registrosFiltradosActuales.forEach(r => {
+        const p = Math.round(parseFloat(r[9]) || 0);
+        sumaProm += p;
+        const sigla = obtenerSiglaArea(r[5]);
+        conteoAreas[sigla] = (conteoAreas[sigla] || 0) + 1;
+
+        const key = `${r[1]}_${r[2]}_${r[3]}`;
+        if (conteoMateriasEstudiante[key] >= 2) {
+          estudiantesCriticosUnicos.add(key);
+        }
+      });
+
+      document.getElementById('statEstudiantesCriticos').innerText = estudiantesCriticosUnicos.size;
+      document.getElementById('statPromedioGeneral').innerText = registrosFiltradosActuales.length > 0 
+        ? Math.round(sumaProm / registrosFiltradosActuales.length) 
+        : "0";
+
+      let matTop = "-"; let maxCount = 0;
+      for (let m in conteoAreas) {
+        if (conteoAreas[m] > maxCount) {
+          maxCount = conteoAreas[m];
+          matTop = `${m} (${maxCount} casos)`;
+        }
+      }
+      document.getElementById('statMateriasCriticas').innerText = matTop;
+
+      if (panelGraficosAbierto) {
+        actualizarGraficosEstadisticos();
+      }
+
+      const tbody = document.getElementById('tbodyAdmin');
+      tbody.innerHTML = '';
+
+      if (registrosFiltradosActuales.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="13" class="p-4 text-center text-slate-400 font-medium">No se encontraron registros con los filtros seleccionados.</td></tr>';
+        return;
+      }
+
+      registrosFiltradosActuales.forEach(r => {
+        const n1 = r[6] ? Math.round(r[6]) : '-';
+        const n2 = r[7] ? Math.round(r[7]) : '-';
+        const n3 = r[8] ? Math.round(r[8]) : '-';
+        const prom = Math.round(r[9]);
+        const sigla = obtenerSiglaArea(r[5]);
+        const key = `${r[1]}_${r[2]}_${r[3]}`;
+        const esMulti = (conteoMateriasEstudiante[key] || 0) >= 2;
+
+        const tr = document.createElement('tr');
+        tr.className = esMulti ? "bg-rose-50/40 hover:bg-rose-100/50 transition" : "hover:bg-slate-50 transition";
+        tr.innerHTML = `
+          <td class="p-2.5 border-r font-black text-indigo-900 text-center">${r[1]}</td>
+          <td class="p-2.5 border-r font-medium text-slate-700">${r[2]}</td>
+          <td class="p-2.5 border-r font-bold text-slate-900 cursor-pointer hover:text-indigo-600 hover:underline" onclick="abrirResumenEstudiante('${r[3]}', '${r[2]}')">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span>${r[3]}</span>
+              ${esMulti ? '<span class="bg-rose-600 text-white text-[9px] px-1.5 py-0.2 rounded-full font-black">2+ ÁREAS</span>' : ''}
+            </div>
+          </td>
+          <td class="p-2.5 border-r text-slate-600">${r[4]}</td>
+          <td class="p-2.5 border-r text-center font-bold text-indigo-950 bg-indigo-50/30" title="${r[5]}">${sigla}</td>
+          <td class="p-2 border-r text-center font-semibold text-slate-700 bg-slate-50/50">${n1}</td>
+          <td class="p-2 border-r text-center font-semibold text-slate-700 bg-slate-50/50">${n2}</td>
+          <td class="p-2 border-r text-center font-semibold text-slate-700 bg-slate-50/50">${n3}</td>
+          <td class="p-2 border-r text-center font-black ${prom <= 35 ? 'text-red-700 bg-red-100/40' : 'text-amber-700 bg-amber-50/50'}">${prom}</td>
+          <td class="p-2.5 border-r text-[11px] text-slate-700 leading-snug">${r[10] || '-'}</td>
+          <td class="p-2.5 border-r text-[11px] text-slate-700 leading-snug">${r[11] || '-'}</td>
+          <td class="p-2.5 border-r text-[11px] text-slate-700 leading-snug">${r[12] || '-'}</td>
+          <td class="p-2.5 text-[11px] text-slate-600 italic leading-snug">${r[13] || '-'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function togglePanelGraficos() {
+      const cont = document.getElementById('contenedorGraficos');
+      const btn = document.getElementById('btnToggleGraficos');
+      panelGraficosAbierto = !panelGraficosAbierto;
+
+      if (panelGraficosAbierto) {
+        cont.classList.remove('hidden');
+        btn.innerText = "✕ Ocultar Gráficos";
+        actualizarGraficosEstadisticos();
+      } else {
+        cont.classList.add('hidden');
+        btn.innerText = "👁️ Mostrar Gráficos";
+      }
+    }
+
+    function actualizarGraficosEstadisticos() {
+      const conteoMat = {};
+      const conteoCur = {};
+      const conteoCausales = {};
+
+      registrosFiltradosActuales.forEach(r => {
+        const sigla = obtenerSiglaArea(r[5]);
+        conteoMat[sigla] = (conteoMat[sigla] || 0) + 1;
+        conteoCur[r[2]] = (conteoCur[r[2]] || 0) + 1;
+        if (r[10]) {
+          String(r[10]).split(';').forEach(c => {
+            const item = c.trim();
+            if (item) conteoCausales[item] = (conteoCausales[item] || 0) + 1;
+          });
+        }
+      });
+
+      const ctxMat = document.getElementById('chartMaterias').getContext('2d');
+      if (myChartMaterias) myChartMaterias.destroy();
+      myChartMaterias = new Chart(ctxMat, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(conteoMat),
+          datasets: [{
+            label: 'Casos por Área',
+            data: Object.values(conteoMat),
+            backgroundColor: '#4338ca',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+      });
+
+      const ctxCur = document.getElementById('chartCursos').getContext('2d');
+      if (myChartCursos) myChartCursos.destroy();
+      myChartCursos = new Chart(ctxCur, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(conteoCur),
+          datasets: [{
+            data: Object.values(conteoCur),
+            backgroundColor: ['#4f46e5', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }
+        }
+      });
+
+      const topCausales = Object.entries(conteoCausales).sort((a, b) => b[1] - a[1]).slice(0, 5);
+      const ctxCaus = document.getElementById('chartCausales').getContext('2d');
+      if (myChartCausales) myChartCausales.destroy();
+      myChartCausales = new Chart(ctxCaus, {
+        type: 'bar',
+        data: {
+          labels: topCausales.map(t => t[0].length > 18 ? t[0].substring(0, 18) + '...' : t[0]),
+          datasets: [{
+            label: 'Frecuencia',
+            data: topCausales.map(t => t[1]),
+            backgroundColor: '#f43f5e',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { x: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+      });
+    }
+
+    function abrirResumenEstudiante(nombreEstudiante, cursoEstudiante) {
+      estudianteSeleccionadoResumen = { nombre: nombreEstudiante, curso: cursoEstudiante };
+      document.getElementById('lblModalEstudianteNombre').innerText = nombreEstudiante;
+      document.getElementById('lblModalEstudianteCurso').innerText = `Curso: ${cursoEstudiante}`;
+
+      const registrosEst = registrosGlobalesAdmin.filter(r => 
+        r[3].trim().toUpperCase() === nombreEstudiante.trim().toUpperCase() &&
+        r[2].trim().toUpperCase() === cursoEstudiante.trim().toUpperCase()
+      );
+
+      document.getElementById('lblModalTotalMaterias').innerText = registrosEst.length;
+      
+      let suma = 0;
+      registrosEst.forEach(r => suma += Math.round(r[9]));
+      document.getElementById('lblModalPromedioGeneral').innerText = registrosEst.length > 0 
+        ? Math.round(suma / registrosEst.length) 
+        : 0;
+
+      const tbody = document.getElementById('tbodyModalResumen');
+      tbody.innerHTML = '';
+
+      registrosEst.forEach(r => {
+        const sigla = obtenerSiglaArea(r[5]);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="p-2 border font-bold text-center text-indigo-900">${r[1]}</td>
+          <td class="p-2 border font-semibold text-slate-800">${r[5]} <span class="text-indigo-600 font-bold text-[10px]">(${sigla})</span></td>
+          <td class="p-2 border text-slate-600">${r[4]}</td>
+          <td class="p-2 border text-center font-medium">${r[6] ? Math.round(r[6]) : '-'}</td>
+          <td class="p-2 border text-center font-medium">${r[7] ? Math.round(r[7]) : '-'}</td>
+          <td class="p-2 border text-center font-medium">${r[8] ? Math.round(r[8]) : '-'}</td>
+          <td class="p-2 border text-center font-black ${Math.round(r[9]) <= 35 ? 'text-red-700' : 'text-amber-700'}">${Math.round(r[9])}</td>
+          <td class="p-2 border text-center">
+            <button onclick="descargarFichaIndividual('${r[0]}')" class="text-indigo-600 hover:underline font-bold text-[11px]">PDF</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('modalResumenEstudiante').classList.remove('hidden');
+    }
+
+    function cerrarModalResumen() {
+      document.getElementById('modalResumenEstudiante').classList.add('hidden');
+    }
+
+    function imprimirResumenEstudiantePDF() {
+      if (!estudianteSeleccionadoResumen) return;
+      const { nombre, curso } = estudianteSeleccionadoResumen;
+
+      const registrosEst = registrosGlobalesAdmin.filter(r => 
+        r[3].trim().toUpperCase() === nombre.trim().toUpperCase() &&
+        r[2].trim().toUpperCase() === curso.trim().toUpperCase()
+      );
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
+      const fechaHora = obtenerFechaHoraActual();
+
+      doc.setFontSize(13); doc.text(nombreColegioActual, 105, 14, { align: 'center' });
+      doc.setFontSize(10.5); doc.text("INFORME PEDAGÓGICO INTEGRAL DEL ESTUDIANTE", 105, 20, { align: 'center' });
+      doc.setFontSize(8.5); doc.text(`Consolidado de Materias en Riesgo / Reprobadas | Emisión: ${fechaHora}`, 105, 25, { align: 'center' });
+
+      doc.setLineWidth(0.4); doc.line(14, 29, 198, 29);
+
+      doc.setFontSize(9.5);
+      doc.text(`• Estudiante: ${nombre}`, 14, 35);
+      doc.text(`• Curso: ${curso}`, 14, 41);
+      doc.text(`• Total Materias Registradas: ${registrosEst.length}`, 130, 35);
+
+      const tableData = registrosEst.map(r => [
+        r[1],
+        `${r[5]} (${obtenerSiglaArea(r[5])})`,
+        r[4],
+        r[6] ? Math.round(r[6]) : '-',
+        r[7] ? Math.round(r[7]) : '-',
+        r[8] ? Math.round(r[8]) : '-',
+        Math.round(r[9]),
+        r[10] || '-'
+      ]);
+
+      doc.autoTable({
+        startY: 46,
+        head: [['Trim', 'Área / Materia', 'Docente', '1T', '2T', '3T', 'Prom', 'Causal Académica']],
+        body: tableData,
+        theme: 'grid',
+        styles: { fontSize: 7, cellPadding: 2 },
+        headStyles: { fillColor: [30, 41, 59] },
+        columnStyles: { 0: { cellWidth: 12 }, 3: { cellWidth: 10 }, 4: { cellWidth: 10 }, 5: { cellWidth: 10 }, 6: { cellWidth: 12 } },
+        didDrawPage: function (data) {
+          const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+          let finalY = data.cursor.y + 25;
+          if (finalY > pageHeight - 30) { doc.addPage(); finalY = 40; }
+          
+          doc.setLineWidth(0.4);
+          doc.line(30, finalY, 90, finalY);
+          doc.line(120, finalY, 180, finalY);
+          doc.setFontSize(8);
+          doc.text("Firma del Padre, Madre o Tutor", 60, finalY + 4, { align: "center" });
+          doc.text("Comisión Pedagógica / Dirección", 150, finalY + 4, { align: "center" });
+        }
+      });
+
+      doc.save(`Resumen_${nombre.replace(/\s+/g, '_')}.pdf`);
+    }
+
+    function exportarExcelAdmin() {
+      if (registrosFiltradosActuales.length === 0) { alert("No hay registros en la vista actual para exportar."); return; }
+      let csv = "ID,Trimestre,Curso,Estudiante,Docente,Area,Sigla,Nota 1T,Nota 2T,Nota 3T,Promedio Entero,Justif. Academica,Justif. Conductual,Acciones Previas,Observacion\n";
+      registrosFiltradosActuales.forEach(r => {
+        csv += `"${r[0]}","${r[1]}","${r[2]}","${r[3]}","${r[4]}","${r[5]}","${obtenerSiglaArea(r[5])}",${Math.round(r[6]) || ''},${Math.round(r[7]) || ''},${Math.round(r[8]) || ''},${Math.round(r[9])},"${r[10] || ''}","${r[11] || ''}","${r[12] || ''}","${r[13] || ''}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `Consolidado_Filtrado_${new Date().toISOString().slice(0,10)}.csv`;
+      link.click();
+    }
+
+    async function descargarPDFDocente() {
+      const res = await apiRequest({ action: 'obtenerReporteDocente', docente: sesionActual.nombre, trimestre: trimestreActivoGlobal });
+      if (!res.registros || res.registros.length === 0) { alert("Aún no tiene registros en este trimestre."); return; }
+      generarPDFReporte(res.registros, `Reporte_${sesionActual.nombre.replace(/\s+/g, '_')}_${trimestreActivoGlobal}.pdf`, `Docente: ${sesionActual.nombre} | Trimestre: ${trimestreActivoGlobal}`, true);
+    }
+
+    async function descargarPDFAdmin() {
+      if (registrosFiltradosActuales.length === 0) { alert("No hay datos en la vista filtrada para imprimir."); return; }
+
+      const fCurso = document.getElementById('filtroCurso').value;
+      const fArea = document.getElementById('filtroArea').value;
+      const fDoc = document.getElementById('filtroDocente').value;
+      const fAcad = document.getElementById('filtroJustifAcad').value;
+      const fCond = document.getElementById('filtroJustifCond').value;
+      const fRiesgo = document.getElementById('filtroRiesgo').value;
+      const esMulti = document.getElementById('chkSoloMultimateria').checked;
+
+      let detallesFiltro = [];
+      if (fCurso) detallesFiltro.push(`Curso: ${fCurso}`);
+      if (fArea) detallesFiltro.push(`Área: ${obtenerSiglaArea(fArea)}`);
+      if (fDoc) detallesFiltro.push(`Docente: ${fDoc}`);
+      if (fAcad) detallesFiltro.push(`Causal Acad.: ${fAcad}`);
+      if (fCond) detallesFiltro.push(`Causal Cond.: ${fCond}`);
+      if (fRiesgo !== "TODOS") detallesFiltro.push(`Riesgo: ${fRiesgo}`);
+      if (esMulti) detallesFiltro.push(`Multimateria`);
+
+      const subtituloFiltros = detallesFiltro.length > 0 
+        ? `Filtros: ${detallesFiltro.join(" | ")} (${registrosFiltradosActuales.length} Casos)`
+        : `Consolidado General (${registrosFiltradosActuales.length} Casos)`;
+
+      generarPDFReporte(registrosFiltradosActuales, `Consolidado_Filtrado_${new Date().toISOString().slice(0,10)}.pdf`, subtituloFiltros, false);
+    }
+
+    function generarPDFReporte(lista, nombreArchivo, subtituloExtra, esReporteDocente) {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'legal' });
+      const fechaHora = obtenerFechaHoraActual();
+      const pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+
+      const tableBody = lista.map(r => [
+        r[1], r[2], r[3], r[4], obtenerSiglaArea(r[5]),
+        r[6] ? Math.round(r[6]) : '-',
+        r[7] ? Math.round(r[7]) : '-',
+        r[8] ? Math.round(r[8]) : '-',
+        Math.round(r[9]),
+        r[10] || '-', r[11] || '-', r[12] || '-', r[13] || '-'
+      ]);
+
+      doc.autoTable({
+        startY: 25,
+        margin: { top: 25, bottom: 22, left: 10, right: 10 },
+        head: [['Trim', 'Curso', 'Estudiante', 'Docente', 'Área', '1T', '2T', '3T', 'Prom', 'Justif. Académica', 'Justif. Conductual', 'Acciones Previas', 'Observación / Acuerdos']],
+        body: tableBody,
+        theme: 'grid',
+        styles: { fontSize: 6, cellPadding: 1.5, overflow: 'linebreak', valign: 'middle' },
+        headStyles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', fontSize: 6.5 },
+        columnStyles: {
+          0: { cellWidth: 10, halign: 'center' },
+          1: { cellWidth: 14, halign: 'center' },
+          2: { cellWidth: 44, fontStyle: 'bold' },
+          3: { cellWidth: 38 },
+          4: { cellWidth: 14, halign: 'center', fontStyle: 'bold' },
+          5: { cellWidth: 8, halign: 'center' },
+          6: { cellWidth: 8, halign: 'center' },
+          7: { cellWidth: 8, halign: 'center' },
+          8: { cellWidth: 10, halign: 'center', fontStyle: 'bold' },
+          9: { cellWidth: 48 },
+          10: { cellWidth: 48 },
+          11: { cellWidth: 48 },
+          12: { cellWidth: 39 }
+        },
+        didDrawPage: function (data) {
+          doc.setFontSize(12); doc.setFont(undefined, 'bold');
+          doc.text(nombreColegioActual, 10, 10);
+          doc.setFontSize(9);
+          doc.text("CONSOLIDADO PEDAGÓGICO DE ESTUDIANTES EN RIESGO / REPROBADOS", 10, 15);
+          doc.setFontSize(7.5); doc.setFont(undefined, 'normal');
+          doc.text(`${subtituloExtra} | Emisión: ${fechaHora}`, 10, 20);
+          doc.setLineWidth(0.3);
+          doc.line(10, 22, pageWidth - 10, 22);
+        }
+      });
+
+      if (!esReporteDocente) {
+        doc.addPage();
+
+        doc.setFontSize(12); doc.setFont(undefined, 'bold');
+        doc.text(nombreColegioActual, 10, 10);
+        doc.setFontSize(9);
+        doc.text("ANEXO ESTADÍSTICO INSTITUCIONAL Y ANÁLISIS DE RENDIMIENTO", 10, 15);
+        doc.setFontSize(7.5); doc.setFont(undefined, 'normal');
+        doc.text(`Gráficos y Métricas Cuantitativas | Emisión: ${fechaHora}`, 10, 20);
+        doc.setLineWidth(0.3);
+        doc.line(10, 22, pageWidth - 10, 22);
+
+        if (!myChartMaterias) actualizarGraficosEstadisticos();
+
+        try {
+          const imgMat = document.getElementById('chartMaterias').toDataURL('image/png', 1.0);
+          const imgCur = document.getElementById('chartCursos').toDataURL('image/png', 1.0);
+          const imgCaus = document.getElementById('chartCausales').toDataURL('image/png', 1.0);
+
+          const imgWidth = 100;
+          const imgHeight = 65;
+          const startY = 28;
+
+          doc.setFontSize(8.5); doc.setFont(undefined, 'bold');
+          doc.text("1. Reprobación por Área (Siglas)", 15, startY);
+          doc.addImage(imgMat, 'PNG', 15, startY + 2, imgWidth, imgHeight);
+
+          doc.text("2. Distribución por Curso", 130, startY);
+          doc.addImage(imgCur, 'PNG', 130, startY + 2, imgWidth, imgHeight);
+
+          doc.text("3. Principales Causales Académicas", 245, startY);
+          doc.addImage(imgCaus, 'PNG', 245, startY + 2, imgWidth, imgHeight);
+        } catch (e) {
+          console.warn("No se pudieron renderizar las imágenes de gráficos:", e);
+        }
+
+        const totalCasos = lista.length;
+        let sumaP = 0;
+        const setEstudiantes = new Set();
+        lista.forEach(r => {
+          sumaP += Math.round(r[9]);
+          setEstudiantes.add(r[3]);
+        });
+        const promGen = totalCasos > 0 ? Math.round(sumaP / totalCasos) : 0;
+
+        doc.autoTable({
+          startY: 105,
+          margin: { left: 15, right: 15 },
+          head: [['Total Casos Registrados', 'Estudiantes Únicos en Riesgo', 'Promedio General de Reprobación', 'Estado del Periodo']],
+          body: [[
+            `${totalCasos} registros`,
+            `${setEstudiantes.size} estudiantes`,
+            `${promGen} puntos`,
+            `Trimestre: ${trimestreActivoGlobal} (Cierre de Periodo)`
+          ]],
+          theme: 'grid',
+          styles: { fontSize: 8, halign: 'center', cellPadding: 3 },
+          headStyles: { fillColor: [79, 70, 229], fontStyle: 'bold' }
+        });
+      }
+
+      const totalPaginas = doc.internal.getNumberOfPages();
+      doc.setPage(totalPaginas);
+
+      let finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 28 : 155;
+      if (finalY > pageHeight - 22) {
+        doc.addPage();
+        finalY = 45;
+      }
+
+      doc.setLineWidth(0.4);
+
+      if (esReporteDocente) {
+        const centroDocente = pageWidth * 0.28;
+        const centroDireccion = pageWidth * 0.72;
+
+        doc.line(centroDocente - 35, finalY, centroDocente + 35, finalY);
+        doc.line(centroDireccion - 35, finalY, centroDireccion + 35, finalY);
+
+        doc.setFontSize(7.5); doc.setFont(undefined, 'normal');
+        doc.text("Firma de la Profesora / Profesor", centroDocente, finalY + 4, { align: "center" });
+        doc.text(sesionActual.nombre, centroDocente, finalY + 7.5, { align: "center" });
+        doc.text("Sello y Firma de Dirección / Comisión Pedagógica", centroDireccion, finalY + 4, { align: "center" });
+      } else {
+        const centroComision = pageWidth * 0.30;
+        const centroDireccion = pageWidth * 0.70;
+
+        doc.line(centroComision - 40, finalY, centroComision + 40, finalY);
+        doc.line(centroDireccion - 40, finalY, centroDireccion + 40, finalY);
+
+        doc.setFontSize(7.5); doc.setFont(undefined, 'normal');
+        doc.text("Comisión Técnico Pedagógica", centroComision, finalY + 4, { align: "center" });
+        doc.text("Sello y Firma de Dirección", centroDireccion, finalY + 4, { align: "center" });
+      }
+
+      const totalPaginasFinal = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= totalPaginasFinal; i++) {
+        doc.setPage(i);
+        doc.setFontSize(7.5);
+        doc.setFont(undefined, 'normal');
+        doc.text(`Página ${i}/${totalPaginasFinal}`, pageWidth - 15, pageHeight - 8, { align: "right" });
+      }
+
+      doc.save(nombreArchivo);
+    }
+
+    function descargarFichaIndividual(idUnico) {
+      const r = registrosGlobalesAdmin.find(item => item[0] === idUnico);
+      if (!r) return;
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
+      const fechaHora = obtenerFechaHoraActual();
+      const sigla = obtenerSiglaArea(r[5]);
+
+      doc.setFontSize(14); doc.text(nombreColegioActual, 105, 15, { align: 'center' });
+      doc.setFontSize(11); doc.text("FICHA PEDAGÓGICA INDIVIDUAL DE SEGUIMIENTO", 105, 22, { align: 'center' });
+      doc.setFontSize(8.5); doc.text(`Trimestre: ${r[1]} | Fecha de Emisión: ${fechaHora}`, 105, 27, { align: 'center' });
+
+      doc.setLineWidth(0.5); doc.line(14, 32, 198, 32);
+
+      doc.setFontSize(10);
+      doc.text(`• Estudiante: ${r[3]}`, 14, 40);
+      doc.text(`• Curso: ${r[2]}`, 14, 47);
+      doc.text(`• Área / Materia: ${r[5]} (${sigla})`, 14, 54);
+      doc.text(`• Docente Responsable: ${r[4]}`, 14, 61);
+      doc.text(`• Calificaciones: 1°T: ${r[6] ? Math.round(r[6]) : '-'} | 2°T: ${r[7] ? Math.round(r[7]) : '-'} | 3°T: ${r[8] ? Math.round(r[8]) : '-'} | Promedio Final: ${Math.round(r[9])}`, 14, 68);
+
+      doc.setFontSize(11); doc.text("DETALLE DE CAUSALES Y ACCIONES PEDAGÓGICAS:", 14, 80);
+      
+      doc.setFontSize(9);
+      doc.text("Justificación Académica:", 14, 88);
+      doc.rect(14, 91, 184, 18); doc.text(r[10] || "Ninguna", 17, 97, { maxWidth: 178 });
+
+      doc.text("Justificación Conductual:", 14, 115);
+      doc.rect(14, 118, 184, 18); doc.text(r[11] || "Ninguna", 17, 124, { maxWidth: 178 });
+
+      doc.text("Acciones Previas Implementadas:", 14, 142);
+      doc.rect(14, 145, 184, 18); doc.text(r[12] || "Ninguna", 17, 151, { maxWidth: 178 });
+
+      doc.text("Observación Adicional / Compromisos:", 14, 169);
+      doc.rect(14, 172, 184, 22); doc.text(r[13] || "Ninguna", 17, 178, { maxWidth: 178 });
+
+      doc.line(30, 230, 90, 230);
+      doc.line(120, 230, 180, 230);
+      doc.setFontSize(8.5);
+      doc.text("Firma del Padre, Madre o Tutor", 60, 235, { align: 'center' });
+      doc.text("Firma de Dirección / Comisión Pedagógica", 150, 235, { align: 'center' });
+
+      doc.save(`Ficha_${r[3].replace(/\s+/g, '_')}_${r[1]}.pdf`);
+    }
+
+    async function procesarPDFSIE() {
+      const fileInput = document.getElementById('pdfFileInput');
+      const statusMsg = document.getElementById('pdfStatusMsg');
+      const btn = document.getElementById('btnProcesarPDF');
+
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert("Por favor seleccione un archivo PDF del SIE.");
+        return;
+      }
+
+      statusMsg.className = "text-xs font-semibold mt-2 text-indigo-700";
+      statusMsg.innerText = "Extrayendo información del PDF SIE...";
+      statusMsg.classList.remove('hidden');
+      btn.disabled = true;
+
+      try {
+        const file = fileInput.files[0];
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        
+        let fullText = "";
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+          const page = await pdf.getPage(pageNum);
+          const textContent = await page.getTextContent();
+          const pageText = textContent.items.map(item => item.str).join(" ");
+          fullText += " " + pageText;
+        }
+
+        let cursoDetectado = "6to A";
+        const gradoMatch = fullText.match(/Grado:\s*([^\s]+)/i);
+        const paraleloMatch = fullText.match(/Paralelo:\s*([^\s]+)/i);
+        
+        if (gradoMatch && paraleloMatch) {
+          const gradoMap = { "primero": "1ro", "segundo": "2do", "tercero": "3ro", "cuarto": "4to", "quinto": "5to", "sexto": "6to" };
+          const g = gradoMap[gradoMatch[1].toLowerCase()] || gradoMatch[1];
+          cursoDetectado = `${g} ${paraleloMatch[1].toUpperCase()}`;
+        }
+
+        const regexFila = /\d+\s+(\d{10,20}[A-Z]?)\s+(\d{6,10})\s+([A-ZÑÁÉÍÓÚ\s]+?)\s+[MF]\s+\d{1,2}\s+de\s+[a-z]{3}\.?\s+de\s+\d{4}[\s\S]*?(EFECTIVO|RETIRADO|NO\s+INCORPORADO)/g;
+
+        let estudiantesEfectivos = [];
+        let match;
+        while ((match = regexFila.exec(fullText)) !== null) {
+          const nombre = match[3].replace(/\s+/g, ' ').trim();
+          const estado = match[4].replace(/\s+/g, ' ').trim().toUpperCase();
+
+          if (estado === "EFECTIVO" && nombre.length > 5) {
+            estudiantesEfectivos.push(nombre);
+          }
+        }
+
+        if (estudiantesEfectivos.length === 0) {
+          statusMsg.className = "text-xs font-semibold mt-2 text-red-600";
+          statusMsg.innerText = "No se encontraron estudiantes con matrícula EFECTIVO.";
+          btn.disabled = false;
+          return;
+        }
+
+        statusMsg.innerText = `Guardando ${estudiantesEfectivos.length} estudiantes de ${cursoDetectado}...`;
+
+        const res = await apiRequest({
+          action: 'importarEstudiantesMasivo',
+          curso: cursoDetectado,
+          estudiantes: estudiantesEfectivos,
+          claveAdmin: sesionActual.ci
+        });
+
+        if (res.success) {
+          statusMsg.className = "text-xs font-semibold mt-2 text-emerald-700";
+          statusMsg.innerText = `✅ ${res.message}`;
+          fileInput.value = "";
+        } else {
+          statusMsg.className = "text-xs font-semibold mt-2 text-red-600";
+          statusMsg.innerText = `Error: ${res.message}`;
+        }
+
+      } catch (err) {
+        statusMsg.className = "text-xs font-semibold mt-2 text-red-600";
+        statusMsg.innerText = `Error: ${err.message}`;
+      } finally {
+        btn.disabled = false;
+      }
     }
 
     function cerrarSesion() { location.reload(); }
