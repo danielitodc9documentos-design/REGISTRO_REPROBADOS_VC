@@ -8,6 +8,8 @@
   <!-- Generador de PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <!-- Chart.js para Gráficos Estadísticos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Lector de PDF SIE -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
@@ -17,6 +19,9 @@
 <body class="bg-slate-100 text-slate-800 min-h-screen py-4 sm:py-6 px-3 sm:px-6 antialiased">
 
   <script>
+    // ==========================================
+    // URL DE GOOGLE APPS SCRIPT CONFIGURADA:
+    // ==========================================
     const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxCQtbJK9HBQ-HHsJpI-diZFeawf_aOpNTz8JLFO6KW98gN_88uZdJZB3bifsNGPNcK5g/exec";
   </script>
 
@@ -188,6 +193,38 @@
         <div class="bg-white border rounded-2xl p-4 shadow-sm text-center">
           <div class="text-2xl font-black text-emerald-700 truncate px-1" id="statMateriasCriticas">-</div>
           <div class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Área con Más Casos</div>
+        </div>
+      </div>
+
+      <!-- BOTÓN ACORDEÓN PARA GRÁFICOS INTERACTIVOS -->
+      <div class="bg-white border rounded-2xl p-4 shadow-sm">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">📊</span>
+            <div>
+              <h3 class="text-sm font-bold text-slate-800">Panel de Diagnóstico Visual (Gráficos)</h3>
+              <p class="text-xs text-slate-500">Muestra la distribución estadística de los casos filtrados en tiempo real.</p>
+            </div>
+          </div>
+          <button onclick="togglePanelGraficos()" id="btnToggleGraficos" class="bg-indigo-50 text-indigo-900 border border-indigo-200 hover:bg-indigo-100 text-xs px-3.5 py-2 rounded-xl font-bold transition">
+            👁️ Mostrar Gráficos
+          </button>
+        </div>
+
+        <!-- CONTENEDOR DE GRÁFICOS OCULTO POR DEFECTO -->
+        <div id="contenedorGraficos" class="hidden mt-4 pt-4 border-t border-slate-100 grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div class="bg-slate-50 border p-3 rounded-xl flex flex-col items-center">
+            <h4 class="text-xs font-bold text-slate-700 mb-2 text-center">Reprobación por Materia</h4>
+            <div class="w-full h-56 relative"><canvas id="chartMaterias"></canvas></div>
+          </div>
+          <div class="bg-slate-50 border p-3 rounded-xl flex flex-col items-center">
+            <h4 class="text-xs font-bold text-slate-700 mb-2 text-center">Distribución por Curso</h4>
+            <div class="w-full h-56 relative"><canvas id="chartCursos"></canvas></div>
+          </div>
+          <div class="bg-slate-50 border p-3 rounded-xl flex flex-col items-center">
+            <h4 class="text-xs font-bold text-slate-700 mb-2 text-center">Top Causales Académicas</h4>
+            <div class="w-full h-56 relative"><canvas id="chartCausales"></canvas></div>
+          </div>
         </div>
       </div>
 
@@ -492,6 +529,12 @@
     let registrosGlobalesAdmin = [];
     let registrosFiltradosActuales = [];
     let estudianteSeleccionadoResumen = null;
+
+    // Instancias de Chart.js
+    let myChartMaterias = null;
+    let myChartCursos = null;
+    let myChartCausales = null;
+    let panelGraficosAbierto = false;
 
     function obtenerFechaHoraActual() {
       const ahora = new Date();
@@ -922,7 +965,7 @@
     }
 
     // ============================================================
-    // SISTEMA DE FILTROS EN CASCADA Y VISTA TABLA COMPLETA
+    // GESTIÓN DE FILTROS EN CASCADA Y VISTA TABLA
     // ============================================================
 
     async function cargarDatosAdmin() {
@@ -951,7 +994,6 @@
       const areas = [...new Set(registrosGlobalesAdmin.map(r => r[5]))].sort();
       const docentes = [...new Set(registrosGlobalesAdmin.map(r => r[4]))].sort();
 
-      // Extraer causas únicas separadas por punto y coma
       const setAcad = new Set();
       const setCond = new Set();
       registrosGlobalesAdmin.forEach(r => {
@@ -1092,7 +1134,12 @@
       }
       document.getElementById('statMateriasCriticas').innerText = matTop;
 
-      // Render de la Tabla Completa en pantalla con todas las justificaciones
+      // Actualizar gráficos si el panel está desplegado
+      if (panelGraficosAbierto) {
+        actualizarGraficosEstadisticos();
+      }
+
+      // Render de la Tabla Completa
       const tbody = document.getElementById('tbodyAdmin');
       tbody.innerHTML = '';
 
@@ -1134,6 +1181,114 @@
         tbody.appendChild(tr);
       });
     }
+
+    // ============================================================
+    // GESTIÓN DE GRÁFICOS INTERACTIVOS (CHART.JS)
+    // ============================================================
+
+    function togglePanelGraficos() {
+      const cont = document.getElementById('contenedorGraficos');
+      const btn = document.getElementById('btnToggleGraficos');
+      panelGraficosAbierto = !panelGraficosAbierto;
+
+      if (panelGraficosAbierto) {
+        cont.classList.remove('hidden');
+        btn.innerText = "✕ Ocultar Gráficos";
+        actualizarGraficosEstadisticos();
+      } else {
+        cont.classList.add('hidden');
+        btn.innerText = "👁️ Mostrar Gráficos";
+      }
+    }
+
+    function actualizarGraficosEstadisticos() {
+      // 1. Datos por Materia
+      const conteoMat = {};
+      // 2. Datos por Curso
+      const conteoCur = {};
+      // 3. Causales Académicas
+      const conteoCausales = {};
+
+      registrosFiltradosActuales.forEach(r => {
+        conteoMat[r[5]] = (conteoMat[r[5]] || 0) + 1;
+        conteoCur[r[2]] = (conteoCur[r[2]] || 0) + 1;
+        if (r[10]) {
+          String(r[10]).split(';').forEach(c => {
+            const item = c.trim();
+            if (item) conteoCausales[item] = (conteoCausales[item] || 0) + 1;
+          });
+        }
+      });
+
+      // Render Gráfico 1: Materias
+      const ctxMat = document.getElementById('chartMaterias').getContext('2d');
+      if (myChartMaterias) myChartMaterias.destroy();
+      myChartMaterias = new Chart(ctxMat, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(conteoMat),
+          datasets: [{
+            label: 'N° Casos',
+            data: Object.values(conteoMat),
+            backgroundColor: '#4338ca',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+      });
+
+      // Render Gráfico 2: Cursos
+      const ctxCur = document.getElementById('chartCursos').getContext('2d');
+      if (myChartCursos) myChartCursos.destroy();
+      myChartCursos = new Chart(ctxCur, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(conteoCur),
+          datasets: [{
+            data: Object.values(conteoCur),
+            backgroundColor: ['#4f46e5', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }
+        }
+      });
+
+      // Render Gráfico 3: Causales (Top 5)
+      const topCausales = Object.entries(conteoCausales).sort((a, b) => b[1] - a[1]).slice(0, 5);
+      const ctxCaus = document.getElementById('chartCausales').getContext('2d');
+      if (myChartCausales) myChartCausales.destroy();
+      myChartCausales = new Chart(ctxCaus, {
+        type: 'bar',
+        data: {
+          labels: topCausales.map(t => t[0].length > 18 ? t[0].substring(0, 18) + '...' : t[0]),
+          datasets: [{
+            label: 'Frecuencia',
+            data: topCausales.map(t => t[1]),
+            backgroundColor: '#f43f5e',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { x: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+      });
+    }
+
+    // ============================================================
+    // MÓDULO RESUMEN / KARDEX POR ESTUDIANTE
+    // ============================================================
 
     function abrirResumenEstudiante(nombreEstudiante, cursoEstudiante) {
       estudianteSeleccionadoResumen = { nombre: nombreEstudiante, curso: cursoEstudiante };
@@ -1286,11 +1441,15 @@
       generarPDFReporte(registrosFiltradosActuales, `Consolidado_Filtrado_${new Date().toISOString().slice(0,10)}.pdf`, subtituloFiltros, false);
     }
 
-    // GENERADOR PDF OFICIO CON 13 COLUMNAS Y FIRMAS EN CADA HOJA
+    // ============================================================
+    // GENERADOR PDF CON ANEXO DE GRÁFICOS, FOLIADO Y FIRMA AL FINAL
+    // ============================================================
     function generarPDFReporte(lista, nombreArchivo, subtituloExtra, esReporteDocente) {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'legal' });
       const fechaHora = obtenerFechaHoraActual();
+      const pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
 
       const tableBody = lista.map(r => [
         r[1], // Trim
@@ -1310,23 +1469,12 @@
 
       doc.autoTable({
         startY: 25,
-        margin: { top: 25, bottom: 28, left: 10, right: 10 },
+        margin: { top: 25, bottom: 22, left: 10, right: 10 },
         head: [['Trim', 'Curso', 'Estudiante', 'Docente', 'Área', '1T', '2T', '3T', 'Prom', 'Justif. Académica', 'Justif. Conductual', 'Acciones Previas', 'Observación / Acuerdos']],
         body: tableBody,
         theme: 'grid',
-        styles: { 
-          fontSize: 6, 
-          cellPadding: 1.5, 
-          overflow: 'linebreak',
-          valign: 'middle'
-        },
-        headStyles: { 
-          fillColor: [30, 41, 59], 
-          textColor: [255, 255, 255], 
-          fontStyle: 'bold', 
-          halign: 'center',
-          fontSize: 6.5
-        },
+        styles: { fontSize: 6, cellPadding: 1.5, overflow: 'linebreak', valign: 'middle' },
+        headStyles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center', fontSize: 6.5 },
         columnStyles: {
           0: { cellWidth: 10, halign: 'center' },
           1: { cellWidth: 14, halign: 'center' },
@@ -1343,52 +1491,131 @@
           12: { cellWidth: 36 }
         },
         didDrawPage: function (data) {
-          const pageWidth = doc.internal.pageSize.width || doc.internal.pageSize.getWidth();
-          const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
-
-          // Encabezado en todas las páginas
-          doc.setFontSize(12);
-          doc.setFont(undefined, 'bold');
+          // Encabezado en todas las páginas de la tabla
+          doc.setFontSize(12); doc.setFont(undefined, 'bold');
           doc.text(nombreColegioActual, 10, 10);
-          
           doc.setFontSize(9);
           doc.text("CONSOLIDADO PEDAGÓGICO DE ESTUDIANTES EN RIESGO / REPROBADOS", 10, 15);
-          
-          doc.setFontSize(7.5);
-          doc.setFont(undefined, 'normal');
-          doc.text(`${subtituloExtra} | Emisión: ${fechaHora} | Pág. ${data.pageNumber}`, 10, 20);
-
+          doc.setFontSize(7.5); doc.setFont(undefined, 'normal');
+          doc.text(`${subtituloExtra} | Emisión: ${fechaHora}`, 10, 20);
           doc.setLineWidth(0.3);
           doc.line(10, 22, pageWidth - 10, 22);
-
-          // Firmas en el pie de todas las páginas
-          const lineaY = pageHeight - 14;
-          doc.setLineWidth(0.4);
-
-          if (esReporteDocente) {
-            const centroDocente = pageWidth * 0.28;
-            const centroDireccion = pageWidth * 0.72;
-
-            doc.line(centroDocente - 35, lineaY, centroDocente + 35, lineaY);
-            doc.line(centroDireccion - 35, lineaY, centroDireccion + 35, lineaY);
-
-            doc.setFontSize(7);
-            doc.text("Firma de la Profesora / Profesor", centroDocente, lineaY + 4, { align: "center" });
-            doc.text(sesionActual.nombre, centroDocente, lineaY + 7.5, { align: "center" });
-            doc.text("Sello y Firma de Dirección / Comisión Pedagógica", centroDireccion, lineaY + 4, { align: "center" });
-          } else {
-            const centroComision = pageWidth * 0.30;
-            const centroDireccion = pageWidth * 0.70;
-
-            doc.line(centroComision - 40, lineaY, centroComision + 40, lineaY);
-            doc.line(centroDireccion - 40, lineaY, centroDireccion + 40, lineaY);
-
-            doc.setFontSize(7);
-            doc.text("Comisión Técnico Pedagógica", centroComision, lineaY + 4, { align: "center" });
-            doc.text("Sello y Firma de Dirección", centroDireccion, lineaY + 4, { align: "center" });
-          }
         }
       });
+
+      // Si es el informe de la Comisión / Admin, agregar HOJA ANEXA CON GRÁFICOS Y RESUMEN
+      if (!esReporteDocente) {
+        doc.addPage();
+
+        // Encabezado de la hoja de Gráficos
+        doc.setFontSize(12); doc.setFont(undefined, 'bold');
+        doc.text(nombreColegioActual, 10, 10);
+        doc.setFontSize(9);
+        doc.text("ANEXO ESTADÍSTICO INSTITUCIONAL Y ANÁLISIS DE RENDIMIENTO", 10, 15);
+        doc.setFontSize(7.5); doc.setFont(undefined, 'normal');
+        doc.text(`Gráficos y Métricas Cuantitativas | Emisión: ${fechaHora}`, 10, 20);
+        doc.setLineWidth(0.3);
+        doc.line(10, 22, pageWidth - 10, 22);
+
+        // Asegurar que los gráficos existen para capturar la imagen
+        if (!myChartMaterias) actualizarGraficosEstadisticos();
+
+        try {
+          const imgMat = document.getElementById('chartMaterias').toDataURL('image/png', 1.0);
+          const imgCur = document.getElementById('chartCursos').toDataURL('image/png', 1.0);
+          const imgCaus = document.getElementById('chartCausales').toDataURL('image/png', 1.0);
+
+          // Posicionar las 3 imágenes lado a lado
+          const imgWidth = 100;
+          const imgHeight = 65;
+          const startY = 28;
+
+          doc.setFontSize(8.5); doc.setFont(undefined, 'bold');
+          doc.text("1. Reprobación por Área / Materia", 15, startY);
+          doc.addImage(imgMat, 'PNG', 15, startY + 2, imgWidth, imgHeight);
+
+          doc.text("2. Distribución por Curso", 130, startY);
+          doc.addImage(imgCur, 'PNG', 130, startY + 2, imgWidth, imgHeight);
+
+          doc.text("3. Principales Causales Académicas", 245, startY);
+          doc.addImage(imgCaus, 'PNG', 245, startY + 2, imgWidth, imgHeight);
+        } catch (e) {
+          console.warn("No se pudieron renderizar las imágenes de gráficos:", e);
+        }
+
+        // Resumen Cuantitativo en formato Cuadro
+        const totalCasos = lista.length;
+        let sumaP = 0;
+        const setEstudiantes = new Set();
+        lista.forEach(r => {
+          sumaP += Math.round(r[9]);
+          setEstudiantes.add(r[3]);
+        });
+        const promGen = totalCasos > 0 ? Math.round(sumaP / totalCasos) : 0;
+
+        doc.autoTable({
+          startY: 105,
+          margin: { left: 15, right: 15 },
+          head: [['Total Casos Registrados', 'Estudiantes Únicos en Riesgo', 'Promedio General de Reprobación', 'Estado del Periodo']],
+          body: [[
+            `${totalCasos} registros`,
+            `${setEstudiantes.size} estudiantes`,
+            `${promGen} puntos`,
+            `Trimestre: ${trimestreActivoGlobal} (Cierre de Periodo)`
+          ]],
+          theme: 'grid',
+          styles: { fontSize: 8, halign: 'center', cellPadding: 3 },
+          headStyles: { fillColor: [79, 70, 229], fontStyle: 'bold' }
+        });
+      }
+
+      // ============================================================
+      // FIRMAS EXCLUSIVAS EN LA ÚLTIMA PÁGINA
+      // ============================================================
+      const totalPaginas = doc.internal.getNumberOfPages();
+      doc.setPage(totalPaginas);
+
+      let finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 28 : 155;
+      if (finalY > pageHeight - 22) {
+        doc.addPage();
+        finalY = 45;
+      }
+
+      doc.setLineWidth(0.4);
+
+      if (esReporteDocente) {
+        const centroDocente = pageWidth * 0.28;
+        const centroDireccion = pageWidth * 0.72;
+
+        doc.line(centroDocente - 35, finalY, centroDocente + 35, finalY);
+        doc.line(centroDireccion - 35, finalY, centroDireccion + 35, finalY);
+
+        doc.setFontSize(7.5); doc.setFont(undefined, 'normal');
+        doc.text("Firma de la Profesora / Profesor", centroDocente, finalY + 4, { align: "center" });
+        doc.text(sesionActual.nombre, centroDocente, finalY + 7.5, { align: "center" });
+        doc.text("Sello y Firma de Dirección / Comisión Pedagógica", centroDireccion, finalY + 4, { align: "center" });
+      } else {
+        const centroComision = pageWidth * 0.30;
+        const centroDireccion = pageWidth * 0.70;
+
+        doc.line(centroComision - 40, finalY, centroComision + 40, finalY);
+        doc.line(centroDireccion - 40, finalY, centroDireccion + 40, finalY);
+
+        doc.setFontSize(7.5); doc.setFont(undefined, 'normal');
+        doc.text("Comisión Técnico Pedagógica", centroComision, finalY + 4, { align: "center" });
+        doc.text("Sello y Firma de Dirección", centroDireccion, finalY + 4, { align: "center" });
+      }
+
+      // ============================================================
+      // FOLIADO OFICIAL EN TODAS LAS PÁGINAS (Página X/Y)
+      // ============================================================
+      const totalPaginasFinal = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= totalPaginasFinal; i++) {
+        doc.setPage(i);
+        doc.setFontSize(7.5);
+        doc.setFont(undefined, 'normal');
+        doc.text(`Página ${i}/${totalPaginasFinal}`, pageWidth - 15, pageHeight - 8, { align: "right" });
+      }
 
       doc.save(nombreArchivo);
     }
