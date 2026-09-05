@@ -19,12 +19,15 @@
 <body class="bg-slate-100 text-slate-800 min-h-screen py-4 sm:py-6 px-3 sm:px-6 antialiased">
 
   <script>
+    // ==========================================
+    // URL DE GOOGLE APPS SCRIPT CONFIGURADA:
+    // ==========================================
     const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbxCQtbJK9HBQ-HHsJpI-diZFeawf_aOpNTz8JLFO6KW98gN_88uZdJZB3bifsNGPNcK5g/exec";
   </script>
 
   <div class="max-w-7xl mx-auto space-y-4">
 
-    <!-- ENCABEZADO -->
+    <!-- ENCABEZADO RESPONSIVO -->
     <header class="bg-indigo-900 text-white rounded-2xl p-4 sm:p-6 shadow-md border-b-4 border-indigo-950">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div class="space-y-1">
@@ -257,6 +260,30 @@
         <div class="bg-white border rounded-2xl p-4 shadow-sm text-center">
           <div class="text-2xl font-black text-emerald-700 truncate px-1" id="statMateriasCriticas">-</div>
           <div class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Área con Más Casos</div>
+        </div>
+      </div>
+
+      <!-- MÓDULO DE COMUNICADOS INSTITUCIONALES[cite: 1] -->
+      <div class="bg-white border border-indigo-100 rounded-2xl p-4 sm:p-5 shadow-sm">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
+          <div>
+            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-1.5">📢 Panel de Comunicados para el Plantel Docente</h3>
+            <p class="text-xs text-slate-500">Este mensaje aparecerá en una ventana emergente a los docentes en cuanto inicien sesión[cite: 1].</p>
+          </div>
+          <div class="flex gap-2 w-full sm:w-auto">
+            <button onclick="retirarComunicado()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs px-3 py-2 rounded-xl font-bold transition">Quitar Comunicado</button>
+            <button onclick="publicarComunicado()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-4 py-2 rounded-xl font-bold transition shadow">💾 Publicar Aviso</button>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+          <div>
+            <label class="block font-semibold text-slate-600 mb-1">Título del Comunicado:</label>
+            <input type="text" id="txtComunTitulo" placeholder="Ej: Fecha límite de entrega" class="w-full border rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block font-semibold text-slate-600 mb-1">Cuerpo del Comunicado / Instrucciones:</label>
+            <input type="text" id="txtComunTexto" placeholder="Estimados colegas: se recuerda que..." class="w-full border rounded-xl p-2.5 outline-none focus:ring-2 focus:ring-indigo-500">
+          </div>
         </div>
       </div>
 
@@ -564,6 +591,30 @@
     </div>
   </div>
 
+  <!-- MODAL: COMUNICADO EMERGENTE PARA DOCENTES[cite: 1] -->
+  <div id="modalComunicado" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border-t-8 border-indigo-600 space-y-4">
+      <div class="flex items-start justify-between">
+        <div class="space-y-0.5">
+          <span class="bg-indigo-100 text-indigo-900 text-[11px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider">Aviso Institucional</span>
+          <h3 class="text-lg font-black text-slate-900 pt-1" id="lblModalComunTitulo">Comunicado</h3>
+        </div>
+        <button onclick="cerrarModalComunicado()" class="text-slate-400 hover:text-slate-600 text-lg font-bold">✕</button>
+      </div>
+      
+      <div class="bg-slate-50 border p-4 rounded-2xl text-xs sm:text-sm text-slate-700 leading-relaxed max-h-60 overflow-y-auto whitespace-pre-wrap" id="lblModalComunTexto"></div>
+
+      <div class="flex items-center justify-between pt-2 text-[11px] text-slate-400 border-t">
+        <span id="lblModalComunAutor">Emitido por: Dirección / Comisión</span>
+        <span id="lblModalComunFecha"></span>
+      </div>
+
+      <button onclick="cerrarModalComunicado()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-xs sm:text-sm shadow transition">
+        Entendido / Aceptar
+      </button>
+    </div>
+  </div>
+
   <!-- MODAL REGISTRO DE DOCENTE -->
   <div id="modalDocente" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-2xl p-5 sm:p-6 max-w-md w-full shadow-xl">
@@ -583,6 +634,9 @@
   </div>
 
   <script>
+    // ============================================================
+    // CONTROLADOR PRINCIPAL Y LÓGICA DE INTERFAZ
+    // ============================================================
     let sesionActual = null;
     let cacheEstudiantes = {};
     let opcionesConfig = { academicas: [], conductuales: [], acciones: [] };
@@ -672,9 +726,19 @@
           document.getElementById('userInfo').classList.remove('hidden');
           document.getElementById('userBadge').innerText = `${res.rol}: ${res.nombre}`;
 
+          // Mostrar comunicado si existe[cite: 1]
+          if (res.comunicado && res.comunicado.texto) {
+            mostrarModalComunicado(res.comunicado);
+          }
+
           if (res.rol === 'ADMIN' || res.rol === 'COMISION') {
             document.getElementById('vistaAdmin').classList.remove('hidden');
             
+            if (res.comunicado) {
+              document.getElementById('txtComunTitulo').value = res.comunicado.titulo || '';
+              document.getElementById('txtComunTexto').value = res.comunicado.texto || '';
+            }
+
             if (res.rol === 'COMISION') {
               document.getElementById('seccionSoloAdmin').classList.add('hidden');
             } else {
@@ -707,6 +771,45 @@
         btn.innerText = "Iniciar Sesión";
         btn.disabled = false;
       }
+    }
+
+    // GESTIÓN DE COMUNICADOS[cite: 1]
+    function mostrarModalComunicado(c) {
+      document.getElementById('lblModalComunTitulo').innerText = c.titulo || 'COMUNICADO INSTITUCIONAL';
+      document.getElementById('lblModalComunTexto').innerText = c.texto || '';
+      document.getElementById('lblModalComunAutor').innerText = `Emitido por: ${c.autor || 'Dirección / Comisión'}`;
+      document.getElementById('lblModalComunFecha').innerText = c.fecha ? `Fecha: ${c.fecha}` : '';
+      document.getElementById('modalComunicado').classList.remove('hidden');
+    }
+
+    function cerrarModalComunicado() {
+      document.getElementById('modalComunicado').classList.add('hidden');
+    }
+
+    async function publicarComunicado() {
+      const titulo = document.getElementById('txtComunTitulo').value.trim();
+      const texto = document.getElementById('txtComunTexto').value.trim();
+      if (!texto) { alert("Por favor ingrese el mensaje del comunicado."); return; }
+
+      const res = await apiRequest({
+        action: 'guardarComunicado',
+        comunicado: {
+          titulo: titulo || "COMUNICADO PEDAGÓGICO",
+          texto: texto,
+          autor: sesionActual.rol === 'ADMIN' ? "DIRECCIÓN INSTITUCIONAL" : "COMISIÓN PEDAGÓGICA",
+          fecha: new Date().toLocaleDateString('es-ES')
+        },
+        claveAuth: sesionActual.ci
+      });
+      alert(res.message);
+    }
+
+    async function retirarComunicado() {
+      if (!confirm("¿Desea dar de baja el comunicado actual?")) return;
+      const res = await apiRequest({ action: 'guardarComunicado', comunicado: null, claveAuth: sesionActual.ci });
+      alert(res.message);
+      document.getElementById('txtComunTitulo').value = '';
+      document.getElementById('txtComunTexto').value = '';
     }
 
     function configurarCamposNotasDocente(trim) {
